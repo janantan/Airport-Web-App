@@ -4,100 +4,95 @@
 	<tbody>
 		<tr>
 			<td>
-				<fieldset style="background: #fefefe; height:26vh;">
-					<legend style="font-weight: bold;">Shift Brief</legend>
+				<fieldset id="second-fieldset" style="background: #fefefe; height:70vh;">
+					<legend style="font-weight: bold;">Log Number: {{log_no}}</legend>
 					<table id="shift-brief">
-						<tr>
-							<td>
-								<span class="font-style">Team NO:</span>
-							</td>
-							<td class="right-border" style="color: red;">
-								<span>{{result['team']}}</span>
-							</td>
-							<td>
-								<span class="font-style">Airport:</span>
-							</td>
-							<td>										
-								<span>OICC</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<span class="font-style">On-Duty:</span>
-							</td>
-							<td class="right-border" style="color: red;">
-								<span>{{(', '.join(result['on_duty']))}}</span>
-							</td>
-							<td>
-								<span class="font-style">UTC Date:</span>
-							</td>
-							<td>
-								<span>{{result['shift_date']}}</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<span class="font-style">Shift Switch:</span>
-							</td>
-							<td class="right-border">
-								<span>{{(', '.join(result['shift_switch']))}}</span>
-							</td>
-							<td>
-								<span class="font-style">LCL Date:</span>
-							</td>
-							<td>
-								<span>{{result['shift_jdate']}}</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<span class="font-style">Overtime:</span>
-							</td>
-							<td class="right-border">
-								<span>{{(', '.join(result['overtime']))}}</span>
-							</td>
-							<td>
-								<span class="font-style">Week Day:</span>
-							</td>
-							<td>
-								<span>{{result['day']}}</span>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<span class="font-style">Daily Leave:</span>
-							</td>
-							<td class="right-border">
-								<span>{{(', '.join(result['daily_leave']))}}</span>
-							</td>
-							<td>
-								<span class="font-style">Day/Night:</span>
-							</td>
-							<td>
-								<span>{{result['shift']}}</span>
-							</td>
-						</tr>
-					</table>
-				</fieldset>
-				<fieldset id="second-fieldset" style="background: #fefefe; min-height: 200px; height:38vh;">
-            		<legend style="font-weight: bold;">Log Data</legend>
-            		<table>
-            			<thead></thead>
-            			<tbody style="height:35vh;">
+						<thead></thead>
+						<tbody style="height: 68vh;">
+							<tr>
+								<td>
+									<span class="font-style">Team NO:</span>
+								</td>
+								<td colspan="2" class="right-border" style="color: red;">
+									<span>{{result['team']}}</span>
+								</td>
+								<td colspan="2">
+									<span class="font-style">Airport:</span>
+								</td>
+								<td>										
+									<span>OICC</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="font-style">On-Duty:</span>
+								</td>
+								<td colspan="2" class="right-border" style="color: red;">
+									<span>{{(', '.join(result['on_duty']))}}</span>
+								</td>
+								<td colspan="2">
+									<span class="font-style">UTC Date:</span>
+								</td>
+								<td>
+									<span>{{result['shift_date']}}</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="font-style">Shift Switch:</span>
+								</td>
+								<td colspan="2" class="right-border">
+									<span>{{(', '.join(result['shift_switch']))}}</span>
+								</td>
+								<td colspan="2">
+									<span class="font-style">LCL Date:</span>
+								</td>
+								<td>
+									<span>{{result['shift_jdate']}}</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="font-style">Overtime:</span>
+								</td>
+								<td colspan="2" class="right-border">
+									<span>{{(', '.join(result['overtime']))}}</span>
+								</td>
+								<td colspan="2">
+									<span class="font-style">Week Day:</span>
+								</td>
+								<td>
+									<span>{{result['day']}}</span>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="font-style">Daily Leave:</span>
+								</td>
+								<td colspan="2" class="right-border">
+									<span>{{(', '.join(result['daily_leave']))}}</span>
+								</td>
+								<td colspan="2">
+									<span class="font-style">Day/Night:</span>
+								</td>
+								<td>
+									<span>{{result['shift']}}</span>
+								</td>
+							</tr>
             				<tr>
-		            			<th style="padding-top: 20px;">
+		            			<th style="padding-top: 40px;">
 		            				<span style="color: red;">Network Status</span>
 		            			</th>
-		            			<th style="padding-top: 20px;">
+		            			<th style="padding-top: 40px;">
 					             	<span>Server</span><hr>
 						        </th>
-						        <th style="padding-top: 20px;">
+						        <th style="padding-top: 40px;">
 					             	<span>Supervisor</span><hr>
 						        </th>
-		            			<th style="padding-top: 20px;">
+		            			<th style="padding-top: 40px;">
 					            	<span>Workstation</span><hr>
 						        </th>
-						        <th style="padding-top: 20px;">
+						        <th style="padding-top: 40px;">
 					             	<span>Printer</span><hr>
 						        </th>
 						    </tr>
