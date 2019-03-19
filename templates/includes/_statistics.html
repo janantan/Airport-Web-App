@@ -1,0 +1,110 @@
+<div>
+	<main style="font-size:12px;">
+		<div id="flight-schedule">
+			<table id="freeze">
+				<thead>
+					<tr style="background:yellow;">
+						{% if airline %}
+							<th style="width: 200px;">						
+								<img src="/static/img/logo/{{airline}}.png" alt="{{airline}}" class="center" width="30" height="30"/>
+							</th>
+						{% endif %}					
+						<th style="width: 300px;">
+							<span>Date</span>
+						</th>
+						<th>
+							<span>Type</span>
+						</th>
+						<th>
+							<span>ARR Flight Number</span>
+						</th>
+						<th>
+							<span>ARR From</span>
+						</th>
+						<th>
+							<span>ARR Time</span>
+						</th>
+						<th>
+							<span>ARR DLA Source</span>
+						</th>
+						<th>
+							<span>DEP Flight Number</span>
+						</th>
+						<th>
+							<span>Dep To</span>
+						</th>
+						<th>
+							<span>DEP Time</span>
+						</th>
+						<th>
+							<span>DEP DLA Source</span>
+						</th>
+						<th>
+							<span>Light</span>
+						</th>
+						<th>
+							<span>REG</span>
+						</th>
+						<th>
+							<span>Initial</span>
+						</th>
+						<th>
+							<span>Remarks</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for i in range (result_count) %}
+						<tr class="rows">
+							<td style="width: 70px;">
+								<span>{{loop.index}}</span>
+							</td>
+							<td style="width: 230px; font-size:11px; font-weight:bold;">
+								<a href="/flight-form/{{statistics_big_list[i][14]}}" title="Edit?" target="_blank"><span style="color:blue;">{{statistics_big_list[i][0]}}</span></a>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][1]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][2]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][3]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][4]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][5]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][6]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][7]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][8]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][9]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][10]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][11]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][12]}}</span>
+							</td>
+							<td>
+								<span>{{statistics_big_list[i][13]}}</span>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</main>
+</div>

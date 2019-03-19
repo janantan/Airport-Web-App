@@ -1,0 +1,381 @@
+<tbody id="ev_{{counter}}-com0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">
+		 	<span id="ev_{{counter}}-com1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_com_status" value="Not OPR" style="cursor:pointer;" />Not OPR
+			<input type="radio" name="ev_{{counter}}_com_status" value="US" style="cursor:pointer;"/>US
+			<input type="radio" name="ev_{{counter}}_com_status" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+	    </td>
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_com_title" id="ev_{{counter}}_com_title">
+				<option></option>
+				<option value="ATIS (INFO) 126.800 MHz">ATIS (INFO) 126.800 MHz</option>
+				<option value="OICS HOTLINE">OICS HOTLINE</option>
+				<option value="ACC HOTLINE">ACC HOTLINE</option>
+				<option value="FM RADIO">FM RADIO</option>
+				<option value="OICI HOTLINE">OICI HOTLINE</option>
+				<option value="TWR FREQ 121.900 MHz">TWR FREQ 121.900 MHz</option>
+				<option value="EMERG FREQ 121.5 MHz">EMERG FREQ 121.5 MHz</option>
+				<option value="SEPAH HOTLINE">SEPAH HOTLINE</option>
+				<option value="SIGNALING LAMP">SIGNALING LAMP</option>
+				<option value="MIL HOTLINE">MIL HOTLINE</option>
+				<option value="I-COM">I-COM</option>
+				<option value="TWR FREQ 122.450 MHz">TWR FREQ 122.450 MHz</option>
+			</select>
+	    </td>
+	    <th style="width:220px;">			            			         
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_com_time" type="time" name="ev_{{counter}}_com_time" />
+	    </td>	
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">			            			         
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_com_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-nav0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">			            			         
+		 	<span id="ev_{{counter}}-nav1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">			            			         
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_nav_status" value="Not OPR" style="cursor:pointer;" />Not OPR
+			<input type="radio" name="ev_{{counter}}_nav_status" value="US" style="cursor:pointer;"/>US
+			<input type="radio" name="ev_{{counter}}_nav_status" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+	    </td>	
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_nav_title" id="ev_{{counter}}_nav_title">
+				<option></option>
+					<option value="ILS DME (CH 48X)">ILS DME (CH 48X)</option>
+					<option value="DVOR/DME (CH 93X) 114.600 MHz">DVOR/DME (CH 93X) 114.600 MHz</option>
+					<option value="LLZ 29 111.100 MHz">LLZ 29 111.100 MHz</option>
+					<option value="ILS GP 331.700 MHz">ILS GP 331.700 MHz</option>
+					<option value="NDB">NDB</option>
+			</select>
+	    </td>
+	    <th style="width:220px;">			            			         
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_nav_time" type="time" name="ev_{{counter}}_nav_time" />
+	    </td>	
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">			            			         
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_nav_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-sur0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">			            			         
+		 	<span id="ev_{{counter}}-sur1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">			            			         
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_sur_status" value="Not OPR" style="cursor:pointer;" />Not OPR
+			<input type="radio" name="ev_{{counter}}_sur_status" value="US" style="cursor:pointer;"/>US
+			<input type="radio" name="ev_{{counter}}_sur_status" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+	    </td>	
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_sur_title" id="ev_{{counter}}_sur_title">
+				<option></option>
+			</select>
+	    </td>
+	    <th style="width:220px;">			            			         
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_sur_time" type="time" name="ev_{{counter}}_surt_time" />
+	    </td>	
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">			            			         
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_sur_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-rwy_twy0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">			            			         
+		 	<span id="ev_{{counter}}-rwy_twy1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">			            			         
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_rwy_twy_status" value="Clear" style="cursor:pointer;" />Clear
+			<input type="radio" name="ev_{{counter}}_rwy_twy_status" value="FOD" style="cursor:pointer;"/>FOD
+			<input type="radio" name="ev_{{counter}}_rwy_twy_status" value="Close" style="cursor:pointer;"/>Close
+	    </td>	
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_rwy_twy_title" id="ev_{{counter}}_rwy_twy_title">
+				<option></option>
+				<option value="RWY 11">RWY 11</option>
+				<option value="RWY 29">RWY 29</option>
+				<option value="TWY A">TWY A</option>
+				<option value="TWY B">TWY B</option>
+			</select>
+	    </td>
+	    <th style="width:220px;">			            			         
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_rwy_twy_time" type="time" name="ev_{{counter}}_rwy_twy_time" />
+	    </td>	
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">			            			         
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rwy_twy_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-lgt0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">			            			         
+		 	<span id="ev_{{counter}}-lgt1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">			            			         
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_lgt_status" value="US" style="cursor:pointer;" />US
+			<input type="radio" name="ev_{{counter}}_lgt_status" value="NIL" style="cursor:pointer;"/>NIL
+	    </td>	
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_lgt_title" id="ev_{{counter}}_lgt_title">
+				<option></option>
+				<option value="RWY 29 END LGT">RWY 29 END LGT</option>
+				<option value="RWY 29 THR LGT">RWY 29 THR LGT</option>
+				<option value="RWY 29 APP LGT">RWY 29 APP LGT</option>
+				<option value="RWY 11 END LGT">RWY 11 END LGT</option>
+				<option value="RWY 29/11 EDGE LGT">RWY 29/11 EDGE LGT</option>
+				<option value="TWY A EDGE LGT">TWY A EDGE LGT</option>
+				<option value="TWY B EDGE LGT">TWY B EDGE LGT</option>
+				<option value="PAPI 29">PAPI 29</option>
+				<option value="ABN">ABN</option>
+			</select>
+	    </td>
+	    <th style="width:220px;">			            			         
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_lgt_time" type="time" name="ev_{{counter}}_lgt_time" />
+	    </td>	
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">			            			         
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_lgt_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-eqp0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:240px;">			            			         
+		 	<span id="ev_{{counter}}-eqp1"></span><span> Title</span>
+		</th>
+		<th style="width:220px;">
+		 	<span>Status</span>
+		</th>
+		<td style="width:300px; font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_eqp_status" value="Not OPR" style="cursor:pointer;" />Not OPR
+			<input type="radio" name="ev_{{counter}}_eqp_status" value="US" style="cursor:pointer;"/>US
+			<input type="radio" name="ev_{{counter}}_eqp_status" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+	    </td>	
+	</tr>
+	<tr>
+	    <td style="width:240px;">
+	    	<select name="ev_{{counter}}_eqp_title" id="ev_{{counter}}_eqp_title">
+				<option></option>
+				<option value="RVR 11">RVR 11</option>
+				<option value="RVR 29">RVR 29</option>
+				<option value="RVR MID">RVR MID</option>
+				<option value="WDI-TWR">WDI-TWR</option>
+				<option value="CRASH ALARM">CRASH ALARM</option>
+				<option value="WINDSOCK">WINDSOCK</option>
+			</select>
+	    </td>
+	    <th style="width:220px;">
+	     	<span>Time (UTC)</span>
+	    </th>
+	    <td style="width:300px;">
+	    	<input id="ev_{{counter}}_eqp_time" type="time" name="ev_{{counter}}_eqp_time" />
+	    </td>
+	</tr>
+	<tr>
+		<td style="width:240px;"></td>
+		<th style="width:220px;">
+			<span>Reason</span>
+		</th>
+		<td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_eqp_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-rwy-in-use0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:300px;">			            			         
+		 	<span>Text</span>
+		</th>
+		<th style="width:240px;">
+		 	<span>Time (UTC)</span>
+		</th>
+		<th style="width:300px;">
+			<span>Reason</span>
+		</th>
+	</tr>
+	<tr>
+	    <td style="width:300px;">
+			<textarea style="width:200px; height:18px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rwy-in-use_text"></textarea>
+		</td>
+	    <td style="width:240px;">
+	    	<input id="ev_{{counter}}_rwy-in-use_time" type="time" name="ev_{{counter}}_rwy-in-use_time" />
+	    </td>
+	    <td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rwy-in-use_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-rwy-inspection0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:300px;">			            			         
+		 	<span>Inspector</span>
+		</th>
+		<th style="width:240px;">
+		 	<span>Time (UTC)</span>
+		</th>
+		<th style="width:300px;">
+			<span>Reason</span>
+		</th>
+	</tr>
+	<tr>
+	    <td style="width:300px;">
+			<input id="ev_{{counter}}_rwy-inspection_inspector" type="text" name="ev_{{counter}}_rwy-inspection_inspector" size="15" />
+		</td>
+	    <td style="width:240px;">
+	    	<input id="ev_{{counter}}_rwy-inspection_time" type="time" name="ev_{{counter}}_rwy-inspection_time" />
+	    </td>
+	    <td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rwy-inspection_reason"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-rpv0" style="display: none; border: none; margin-top: 15px; height: 200px;">
+	<tr id="rpv-first-row">
+		<th>
+		 	<span>Call Sign</span>
+		</th>
+		<th>
+		 	<span>Take-off Time</span>
+		</th>
+		<th>
+		 	<span>Landing Time</span>
+		</th>
+	</tr>
+	<tr>
+		<td>
+			<input id="ev_{{counter}}_rpv_call_sign" type="text" name="ev_{{counter}}_rpv_call_sign" size="10" />
+		</td>
+	    <td>
+	    	<input id="ev_{{counter}}_rpv_takeoff_time" type="time" name="ev_{{counter}}_rpv_takeoff_time" />
+	    </td>
+	    <td style="font-size: 13px;">
+	    	<input type="radio" name="ev_{{counter}}_rpv_landing_time" value="To Be Continued" style="cursor:pointer;" />To Be Continued
+			<input type="radio" name="ev_{{counter}}_rpv_landing_time" value="Ended" style="cursor:pointer;"/>Ended
+	    </td>
+	</tr>
+	<tr id="rpv-second-row" style="margin-top: 15px;">
+		<th>
+			<span>Reason</span>
+		</th>
+		<th></th>
+		<th>
+			<span>Description</span>
+		</th>
+	</tr>
+	<tr>
+		<td>
+			<textarea style="width:300px; height:40px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rpv_reason"></textarea>
+		</td>
+		<td></td>
+	    <td>
+			<textarea style="width:300px; height:40px; font-size:15px; direction:ltr;" name="ev_{{counter}}_rpv_description"></textarea>
+		</td>
+	</tr>
+</tbody>
+
+<tbody id="ev_{{counter}}-other0" style="display: none; border: none; margin-top: 15px;">
+	<tr>
+		<th style="width:300px;">			            			         
+		 	<span>Title</span>
+		</th>
+		<th style="width:240px;">
+		 	<span>Time (UTC)</span>
+		</th>
+		<th style="width:300px;">
+			<span>Reason</span>
+		</th>
+	</tr>
+	<tr>
+	    <td style="width:300px;">
+			<input id="ev_{{counter}}_other_title" type="text" name="ev_{{counter}}_other_title" size="15" />
+		</td>
+	    <td style="width:240px;">
+	    	<input id="ev_{{counter}}_other_time" type="time" name="ev_{{counter}}_other_time" />
+	    </td>
+	    <td style="width:300px;">
+			<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{counter}}_other_reason"></textarea>
+		</td>
+	</tr>
+</tbody>

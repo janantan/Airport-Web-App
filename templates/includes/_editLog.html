@@ -1,0 +1,229 @@
+<form method="POST" action="">
+	<table id="freeze-editlog">
+		<thead>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<fieldset style="background: #fefefe; height: 29vh;">
+						<legend style="font-weight: bold;">On-Duty Info</legend>
+						<table id="shift-brief" style="font-size: 14px;">
+							<thead></thead>
+							<tbody style="height: 27vh;">
+								<tr>
+									<td>
+										<span class="font-style">Taken Over From:</span>
+									</td>
+									<td class="right-border">
+										<span>{{result['taken_over_from']}}</span>
+									</td>
+									<td>
+										<span class="font-style">Inspection Time:</span>
+									</td>
+									<td class="right-border">
+										<input id="inspection_time" type="time" name="inspection_time" value="{{result['inspection_time']}}" />
+									</td>
+									<td>										
+										<span class="font-style">Airport:</span>
+									</td>
+									<td>										
+										<span>OICC</span>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span class="font-style">Hand Over Time:</span>
+									</td>
+									<td class="right-border">
+										<span>{{result['hand_over_time']}}</span>
+									</td>
+									<td>
+										<span class="font-style">Inspector:</span>
+									</td>
+									<td class="right-border">
+										<input id="inspector" type="text" name="inspector" value="{{result['inspector']}}" size="5" />
+									</td>
+									<td>
+										<span class="font-style">UTC Date:</span>
+									</td>
+									<td>
+										<span>{{result['shift_date']}}</span>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span class="font-style">Hand Over To:</span>
+									</td>
+									<td class="right-border">
+										<input id="hand_over_to" type="text" name="hand_over_to" value="{{result['hand_over_to']}}" size="5" />
+									</td>
+									<td>
+										<span class="font-style">Inspection Result:</span>
+									</td>
+									<td class="right-border">
+										<textarea style="width:100px; height:40px; font-size:15px; direction: ltr;" name="inspection_result">{{result['inspection_result']}}</textarea>
+									</td>
+									<td>
+										<span class="font-style">LCL Date:</span>
+									</td>
+									<td>
+										<span>{{result['shift_jdate']}}</span>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span class="font-style">Team NO:</span>
+									</td>
+									<td class="right-border">
+										<select name="team" id="team">
+											<option>{{result['team']}}</option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+										</select>
+									</td>
+									<td>
+										<span class="font-style">RWY in Use:</span>
+									</td>
+									<td class="right-border">
+										<select name="rwy_in_use" id="rwy_in_use">
+											<option>{{result['rwy_in_use']}}</option>
+											<option value="11">11</option>
+											<option value="29">29</option>
+										</select>
+									</td>
+									<td>
+										<span class="font-style">Week Day:</span>
+									</td>
+									<td>
+										<select name="week_day" id="week_day">
+											<option>{{result['week_day']}}</option>
+											<option value="Monday">Monday</option>
+											<option value="Tuesday">Tuesday</option>
+											<option value="Wednesday">Wednesday</option>
+											<option value="Thursday">Thursday</option>
+											<option value="Friday">Friday</option>
+											<option value="Saturday">Saturday</option>
+											<option value="Sunday">Sunday</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<span class="font-style" style="font-size: 14px;">Present Members:</span>
+									</td>
+									<td class="right-border">
+										<input id="present_members" type="text" style="font-size:10px;" name="present_members" value="{{(", ".join(result['present_members']))}}" size="20" />
+									</td>
+									<td></td>
+									<td class="right-border"></td>
+									<td>
+										<span class="font-style">Day/Night:</span>
+									</td>
+									<td>
+										{% if result['shift'] %}
+								        	{% if result['shift'] == "Day" %}
+				              					<label><input type="radio" name="shift" value="Day" checked />Day Shift</label>
+												<label><input type="radio" name="shift" value="Night"/>Night Shift</label>
+											{% else %}
+												<label><input type="radio" name="shift" value="Day" />Day Shift</label>
+												<label><input type="radio" name="shift" value="Night" checked />Night Shift</label>
+											{% endif %}
+										{% else %}
+											<label><input type="radio" name="shift" value="Day" />Day Shift</label>
+											<label><input type="radio" name="shift" value="Night"/>Night Shift</label>
+										{% endif %}
+									</td>
+								</tr>
+								<tr style="background: yellow; display: block; margin-top: 25px;">
+			            			<th style="width:250px;">			            			         
+						             	<span>Name</span>
+							        </th>
+							        <th style="width:200px;">			            			         
+						             	<span>Status</span>
+							        </th>
+			            			<th style="width:250px;">			            			         
+						            	<span>Shift Switch</span>
+							        </th>
+							        <th style="width:250px;">
+							        	<span>Description</span>
+							        </th>
+							        <th style="width:50px;"></th>
+							    </tr>
+								{% include 'logdata/_except.html' %}
+							</tbody>
+						</table>
+					</fieldset>
+					<fieldset style="background: #fefefe; margin-bottom: 0; margin-top:-1vh; height: 38vh;">
+						<legend style="font-weight: bold;">Log Data</legend>
+						<table id="freeze-fieldset">
+							{% if not session['no_log_data_flag'] %}
+								{% for item in first_list %}
+								<tr>
+									<td>
+										{% include item %}
+									</td>
+								</tr>
+								{% endfor %}
+								{% for item in last_list %}
+								<tr>
+									<td>
+										{% include item %}
+									</td>
+								</tr>
+								{% endfor %}
+							{% else %}
+								{% for item in last_list %}
+								<tr>
+									<td>
+										{% include item %}
+									</td>
+								</tr>
+								{% endfor %}
+							{% endif %}
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+			<tr id="wholelog-links" style="float: left; border: none;">
+				<td style="width: 60vw;">					
+					<ul>
+						<input style="text-transform: none; float: left;" type="submit" value="Save" />
+						<li><a href="/logs/{{log_no}}" class="button" title="back to logs" style="background-color: #f3f3f3; display: table-cell;">Back</a></li>
+						<li style="float: right;"><a class="next" title="Next Shift"></a></li>
+						<li style="float: right; font-size: 16px;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
+						<li style="float: right;"><a class="previous" title="Previous Shift"></a></li>
+					</ul>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+<script type="text/javascript">
+	var k = 1;
+	
+	function addDutyInfo(id_name, action) {
+		var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "duty_info_" + ++k;
+			var on_duty = "name_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(on_duty, "name_"+k);
+			var status = "duty_status_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "duty_status_"+k);
+			var shift_switch = "shift_switch_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(shift_switch, "shift_switch_"+k);
+			var duty_description = "duty_description_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(duty_description, "duty_description_"+k);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "duty_info_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

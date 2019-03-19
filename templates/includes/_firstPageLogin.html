@@ -1,0 +1,38 @@
+<div>
+  <main>
+    <div id="login-form" onclick="changeOpacity()">
+      <section>
+        <form method="POST" action="">
+          <fieldset id="fp-login">
+            <legend style="font-size: 17px;">Please sign in</legend>
+            <div>
+              <input id="username" style="padding-left: 25px; margin-top: 2vh; border-color: gray; background:no-repeat left; background-image: url(/static/img/icon/login.png);" placeholder="username" type="text" name="username" required />
+            </div>
+
+            <div>
+              <input id="password" style="padding-left: 25px; margin-top: 2vh; border-color: gray; background:no-repeat left; background-image: url(/static/img/icon/password.png);" placeholder="password" type="password" name="password" required />
+            </div>
+            <div>
+              <input id="login" type="submit" style="background: none; margin-top: 4vh; border-color: gray; font-family: Times; font-size: 16px; padding:5px;" value="Login" />
+            </div>
+            <div>
+              <a href="#" style="color: rgb(221,100,28);">I forgot my password!</a>
+            </div>
+            <div>
+              <a id="register" href="/register" class="button" style="background: no-repeat left; background-image: url(/static/img/icon/register.png); padding-left: 25px; border-color: gray;">Sign up</a>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script type="text/javascript">
+  function changeOpacity() {
+    document.getElementById("bg-img").style.opacity = "0.3";
+    document.getElementById("fp-login").style.border = "2px solid gray";
+    document.getElementById("login").style.backgroundColor = "rgb(165,170,190)";
+    document.getElementById("register").style.backgroundColor = "rgb(165,170,190)";
+  }
+</script>

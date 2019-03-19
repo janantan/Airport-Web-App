@@ -1,0 +1,280 @@
+<div id="flight-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead></thead>
+				<tbody style="height: 77vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset>
+				        		<legend>On-Duty Info</legend>
+				        		<table>
+				        			<thead></thead>
+				        			<tbody style="margin-top: 15px; min-height: 28vh;">
+					            		<tr style="background: yellow;">
+					            			<th style="width: 210px;">
+									            <span>Date</span>
+									        </th>
+									        <th style="width: 210px;">			            			         
+								             	<span>Week Day</span>
+									        </th>
+					            			<th style="width: 210px;">
+								             	<span>Team No.</span>
+									        </th>
+					            			<th style="width: 210px;">			            			         
+								            	<span>Day-Night</span>
+									        </th>
+									    </tr>
+									    <tr>
+					            			<td>
+								            	<p class="alert-datetime">{{session['datetime']}}</p>
+												<p class="alert-datetime">{{session['jdatetime']}}</p>
+									        </td>
+									        <td>
+									        	<select name="day" id="day">
+													<option>{{wd}}</option>
+													<option value="Monday">Monday</option>
+													<option value="Tuesday">Tuesday</option>
+													<option value="Wednesday">Wednesday</option>
+													<option value="Thursday">Thursday</option>
+													<option value="Friday">Friday</option>
+													<option value="Saturday">Saturday</option>
+													<option value="Sunday">Sunday</option>
+												</select>
+									        </td>
+					            			<td>
+					              				<select name="team" id="team">
+													<option>{{result['team']}}</option>
+													<option value="1">1</option>
+													<option value="2">2</option>
+													<option value="3">3</option>
+													<option value="4">4</option>
+													<option value="5">5</option>
+												</select>
+									        </td>
+									        <td>
+					              				{% if today_shift == "Day" %}{% set day_ck = 'checked' %}{% else %}{% set day_ck = '' %}{% endif %}
+									        	{% if today_shift == "Night" %}{% set night_ck = 'checked' %}{% else %}{% set night_ck = '' %}{% endif %}
+				              					<label style="display:inline-block;"><input type="radio" name="shift" value="Day" {{day_ck}}/>Day</label>
+												<label style="display:inline-block;"><input type="radio" name="shift" value="Night" {{night_ck}}/>Night</label>
+									        </td>
+									    </tr>
+
+									    <tr style="background: yellow;">					    	
+									    	<th style="width: 210px;">
+									            <span>On-Duty</span>
+									        </th>
+									        <th style="width: 210px;">
+									            <span>Shift Switch</span>
+									        </th>
+									        <th style="width: 210px;">
+									            <span>Overtime</span>
+									        </th>
+									        <th style="width: 210px; font-size: 14px;">
+									            <span>Daily Leave</span>
+									        </th>
+									    </tr>
+									    <tr>					    	
+									    	<td style="width: 210px; padding-bottom:7px;">
+					              				<input id="on_duty" type="text" name="on_duty" value="{{(', '.join(result['on_duty']))}}" size="7" style="text-transform:uppercase;" required />
+									        </td>
+									        <td style="width: 210px; padding-bottom:7px;">
+					              				<input id="shift_switch" type="text" name="shift_switch" value="{{(', '.join(result['shift_switch']))}}" size="7" style="text-transform:uppercase;" />
+									        </td>
+									        <td style="width: 210px; padding-bottom:7px;">
+									        	<input id="overtime" type="text" name="overtime" value="{{(', '.join(result['overtime']))}}" size="7" style="text-transform:uppercase; text-align:center;" />
+									        </td>
+									    	<td style="width: 210px; padding-bottom:7px;">
+									    		<input id="daily_leave" type="text" name="daily_leave" value="{{(', '.join(result['daily_leave']))}}" size="7" style="text-transform:uppercase;" />
+									    	</td>
+									    </tr>
+									</tbody>
+							    </table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height:10vh;">
+				        		<legend>Network Status</legend>
+				        		<table id="network-form">
+				        			<thead></thead>
+				        			<tbody>
+										<tr bgcolor="#f1f1f1">
+											<label>
+												{% if result['network'] %}
+													<td style="padding-bottom: 7px;">
+														Server <input type="checkbox" name="network" value="server" {% if 'server' in result['network'] %}checked{% endif %} /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Supervisor <input type="checkbox" name="network" value="supervisor" {% if 'supervisor' in result['network'] %}checked{% endif %} /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Workstation <input type="checkbox" name="network" value="workstation" {% if 'workstation' in result['network'] %}checked{% endif %} /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Printer <input type="checkbox" name="network" value="printer" {% if 'printer' in result['network'] %}checked{% endif %} /></label>
+													</td>
+												{% else %}
+													<td style="padding-bottom: 7px;">
+														Server <input type="checkbox" name="network" value="server" checked /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Supervisor <input type="checkbox" name="network" value="supervisor" checked /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Workstation <input type="checkbox" name="network" value="workstation" checked /></label>
+													</td>
+													<td style="padding-bottom: 7px;">
+														Printer <input type="checkbox" name="network" value="printer" checked /></label>
+													</td>
+												{% endif %}
+											</label>			
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset>
+				        		<legend>Channel Status</legend>
+				        		<table>
+				        			<thead>
+				        				<tr style="background: yellow;">
+					            			<th style="width: 50px;">
+									            <span>CCT</span>
+									        </th>
+									        <th style="width: 200px;">			            			         
+								             	<span>During Duty</span>
+									        </th>
+					            			<th style="width: 350px;">			            			         
+								             	<span>Interruption Time</span>
+								             	<span><pre style="margin:5px 0;">From        To</pre></span>
+									        </th>					        
+					            			<th style="width: 250px;">			            			         
+								            	<span>Reason</span>
+									        </th>
+									        <th style="width: 200px;">			            			         
+								             	<span>End of Duty</span>
+									        </th>
+					            			<th style="width: 100px;">			            			         
+								             	<span>LR/LS</span>
+									        </th>
+									    </tr>
+				        			</thead>
+				        			<tbody style="margin-top: 15px; min-height: 35vh;">
+				        				{% for i in range(channel_list|length) %}
+						            		<tr class="ch-rows">
+						            			<td style="width: 50px; padding-bottom:7px;">
+										            <span>{{channel_list[i].upper()}}</span>
+										        </td>
+										        {% if result[channel_list[i]+'_during'] %}
+											        <td style="width: 200px; padding-bottom:7px;">
+											        	{% if result[channel_list[i]+'_during'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
+										        		{% if result[channel_list[i]+'_during'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" {{ok}}/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" {{us}}/>US</label>
+											        </td>
+											    {% else %}
+											    	<td style="width: 200px; padding-bottom:7px;">
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" checked/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" />US</label>
+											        </td>
+											    {% endif %}
+						            			<td style="width: 350px; padding-bottom:7px;">			            			         
+									             	<input type="time" name="{{channel_list[i]}}_from" value="{{result[channel_list[i]+'_from']}}" style="width:100px;" />
+													<input type="time" name="{{channel_list[i]}}_to" value="{{result[channel_list[i]+'_to']}}" style="width:100px;" />
+										        </td>					        
+						            			<td style="width: 0px; padding-bottom:7px;">			            			         
+									            	<select name="{{channel_list[i]}}_reason" style="width:150px;">
+														<option style="font-size:12px;">{{result[channel_list[i]+'_reason']}}</option>
+														<option style="font-size:12px;" value="Failure at the Other End">Failure at the Other End</option>
+														<option style="font-size:12px;" value="Failure at the Center Side">Failure at the Center Side</option>
+														<option style="font-size:12px;" value="Circuit Break">Circuit Break</option>
+														<option style="font-size:12px;" value="ATN Fault">ATN Fault</option>
+														<option style="font-size:12px;" value="Nobody at the Other End">Nobody at the Other End</option>
+														<option style="font-size:12px;" value="Unknown">Unknown</option>
+														<option style="font-size:12px;" value="Other">Other</option>
+													</select>
+										        </td>
+										        {% if result[channel_list[i]+'_end'] %}
+										        	<td style="width: 200px; padding-bottom:7px;">		        	
+											        	{% if result[channel_list[i]+'_end'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
+										        		{% if result[channel_list[i]+'_end'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" {{ok}}/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" {{us}}/>US</label>
+													</td>
+												{% else %}
+											    	<td style="width: 200px; padding-bottom:7px;">
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" checked/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" />US</label>
+											        </td>
+											    {% endif %}
+										        </td>
+						            			<td style="width: 100px; padding-bottom:7px;">
+									             	<input type="text" name="{{channel_list[i]}}_lrls" value="{{result[channel_list[i]+'_lrls']}}" maxlength="4" size="2" />
+										        </td>
+										    </tr>
+										{% endfor %}
+									</tbody>
+							    </table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset>
+				        		<legend>Messages</legend>
+				        		<table bgcolor="#f2f2f2" style="width:100%;">
+				        			<thead></thead>
+				        			<tbody style="margin-top: 15px; min-height: 35vh;">
+				        				{% for i in range(msg_list|length) %}
+						            		<tr style="width:100%;">
+						            			<td style="width: 100px; padding-bottom:7px;">
+						            				{% if i == (msg_list|length)-1 %}
+										            	<span>FLT PERM</span>
+										            {% else %}
+										            	<span>{{msg_list[i].upper()}}</span>
+										            {% endif %}
+										        </td>
+										       	<td style="padding-bottom:7px; width:70vw;">
+                									<input style="width: 90%; text-align:left;" type="text" name="{{msg_list[i]}}" value="{{result[msg_list[i]]}}" />
+										        </td>
+										        <td style="width:1px;"></td><td style="width:1px;"></td>
+										    </tr>
+										{% endfor %}
+									</tbody>
+							    </table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset>
+				        		<legend>Remarks of Duty</legend>
+				        		<div id="remarks">
+									<textarea name="remarks">{{result['remarks']}}</textarea>
+								</div>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset class="signature">
+								<legend>Signature</legend>
+								<figure id="signature">
+									<img src="{{ session['signature_path'] }}" width="100" height="100" />
+								</figure>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="margin:12px 0 0 15px;">
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>

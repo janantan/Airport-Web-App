@@ -1,0 +1,61 @@
+<fieldset style="font-size: 13.5px;">
+	<legend style="text-align: left; font-size: 15px; font-weight: bold;">Shift Brief</legend>
+	<table id="duty-info">
+		<tr>
+			<th>
+				<span>Airport:</span>
+			</th>
+			<td>
+				<span>OICC</span>
+			</td>
+		</tr>
+		<tr>
+			<th>
+				<span>UTC Date:</span>
+			</th>
+			<td>
+				<span>{{log_records_list[0]}}</span>
+			</td>
+		</tr>
+		<tr>
+			<th>
+				<span>LCL Date:</span>
+			</th>
+			<td>
+				<span>{{log_records_list[1]}}</span>
+			</td>
+		</tr>
+		<tr>
+			<th>
+				<span>On-Duty:</span>
+			</th>
+			<td>
+				<span>{{(', '.join(log_records_list[2]))}}</span>
+			</td>	
+		</tr>
+		<tr>
+			<th>
+				<span>Team NO:</span>
+			</th>
+			<td>
+				<span>{{log_records_list[3]}}</span>
+			</td>	
+		</tr>
+		<tr>
+			<th>
+				<span>Week Day:</span>
+			</th>
+			<td>
+				<span>{{log_records_list[4]}}</span>
+			</td>	
+		</tr>
+		<tr>
+			<th>
+				<span>Day/Night:</span>
+			</th>
+			<td>
+				<span>{{log_records_list[5]}}</span>
+			</td>
+		</tr>
+	</table>
+</fieldset>

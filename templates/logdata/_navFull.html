@@ -1,0 +1,77 @@
+<fieldset>
+	<legend>Navigation</legend>
+	<table class="freeze-table">
+		<thead>
+    		<tr style="background: yellow;">
+    			<th>			            			         
+	             	<span>Title</span>
+		        </th>
+		        <th style="width:300px;">			            			         
+	             	<span>Status</span>
+		        </th>
+    			<th>			            			         
+	            	<span>Description</span>
+		        </th>
+		        <th style="width:90px;"></th>
+		    </tr>
+	    </thead>										    
+		<tbody style="height: 160px;">
+		   	{% for i in range(result['nav_title']|length) %}
+			    <tr id="nav_duplicater{{i+1}}">
+        			<td>
+		            	<select name="nav_title_{{i+1}}" id="nav_title">
+							<option>{{result['nav_title'][i]}}</option>
+							<option value="ILS DME (CH 48X)">ILS DME (CH 48X)</option>
+							<option value="DVOR/DME (CH 93X) 114.600 MHz">DVOR/DME (CH 93X) 114.600 MHz</option>
+							<option value="LLZ 29 111.100 MHz">LLZ 29 111.100 MHz</option>
+							<option value="ILS GP 331.700 MHz">ILS GP 331.700 MHz</option>
+							<option value="NDB">NDB</option>
+						</select>
+			        </td>
+			        <td style="width:300px;">
+			        	{% if result['nav_status'][i]=='Not OPR' %}{% set not_opr_ck='checked' %}{% else %}{% set not_opr_ck='' %}{% endif %}
+			        	{% if result['nav_status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['nav_status'][i]=='FLTCK EXP' %}{% set fltck_exp='checked' %}{% else %}{% set fltck_exp='' %}{% endif %}
+			        	<input type="radio" name="nav_status_{{i+1}}" value="Not OPR" style="cursor:pointer;" {{not_opr_ck}} />Not OPR
+						<input type="radio" name="nav_status_{{i+1}}" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="nav_status_{{i+1}}" value="FLTCK EXP" style="cursor:pointer;" {{fltck_exp}}/>FLTCK EXP
+			        </td>
+        			<td>
+        				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="nav_description_{{i+1}}">{{result['nav_description'][i]}}</textarea>
+          			</td>
+          			<td style="width:10px;" id="last_child">
+          				<a href="javascript:addrowFunction2('nav_duplicater{{i+1}}','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+          			</td>
+          			<td style="width:10px;" id="last_child">
+          				<a href="javascript:addrowFunction2('nav_duplicater{{i+1}}','add')" title="add new" class="add-box">+</a>
+          			</td>
+			    </tr>
+			{% endfor %}
+		</tbody>											
+    </table>
+</fieldset>
+
+<script>
+	var j = "{{ result['nav_title']|length }}";
+	function addrowFunction2(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "nav_duplicater" + ++j;
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+j);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+j);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "nav_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

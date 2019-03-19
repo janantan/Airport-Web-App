@@ -1,0 +1,85 @@
+<html lang="en-US" style="padding: 10px;">
+    <head>
+        <title>Present Members</title>
+        <!--<meta charset="utf-8" />-->
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="description" content="ATC WEB APP" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="/static/css/atc_web_app.css" />
+        <link rel="shortcut icon" type="image/png" href="/static/img/icon/atc favicon.png"/>
+        <!--<script type="text/javascript" src="/static/js/scripts.js" />-->
+    </head>
+    <body>
+        <div class="container" style="height: 90vh;">
+			<main class="card" style="margin-left: 0; height: 90vh;">
+				<div>
+					<section>
+						<fieldset>
+							<legend style="font-weight: bold;">Present Members on Shift:</legend>
+							<table style="display: block;">
+								<tr>
+									<th style="width: 10vw;"></th>
+									<th style="width: 20vw;">
+										<span>Log Number:</span>
+									</th>
+									<th style="width: 10vw;">
+										<span>Shift Date (UTC):</span>
+									</th>
+									<th style="width: 10vw;">
+										<span>Shift Date (LCL):</span>
+									</th>
+								</tr>
+								<tr>
+									<td style="width: 10vw;"></td>
+									<td style="width: 20vw; padding-bottom: 10vh;">
+										<span>{{log_no}}</span>
+									</td>
+									<td style="width: 20vw; padding-bottom: 10vh;">
+										<span>{{result['shift_date']}}</span>
+									</td>
+									<td style="width: 20vw; padding-bottom: 10vh;">
+										<span>{{result['shift_jdate']}}</span>
+									</td>
+								</tr>
+								<tr>
+									<th style="width: 10vw;">
+										<span>Present Members:</span>
+									</th>
+									<th style="width: 20vw;">
+										<span>Name</span>
+									</th>
+									<th style="width: 20vw;">
+										<span>Initial</span>
+									</th>
+									<th style="width: 20vw;">
+										<span>Photo</span>
+									</th>
+									<th style="width: 20vw;">
+										<span>Signature</span>
+									</th>
+								</tr>
+								{% for i in range(result['team_members']|length) %}
+									<tr>
+										<td style="width: 10vw;"></td>
+										<td style="width: 20vw;">
+											<span>{{result['team_members'][i][0]}}</span>
+										</td>
+										<td style="width: 20vw;">
+											<span>{{result['team_members'][i][1]}}</span>
+										</td>
+										<td style="width: 20vw;">
+											<img id="photo" src="{{photo_path[i][1]}}" width="100" height="100" />
+										</td>
+										<td style="width: 20vw;">
+											<img id="photo" src="{{signature_path[i][1]}}" width="100" height="100" />
+										</td>
+									</tr>
+								{% endfor %}
+							</table>
+						</fieldset>
+					</section>
+				</div>
+			</main>
+		</div>
+    </body>
+</html>

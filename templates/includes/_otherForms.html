@@ -1,0 +1,27 @@
+<div id="tab" style="font-size:.65vw; font-weight:bold; margin-left:-10px; margin-right:-10px;">
+	<a href="/other forms/E101" class="button"">Emergency (E101)</a>
+	<a href="/other forms/E102" class="button">Compulsive (E102)</a>
+	<a href="/other forms/E103" class="button">Remarkable (E103)</a>
+	<a href="/other forms/E104" class="button">Bird Strike (E104)</a>
+	<a href="/other forms/E105" class="button">Operating Below Minima (E105)</a>
+	<a href="/other forms/E106" class="button">Occurrence Report (E106)</a>
+	<a href="/other forms/E107" class="button">ATS Safety Report (E107)</a>
+	<a href="/other forms/E108" class="button">Wildlife Strike Report (E108)</a>
+</div>
+{% if nav == "e101" %}
+	{% include 'other forms/_e101.html' %}
+{% elif nav == "e102" %}
+	{% include 'other forms/_e102.html' %}
+{% elif nav == "e103" %}
+	{% include 'other forms/_e103.html' %}
+{% elif nav == "e104" %}
+	{% include 'other forms/_e104.html' %}
+{% elif nav == "e105" %}
+	{% include 'other forms/_e105.html' %}
+{% elif nav == "e106" %}
+	{% include 'other forms/_e106.html' %}
+{% elif nav == "e107" %}
+	{% include 'other forms/_e107.html' %}
+{% elif nav == "e108" %}
+	{% include 'other forms/_e108.html' %}
+{% endif %}

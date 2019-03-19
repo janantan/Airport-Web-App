@@ -1,0 +1,715 @@
+<div id="logdata-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Please Fill out the Log Data:</span></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<fieldset>
+			            		<legend>Communication</legend>
+			            		<table id="freeze-table">
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>
+								             	<span>Title</span>
+									        </th>
+									        <th style="width:300px;">
+								             	<span>Status</span>
+									        </th>
+					            			<th>
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="com_duplicater1">
+									    	<!--<td style="width:20px; color: red; font-weight: bold;">
+									    		<span>1</span>
+									    	</td>-->
+					            			<td>
+								            	<select name="com_title_1" id="com_title">
+													<option></option>
+													<option value="ATIS (INFO) 126.800 MHz">ATIS (INFO) 126.800 MHz</option>
+													<option value="OICS HOTLINE">OICS HOTLINE</option>
+													<option value="ACC HOTLINE">ACC HOTLINE</option>
+													<option value="FM RADIO">FM RADIO</option>
+													<option value="OICI HOTLINE">OICI HOTLINE</option>
+													<option value="TWR FREQ 121.900 MHz">TWR FREQ 121.900 MHz</option>
+													<option value="EMERG FREQ 121.5 MHz">EMERG FREQ 121.5 MHz</option>
+													<option value="SEPAH HOTLINE">SEPAH HOTLINE</option>
+													<option value="SIGNALING LAMP">SIGNALING LAMP</option>
+													<option value="MIL HOTLINE">MIL HOTLINE</option>
+													<option value="I-COM">I-COM</option>
+													<option value="TWR FREQ 122.450 MHz">TWR FREQ 122.450 MHz</option>
+												</select>
+									        </td>
+									        <td style="width:300px; font-size: 13px;">
+									        	<input type="radio" name="com_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+												<input type="radio" name="com_status_1" value="US" style="cursor:pointer;"/>US
+												<input type="radio" name="com_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+									        </td>
+					            			<td>
+					            				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="com_description_1"></textarea>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction1('com_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction1('com_duplicater1', 'add')" title="add new" class="add-box"> + </a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>		
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset>
+			            		<legend>Navigation</legend>
+			            		<table>
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>			            			         
+								             	<span>Title</span>
+									        </th>
+									        <th style="width:300px;">			            			         
+								             	<span>Status</span>
+									        </th>
+					            			<th>			            			         
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="nav_duplicater1">
+					            			<td>
+								            	<select name="nav_title_1" id="nav_title">
+													<option></option>
+													<option value="ILS DME (CH 48X)">ILS DME (CH 48X)</option>
+													<option value="DVOR/DME (CH 93X) 114.600 MHz">DVOR/DME (CH 93X) 114.600 MHz</option>
+													<option value="LLZ 29 111.100 MHz">LLZ 29 111.100 MHz</option>
+													<option value="ILS GP 331.700 MHz">ILS GP 331.700 MHz</option>
+													<option value="NDB">NDB</option>
+												</select>
+									        </td>
+									        <td style="width:300px;  font-size: 13px;">
+									        	<input type="radio" name="nav_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+												<input type="radio" name="nav_status_1" value="US" style="cursor:pointer;"/>US
+												<input type="radio" name="nav_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+									        </td>
+					            			<td>
+					            				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="nav_description_1"></textarea>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction2('nav_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction2('nav_duplicater1','add')" title="add new" class="add-box">+</a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>
+			            	</fieldset>
+			            </td>
+			        </tr>
+			        <tr>
+			            <td>
+							<fieldset>
+			            		<legend>Surveillance</legend>
+			            		<table>
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>			            			         
+								             	<span>Title</span>
+									        </th>
+									        <th style="width:300px;">			            			         
+								             	<span>Status</span>
+									        </th>
+					            			<th>			            			         
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="sur_duplicater1">
+					            			<td>
+								            	<select name="sur_title_1" id="sur_title">
+													<option></option>
+												</select>
+									        </td>
+									        <td style="width:300px;  font-size: 13px;">
+									        	<input type="radio" name="sur_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+												<input type="radio" name="sur_status_1" value="US" style="cursor:pointer;"/>US
+												<input type="radio" name="sur_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+									        </td>
+					            			<td>
+					            				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="sur_description_1"></textarea>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction3('sur_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction3('sur_duplicater1','add')" title="add new" class="add-box">+</a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>		
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset>
+			            		<legend>RWY / TWY</legend>
+			            		<table>
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>			            			         
+								             	<span>Title</span>
+									        </th>
+									        <th>			            			         
+								             	<span>Status</span>
+									        </th>
+					            			<th>			            			         
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="rwy_twy_duplicater1">
+					            			<td>
+								            	<select name="rwy_twy_title_1" id="rwy_twy_title">
+													<option></option>
+													<option value="RWY 11">RWY 11</option>
+													<option value="RWY 29">RWY 29</option>
+													<option value="TWY A">TWY A</option>
+													<option value="TWY B">TWY B</option>
+												</select>
+									        </td>
+									        <td style="width:300px;  font-size: 13px;">
+									        	<input type="radio" name="rwy_twy_status_1" value="Clear" style="cursor:pointer;" />Clear
+												<input type="radio" name="rwy_twy_status_1" value="FOD" style="cursor:pointer;"/>FOD
+												<input type="radio" name="rwy_twy_status_1" value="Close" style="cursor:pointer;"/>Close
+									        </td>
+					            			<td>
+					            				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="rwy_twy_description_1"></textarea>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction4('rwy_twy_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction4('rwy_twy_duplicater1','add')" title="add new" class="add-box">+</a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>		
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset>
+			            		<legend>Lights</legend>
+			            		<table>
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>			            			         
+								             	<span>Title</span>
+									        </th>
+									        <th>			            			         
+								             	<span>Status</span>
+									        </th>
+					            			<th>			            			         
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="lgt_duplicater1">
+					            			<td>
+								            	<select name="lgt_title_1" id="lgt_title">
+													<option></option>
+													<option value="RWY 29 END LGT">RWY 29 END LGT</option>
+													<option value="RWY 29 THR LGT">RWY 29 THR LGT</option>
+													<option value="RWY 29 APP LGT">RWY 29 APP LGT</option>
+													<option value="RWY 11 END LGT">RWY 11 END LGT</option>
+													<option value="RWY 29/11 EDGE LGT">RWY 29/11 EDGE LGT</option>
+													<option value="TWY A EDGE LGT">TWY A EDGE LGT</option>
+													<option value="TWY B EDGE LGT">TWY B EDGE LGT</option>
+													<option value="PAPI 29">PAPI 29</option>
+													<option value="ABN">ABN</option>
+												</select>
+									        </td>
+									        <td style="width:300px;  font-size: 13px;">
+												<input type="radio" name="lgt_status_1" value="US" style="cursor:pointer;"/>US
+												<input type="radio" name="lgt_status_1" value="FLTCK EXP" style="cursor:pointer;"/>NIL
+									        </td>
+									        <td>
+							    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="lgt_description_1"></textarea>
+							      			</td>
+					            			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction5('lgt_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction5('lgt_duplicater1','add')" title="add new" class="add-box">+</a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>		
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset>
+			            		<legend>Other Equipments</legend>
+			            		<table>
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>			            			         
+								             	<span>Title</span>
+									        </th>
+									        <th style="width:300px;">			            			         
+								             	<span>Status</span>
+									        </th>
+					            			<th>			            			         
+								            	<span>Description</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody>
+									    <tr id="eqp_duplicater1">
+					            			<td>
+								            	<select name="eqp_title_1" id="eqp_title">
+													<option></option>
+													<option value="RVR 11">RVR 11</option>
+													<option value="RVR 29">RVR 29</option>
+													<option value="RVR MID">RVR MID</option>
+													<option value="WDI-TWR">WDI-TWR</option>
+													<option value="CRASH ALARM">CRASH ALARM</option>
+													<option value="WINDSOCK">WINDSOCK</option>
+												</select>
+									        </td>
+									        <td style="width:300px;  font-size: 13px;">
+									        	<input type="radio" name="eqp_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+												<input type="radio" name="eqp_status_1" value="US" style="cursor:pointer;"/>US
+												<input type="radio" name="eqp_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+									        </td>
+									        <td>
+							    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="eqp_description_1"></textarea>
+							      			</td>
+					            			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction6('eqp_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addrowFunction6('eqp_duplicater1','add')" title="add new" class="add-box">+</a>
+					              			</td>
+									    </tr>
+								    </tbody>
+							    </table>		
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset>
+								<legend>Events List</legend>
+								<fieldset id="event_duplicater1" style="min-height: 160px; max-height: 250px;">
+				            		<table>
+				            			<thead>
+						            		<tr style="background: yellow; border: none;">
+						            			<th style="width:100px;">			            			         
+									             	<span>Event</span>
+										        </th>
+										        <td style="width:600px;">
+									            	<select name="event_title_1" id='ev_1' onchange="eventFunction('ev_1')">
+														<option></option>
+														<option value="Communication">Communication</option>
+														<option value="Navigation">Navigation</option>
+														<option value="Surveillance">Surveillance</option>
+														<option value="RWY TWY">RWY TWY</option>
+														<option value="Lights">Lights</option>
+														<option value="Equipments">Equipments</option>
+														<option value="RWY in Use">RWY in Use</option>
+														<option value="RWY Inspection">RWY Inspection</option>
+														<option value="RPV">RPV</option>
+														<option value="Other">Other</option>
+													</select>
+										        </td>
+										        <td style="width:10px;" id="last_child">
+						              				<a href="javascript:addrowFunction7('event_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+						              			</td>
+						              			<td style="width:10px;" id="last_child">
+						              				<a href="javascript:addrowFunction7('event_duplicater1','add')" title="add new" class="add-box">+</a>
+						              			</td>
+										    </tr>
+									    </thead>
+										{% include 'logdata/_eventSelect.html' %}
+								    </table>
+								</fieldset>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>				
+			</table>
+			<table>
+				<tr style="float: left; border: none;">
+					<td>
+						<input style="text-transform: none;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>
+
+<script>
+	var i = 1, j = 1, k = 1, l = 1, m = 1, n = 1, o = 1;
+	var i_list = ["com_duplicater1"]
+	var j_list = ["nav_duplicater1"]
+	var k_list = ["sur_duplicater1"]
+	var l_list = ["rwy_twy_duplicater1"]
+	var m_list = ["lgt_duplicater1"]
+	var n_list = ["eqp_duplicater1"]
+	var o_list = ["event_duplicater1"]
+
+	function addrowFunction1(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "com_duplicater" + ++i;
+			i_list.push(clone.id);
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+i);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+i);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "com_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "com_duplicater"+i);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (i_list.length > 1) {
+				original.parentNode.removeChild(original);
+				i_list.splice(i_list.indexOf(id_name), 1);
+			}
+		}
+
+	}
+	function addrowFunction2(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "nav_duplicater" + ++j;
+			j_list.push(clone.id);
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+j);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+j);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "nav_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "nav_duplicater"+j);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (j_list.length > 1) {
+				original.parentNode.removeChild(original);
+				j_list.splice(j_list.indexOf(id_name), 1);
+			}
+		}
+	}
+	function addrowFunction3(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "sur_duplicater" + ++k;
+			k_list.push(clone.id);
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+k);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+k);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+k);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+k);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+k);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "sur_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "sur_duplicater"+k);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (k_list.length > 1) {
+				original.parentNode.removeChild(original);
+				k_list.splice(k_list.indexOf(id_name), 1);
+			}
+		}
+	}
+	function addrowFunction4(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "rwy_twy_duplicater" + ++l;
+			l_list.push(clone.id);
+			var title = "title_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+l);
+			var status = "status_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			var description = "description_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+l);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "rwy_twy_duplicater"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "rwy_twy_duplicater"+l);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (l_list.length > 1) {
+				original.parentNode.removeChild(original);
+				l_list.splice(l_list.indexOf(id_name), 1);
+			}
+		}
+	}
+	function addrowFunction5(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "lgt_duplicater" + ++m;
+			m_list.push(clone.id);
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+m);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+m);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "lgt_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "lgt_duplicater"+m);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (m_list.length > 1) {
+				original.parentNode.removeChild(original);
+				m_list.splice(m_list.indexOf(id_name), 1);
+			}
+		}
+	}
+	function addrowFunction6(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "eqp_duplicater" + ++n;
+			n_list.push(clone.id);
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+n);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+n);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+n);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+n);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+n);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "eqp_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "eqp_duplicater"+n);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (n_list.length > 1) {
+				original.parentNode.removeChild(original);
+				n_list.splice(n_list.indexOf(id_name), 1);
+			}
+		}
+	}
+	function addrowFunction7(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "event_duplicater" + ++o;
+			o_list.push(clone.id);
+			var title = "title_"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+o);
+			var str = "event_duplicater"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "event_duplicater"+o);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var ev = "ev_"+id_name.substring(16, id_name.length);
+			for (ii = 0; ii < 100; ii++) {
+				clone.innerHTML = clone.innerHTML.replace(ev, "ev_"+o);
+			}
+			original.parentNode.appendChild(clone);
+		} else {
+			if (o_list.length > 1) {
+				original.parentNode.removeChild(original);
+				o_list.splice(o_list.indexOf(id_name), 1);
+			}
+		}
+		document.getElementById("ev_"+o+"-com0").style.display = "none";
+		document.getElementById("ev_"+o+"-nav0").style.display = "none";
+		document.getElementById("ev_"+o+"-sur0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy_twy0").style.display = "none";
+		document.getElementById("ev_"+o+"-lgt0").style.display = "none";
+		document.getElementById("ev_"+o+"-eqp0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-in-use0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-inspection0").style.display = "none";
+		document.getElementById("ev_"+o+"-rpv0").style.display = "none";
+		document.getElementById("ev_"+o+"-other0").style.display = "none";
+	}
+
+	function eventFunction(event) {
+		var x = document.getElementById(event).value;
+		com_0 = document.getElementById(event+"-com0")
+		nav_0 = document.getElementById(event+"-nav0")
+		sur_0 = document.getElementById(event+"-sur0")
+		rwy_twy_0 = document.getElementById(event+"-rwy_twy0")
+		lgt_0 = document.getElementById(event+"-lgt0")
+		eqp_0 = document.getElementById(event+"-eqp0")
+		rwy_in_use_0 = document.getElementById(event+"-rwy-in-use0")
+		rwy_inspection_0 = document.getElementById(event+"-rwy-inspection0")
+		rpv_0 = document.getElementById(event+"-rpv0")
+		other_0 = document.getElementById(event+"-other0")
+		if (x == 'Communication') {
+			document.getElementById(event+"-com1").innerHTML = x;
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			com_0.style.display = "block";
+		} else if (x == 'Navigation') {
+			document.getElementById(event+"-nav1").innerHTML = x;
+			com_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			nav_0.style.display = "block";
+		} else if (x == 'Surveillance') {
+			document.getElementById(event+"-sur1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			sur_0.style.display = "block";
+		} else if (x == 'RWY TWY') {
+			document.getElementById(event+"-rwy_twy1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_twy_0.style.display = "block";
+		} else if (x == 'Lights') {
+			document.getElementById(event+"-lgt1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			lgt_0.style.display = "block";
+		} else if (x == 'Equipments') {
+			document.getElementById(event+"-eqp1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			eqp_0.style.display = "block";
+		} else if (x == 'RWY in Use') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_in_use_0.style.display = "block";
+		} else if (x == 'RWY Inspection') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_inspection_0.style.display = "block";
+		} else if (x == 'RPV') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			other_0.style.display = "none";
+			rpv_0.style.display = "block";
+		} else if (x == 'Other') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "block";
+		}
+		else {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+		}
+	}
+</script>

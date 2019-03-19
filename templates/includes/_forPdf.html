@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html style="background: #fff; padding-top: 0;">
+    <head>
+        <title>ATC WEB APP</title>
+        <link rel="stylesheet" type="text/css" href="E:/AFTN-AMHS/Python/projects/ATC web app/static/css/atc_web_app.css" />
+    </head>
+    <body style="background: #fff;">
+    	<p class="font-style" style="padding-bottom: 25px;">Log Number: <span style="font-family: 'Bradley Hand ITC'; color: red;">{{log_no}}</span></p>
+        <fieldset style="background: #fefefe;">
+			<legend style="font-weight: bold;">Shift Brief</legend>
+			<table id="shift-brief">
+				<tr>
+					<td>
+						<span class="font-style">Taken Over From:</span>
+					</td>
+					<td class="right-border" style="color: red;">
+						<span>{{result['taken_over_from']}}</span>
+					</td>
+					<td>
+						<span class="font-style">Tean NO:</span>
+					</td>
+					<td class="right-border">
+						<span>{{result['team']}}</span>
+					</td>
+					<td>										
+						<span class="font-style">Airport:</span>
+					</td>
+					<td>										
+						<span>OICC</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="font-style">Hand Over Time:</span>
+					</td>
+					<td class="right-border" style="color: red;">
+						<span>{{result['hand_over_time']}}</span>
+					</td>
+					<td>
+						<span class="font-style">Present Members:</span>
+					</td>
+					<td class="right-border"></td>
+					<td>
+						<span class="font-style">UTC Date:</span>
+					</td>
+					<td>
+						<span>{{result['shift_date']}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="font-style">Hand Over To:</span>
+					</td>
+					<td class="right-border" style="color: red;">
+						<span>{{result['hand_over_to']}}</span>
+					</td>
+					<td colspan="2" class="right-border">
+						<span>{{(", ".join(result['present_members']))}}</span>
+					</td>
+					<td>
+						<span class="font-style">LCL Date:</span>
+					</td>
+					<td>
+						<span>{{result['shift_jdate']}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="font-style">Inspection Time:</span>
+					</td>
+					<td class="right-border">
+						<span>{{result['inspection_time']}}</span>
+					</td>
+					<td>
+						<span class="font-style">Description:</span>
+					</td>
+					<td class="right-border">
+						<span></span>
+					</td>					
+					<td>
+						<span class="font-style">Week Day:</span>
+					</td>
+					<td>
+						<span>{{result['week_day']}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="font-style">Inspector:</span>
+					</td>
+					<td class="right-border">
+						<span>{{result['inspector']}}</span>
+					</td>
+					<td colspan="2" class="right-border">
+						{% for i in range (result['on_duty_description']['name']|length) %}
+							<span>{{result['on_duty_description']['name'][i][1]}}</span>
+							<span>{{result['on_duty_description']['status'][i]}}</span>
+							<span>{{result['on_duty_description']['shift_switch'][i][1]}}</span>
+							<span>{{result['on_duty_description']['description'][i]}}</span>
+							<br>
+						{% endfor %}
+					</td>
+					<td>
+						<span class="font-style">Day/Night:</span>
+					</td>
+					<td>
+						<span>{{result['shift']}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="font-style">Inspection Result:</span>
+					</td>
+					<td class="right-border">
+						<span>{{result['inspection_result']}}</span>
+					</td>
+					<td>
+						<span class="font-style"></span>
+					</td>
+					<td class="right-border">
+						<span></span>
+					</td>
+					<td>
+						<span class="font-style">RWY in Use:</span>
+					</td>
+					<td>
+						<span>{{result['rwy_in_use']}}</span>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset style="background: #fefefe; min-height: 200px;">
+			<legend style="font-weight: bold;">Log Data</legend>
+			{% if not session['no_log_data_flag'] %}
+				<table id="second-fieldset">
+					{% if result['com_title']|length %}
+		        		<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">Communication</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['com_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['com_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['com_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['com_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% if result['nav_title']|length %}
+		        		<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">Navigation</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['nav_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['nav_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['nav_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['nav_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% if result['sur_title']|length %}
+						<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">Surveillance</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['sur_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['sur_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['sur_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['sur_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% if result['rwy_twy_title']|length %}
+						<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">RWY / TWY</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['rwy_twy_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['rwy_twy_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['rwy_twy_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['rwy_twy_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% if result['lgt_title']|length %}
+						<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">Lights</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['lgt_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['lgt_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['lgt_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['lgt_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% if result['eqp_title']|length %}
+						<tr>
+		        			<th style="width:280px; padding-top: 40px;">
+		        				<span style="color: red;">Other Equipments</span>
+		        			</th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				             	<span>Title</span><hr>
+					        </th>
+					        <th style="width: 180px; padding-top: 40px;">
+				             	<span>Status</span><hr>
+					        </th>
+		        			<th style="width: 280px; padding-top: 40px;">
+				            	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['eqp_title']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['eqp_title'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['eqp_status'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['eqp_description'][i]}}
+						    	</td>
+						    </tr>
+						{% endfor %}
+					{% endif %}
+					{% for item in sorted_events %}
+						{% if item[0] == "com" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Communication</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "nav" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Navigation</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "sur" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Surveillance</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "rwy_twy" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - RWY TWY</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "lgt" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Lights</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "eqp" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Equipments</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Status</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['status'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "rwy_in_use" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - RWY in Use</span>
+		            			</th>
+		            			<th>
+					             	<span>Text</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['text'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "rwy_inspection" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - RWY Inspection</span>
+		            			</th>
+		            			<th>
+					             	<span>Inspector</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['inspector'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% elif item[0] == "other" %}
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - Other</span>
+		            			</th>
+		            			<th>
+					             	<span>Title</span><hr>
+						        </th>
+						        <th>
+					             	<span>Time (UTC)</span><hr>
+						        </th>
+		            			<th style="width: 200px;">
+					            	<span>Reason</span><hr>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{item[1]['title'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['time'][item[2]]}}
+						    	</td>
+						    	<td>
+						    		{{item[1]['reason'][item[2]]}}
+						    	</td>
+						    </tr>
+						{% endif %}
+					{% endfor %}
+					{% if result['event_rpv']['call_sign']|length %}
+	            		<tr>
+	            			<th>
+	            				<span style="color: red;">Events</span><span style="font-size: 12px;"> - RPV</span>
+	            			</th>
+	            			<th>
+				             	<span>Call Sign</span><hr>
+					        </th>
+					        <th>
+				             	<span>Take-off Time</span><hr>
+					        </th>
+					        <th>
+				             	<span>Landing Time</span><hr>
+					        </th>
+					        <th>
+				             	<span>Reason</span><hr>
+					        </th>
+					        <th>
+				             	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for i in range(result['event_rpv']['call_sign']|length) %}
+						    <tr>
+						    	<td></td>
+						    	<td>
+						    		{{result['event_rpv']['call_sign'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['event_rpv']['takeoff_time'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['event_rpv']['landing_time'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['event_rpv']['reason'][i]}}
+						    	</td>
+						    	<td>
+						    		{{result['event_rpv']['description'][i]}}
+						    	</td>
+						    </tr>
+					    {% endfor %}
+					{% endif %}
+			    </table>
+			{% endif %}
+		</fieldset>
+    </body>
+</html>

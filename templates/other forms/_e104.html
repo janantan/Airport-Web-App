@@ -1,0 +1,361 @@
+<div id="logdata-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+					</tr>
+				</thead>
+				<tbody style="height: 74vh; margin-top:-1.5vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Add Record in Bird Strike (E104)</legend>
+								<table>
+									<thead></thead>
+									<tbody style="max-height: 63vh;">
+										<tr>
+											<td style="margin-left: -15px;">
+												Operator:
+											</td>
+											<td>
+												<input id="operator" type="text" name="operator" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACFT Register:
+											</td>
+											<td>
+												<input id="register" type="text" name="register" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACFT Make/Model:
+											</td>
+											<td>
+												<input id="acft_model" type="text" name="acft_model" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Engine Make/Model:
+											</td>
+											<td>
+												<input id="engine_model" type="text" name="engine_model" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Date:
+											</td>
+											<td>
+												<input type="date" name="date" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="time_of_day" value="dawn" {{day_ck}}/>dawn</label>
+												<label style="display: inline;"><input type="radio" name="time_of_day" value="day" {{night_ck}}/>day</label>
+												<label style="display: inline;"><input type="radio" name="time_of_day" value="dusk" {{day_ck}}/>dusk</label>
+												<label style="display: inline;"><input type="radio" name="time_of_day" value="night" {{night_ck}}/>night</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Location (if Enroute):
+											</td>
+											<td>
+												<input id="location" type="text" name="location" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												AD Name:
+											</td>
+											<td>
+												<input id="ad_name" type="text" name="ad_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY Used:
+											</td>
+											<td>
+												<input id="rwy_used" type="text" name="rwy_used" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Height (AGL):
+											</td>
+											<td>
+												<input id="height" type="text" name="height" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Speed (IAS):
+											</td>
+											<td>
+												<input id="speed" type="text" name="speed" />
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Windshield:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="windshield" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="windshield" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Nose (Excluding Above):
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="nose" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="nose" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Engine No.1:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="engine_1" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="engine_1" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Engine No.1:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="engine_2" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="engine_2" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Engine No.3:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="engine_3" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="engine_3" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Engine No.4:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="engine_4" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="engine_4" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Propeller:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="propeller" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="propeller" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Radome:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="radome" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="radome" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Fuselage:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="fuselage" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="fuselage" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Wing/Rotor:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="wing_rotor" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="wing_rotor" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Tail:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="tail" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="tail" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Landing Gear:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="landing_gear" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="landing_gear" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Other (Specify):
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="other" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="other" value="damaged" {{night_ck}}/>damaged</label>
+											</td>											
+											<td>
+												Lights:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="lights" value="struck" {{day_ck}}/>struck</label>
+												<label style="display: inline;"><input type="radio" name="lights" value="damaged" {{night_ck}}/>damaged</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Sky Condition:
+											</td>
+											<td style="font-size:14px;" class="right-border">
+												<label style="display: inline;"><input type="radio" name="sky_condition" value="no cloud" {{day_ck}}/>no cloud</label>
+												<label style="display: inline;"><input type="radio" name="sky_condition" value="some cload" {{night_ck}}/>some cload</label>
+												<label style="display: inline;"><input type="radio" name="sky_condition" value="overcast" {{day_ck}}/>overcast</label>
+											</td>											
+											<td>
+												Precipitation:
+											</td>
+											<td>
+												<label style="display: inline;"><input type="radio" name="precipitation" value="fog" {{day_ck}}/>fog</label>
+												<label style="display: inline;"><input type="radio" name="precipitation" value="rain" {{night_ck}}/>rain</label>
+												<label style="display: inline;"><input type="radio" name="precipitation" value="snow" {{day_ck}}/>snow</label>
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Pilot Warned of Birds:
+											</td>
+											<td class="right-border">
+												<label style="display: inline;"><input type="radio" name="pilot_warned" value="yes" {{day_ck}}/>yes</label>
+												<label style="display: inline;"><input type="radio" name="pilot_warned" value="no" {{night_ck}}/>no</label>
+											</td>											
+											<td>
+												Size of Birds:
+											</td>
+											<td style="font-size:14px;">
+												<label style="display: inline;"><input type="radio" name="size_of_birds" value="small" {{day_ck}}/>small</label>
+												<label style="display: inline;"><input type="radio" name="size_of_birds" value="medium" {{night_ck}}/>medium</label>
+												<label style="display: inline;"><input type="radio" name="size_of_birds" value="large" {{day_ck}}/>large</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Phase of FLT:
+											</td>
+											<td colspan="3">
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="parked" {{day_ck}}/>parked</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="taxi" {{night_ck}}/>taxi</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="take-off" {{day_ck}}/>take-off</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="climb" {{night_ck}}/>climb</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="enroute" {{day_ck}}/>enroute</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="descent" {{night_ck}}/>descent</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="approach" {{day_ck}}/>approach</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="landing roll" {{night_ck}}/>landing roll</label>
+											</td>
+										</tr>
+										<tr style="background:#eee;">
+											<td>
+												Effect on FLT:
+											</td>
+											<td colspan="3">
+												<label style="display: inline-block;"><input type="radio" name="effect_on_flt" value="none" {{day_ck}}/>none</label>
+												<label style="display: inline-block;"><input type="radio" name="effect_on_flt" value="aborted take-off" {{night_ck}}/>aborted take-off</label>
+												<label style="display: inline-block;"><input type="radio" name="effect_on_flt" value="precautionary landing" {{day_ck}}/>precautionary landing</label>
+												<label style="display: inline-block;"><input type="radio" name="effect_on_flt" value="engines shut down" {{night_ck}}/>engines shut down</label>
+												<label style="display: inline-block;"><input type="radio" name="effect_on_flt" value="other (specify)" {{day_ck}}/>other (specify)</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Number of Birds:
+											</td>
+											<td colspan="3" style="font-size:14px;">
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="1 seen" {{day_ck}}/>1 seen</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="2 up to 10 seen" {{night_ck}}/>2 up to 10 seen</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="11 up to 100 seen" {{day_ck}}/>11 up to 100 seen</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="more seen" {{night_ck}}/>more seen</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="1 struck" {{day_ck}}/>1 struck</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="2 up to 10 struck" {{night_ck}}/>2 up to 10 struck</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="11 up to 100 struck" {{day_ck}}/>11 up to 100 struck</label>
+												<label style="display: inline-block;"><input type="radio" name="number_of_birds" value="more struck" {{night_ck}}/>more struck</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller (Assist):
+											</td>
+											<td>
+												<input id="assist_controller" type="text" name="assist_controller" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller (Duty):
+											</td>
+											<td>
+												<input id="duty_controller" type="text" name="duty_controller" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Supervisor:
+											</td>
+											<td>
+												<input id="supervisor" type="text" name="supervisor" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Airport Name:
+											</td>
+											<td>
+												<input id="airport_name" type="text" name="airport_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Report pdf:
+											</td>
+											<td>
+												<input type="file" name="report_pdf" style="width:200px;" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table>
+				<tr style="float: left; border: none;">
+					<td>
+						<input style="text-transform: none; margin-top:-2vh;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>

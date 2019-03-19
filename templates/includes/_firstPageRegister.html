@@ -1,0 +1,110 @@
+<div id="login-form">
+	<section>
+		<form method="post" action="" enctype="multipart/form-data">
+			<div style="margin: 2vw 0 0 26vw;"><span style="font-weight: bold; font-size: 17px;">Please Fill out the Register Form:</span></div>
+			<fieldset id="fp-register" class="register-fieldset">
+				<legend></legend>
+				<table id="freeze-fieldset">
+					<thead>
+						<tr></tr>
+					</thead>
+					<tbody id="register-form" style="height: 80vh;">
+						<tr>
+							<td id="x">
+								<fieldset class="register-fieldsets">
+									<legend>Personal Info:</legend>
+					                <div>					
+										<label for="first_name">First Name</label>
+										<input id="first_name" type="text" name="first_name"  required />
+									</div>
+									<div>
+										<label for="last_name">Last Name</label>
+										<input id="last_name" type="text" name="last_name"  required />
+									</div>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<td>
+					            <fieldset class="register-fieldsets">
+									<legend>Department Info:</legend>
+									<div>
+										<label for="department">Select Your Department</label>
+										<select name="department" id="department" required>
+											<option value=""></option>
+											<option value="Aeronautical Information and Communication Technology">Aeronautical Information and Communication Technology</option>
+											<option value="Air Traffic Management">Air Traffic Management</option>
+											<option value="Communication, Navigation and Surveillance">Communication, Navigation and Surveillance</option>
+											<option value="Facilities and Equipment">Facilities and Equipment</option>
+											<option value="Aircraft Rescue and Fire Fighting">Aircraft Rescue and Fire Fighting</option>
+										</select>
+									</div>
+									<div>					
+										<label for="initial">Initial</label>
+										<input id="initial" type="text" name="initial" style="text-transform:uppercase;" />
+									</div>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<fieldset class="register-fieldsets">
+									<legend>Contact Info:</legend>
+									<div>
+										<label for="email">Email</label>
+										<input id="email" type="email" name="email" />
+									</div>
+									<div>
+										<label for="phone">Phone</label>
+										<input type="tel" id="phone" name="phone" />
+									</div>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<fieldset class="register-fieldsets">
+									<legend>Login Info:</legend>
+									<div>					
+										<label for="username">Username</label>
+										<input id="username" type="text" name="username" placeholder="e.g. John" required />
+									</div>
+
+									<div>
+										<label for="password">Password</label>
+										<input id="password" type="password" name="password" required />
+									</div>
+					                
+					                <div>
+										<label for="password">Confirm Password</label>
+										<input id="password" type="password" name="confirm" required />
+									</div>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<fieldset class="register-fieldsets">
+									<legend>Files:</legend>						
+									<div>
+										<label>Photo</label>
+										<input required type="file" name="photo" />
+									</div>
+									<div>
+										<label>Signature</label>
+										<input required type="file" name="signature" />
+									</div>
+								</fieldset>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: left;">
+								<input type="submit" value="Register" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+		</form>
+	</section>
+</div>

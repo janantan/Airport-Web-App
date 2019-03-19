@@ -1,0 +1,466 @@
+<div id="logdata-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Add Record in Emergency (E101)</span></td>
+					</tr>
+				</thead>
+				<tbody style="height: 67vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Flight Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												ACFT IDEN:
+											</td>
+											<td>
+												<input id="acft_iden" type="text" name="acft_iden" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACFT Register:
+											</td>
+											<td>
+												<input id="acft_reg" type="text" name="acft_reg" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Operator:
+											</td>
+											<td>
+												<input id="operator" type="text" name="operator" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Type of ACFT:
+											</td>
+											<td>
+												<input id="acft_type" type="text" name="acft_type" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												FLT Rules:
+											</td>
+											<td>
+												<input id="flt_rules" type="text" name="flt_rules" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												DEP AD & Time:
+											</td>
+											<td>
+												<input id="dep_ad" type="text" name="dep_ad" />
+											</td>
+											<td style="width: 100px;">
+												<input id="dep_time" type="time" name="dep_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												DEST AD & Time:
+											</td>
+											<td>
+												<input id="dest_ad" type="text" name="dest_ad" />
+											</td>
+											<td style="width: 100px;">
+												<input id="dest_time" type="time" name="dest_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Initial CTC (Time & PSN):
+											</td>
+											<td>
+												<input id="Initial" type="text" name="initial" />
+											</td>
+											<td style="width: 100px;">
+												<input id="event_time" type="time" name="event_time" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Emergency Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												ACFT PSN & DIST:
+											</td>
+											<td>
+												<input id="acft_iden" type="text" name="acft_iden" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Nature of EMERG:
+											</td>
+											<td>
+												<input id="acft_reg" type="text" name="acft_reg" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												POB:
+											</td>
+											<td>
+												<input id="pob" type="text" name="pob" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller CLR/Instruction (Start, APP, ...):
+											</td>
+											<td>
+												<input id="conroller_clr" type="text" name="conroller_clr" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Fuel Endurance:
+											</td>
+											<td>
+												<input id="fuel_endurance" type="text" name="fuel_endurance" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY in Use:
+											</td>
+											<td>
+												<input id="rwy_in_use" type="text" name="rwy_in_use" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any Other Significant Information:
+											</td>
+											<td>
+												<textarea style="width:200px; height:30px; font-size:15px; direction: ltr;" name="other_information"></textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Notification Timers</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Fire Fighting (Crash Alarm):
+											</td>
+											<td>
+												<input id="fire_fighting" type="text" name="fire_fighting" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACC Supervisor:
+											</td>
+											<td>
+												<input id="acc_supervisor" type="text" name="acc_supervisor" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ATC Supervisor:
+											</td>
+											<td>
+												<input id="atc_supervisor" type="text" name="atc_supervisor" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Airport Authorities:
+											</td>
+											<td>
+												<input id="airport_authorities" type="text" name="airport_authorities" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Security:
+											</td>
+											<td>
+												<input id="security" type="text" name="security" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACFT OPR:
+											</td>
+											<td>
+												<input id="acft_opr" type="text" name="acft_opr" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Present Weather</legend>								
+								<fieldset style="width: 54vw;">
+									<legend>ref</legend>
+									<table>
+										<thead></thead>
+										<tbody>
+											<tr>
+												<td>
+													Wind:
+												</td>
+												<td class="right-border">
+													<input id="wind" type="text" name="wind" />
+												</td>
+												<td></td>
+												<td>
+													Visibility:
+												</td>
+												<td>
+													<input id="visibility" type="text" name="visibility" />
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Cloud:
+												</td>
+												<td class="right-border">
+													<input id="cloud" type="text" name="cloud" />
+												</td>
+												<td></td>
+												<td>
+													Wax:
+												</td>
+												<td>
+													<input id="wax" type="text" name="wax" />
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Temp:
+												</td>
+												<td class="right-border">
+													<input id="temp" type="text" name="temp" />
+												</td>
+												<td></td>
+												<td>
+													QNH (hpa):
+												</td>
+												<td>
+													<input id="qnh_hpa" type="text" name="qnh_hpa" />
+												</td>
+											</tr>
+											<tr>
+												<td>
+													QNH (Inches):
+												</td>
+												<td class="right-border">
+													<input id="qnh_inches" type="text" name="qnh_inches" />
+												</td>
+												<td></td>
+												<td>
+													DP:
+												</td>
+												<td>
+													<input id="dp" type="text" name="dp" />
+												</td>
+											</tr>
+											<tr>
+												<td>
+													Hum %:
+												</td>
+												<td class="right-border">
+													<input id="hum" type="text" name="hum" />
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</fieldset>
+								<table>
+									<thead></thead>
+									<tbody>									
+										<tr>
+											<td style="width: 200px;">
+												RWY COND & BA:
+											</td>
+											<td style="width: 200px;">
+												<input id="rwy_cond" type="text" name="rwy_cond" />
+											</td>
+										</tr>
+										<tr style="width: 200px;">
+											<td style="width: 200px;">
+												Any Other Significant Phenomena:
+											</td>
+											<td style="width: 200px;">
+												<input id="other_phenomena" type="text" name="other_phenomena" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Air Traffic Management</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Needed any Special Priority:
+											</td>
+											<td>
+												<input id="special_priority" type="text" name="special_priority" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Type of Airspace & ATS Services:
+											</td>
+											<td>
+												<input id="acft_type_ats_service" type="text" name="acft_type_ats_service" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any FLT Delayed:
+											</td>
+											<td>
+												<input id="flt_dla" type="text" name="flt_dla" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any Other in Contact Traffic(s):
+											</td>
+											<td>
+												<input id="contact_traffic" type="text" name="contact_traffic" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Followed By Firefighting Vehicles After Landing:
+											</td>
+											<td>
+												<input id="firefighting_after_landing" type="text" name="firefighting_after_landing" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Military Firefighting Vehicles Assisted:
+											</td>
+											<td>
+												<input id="military_firefighting_assisted" type="text" name="military_firefighting_assisted" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY Closed After Landing:
+											</td>
+											<td>
+												<input id="rwy_closed_after_landing" type="text" name="rwy_closed_after_landing" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY Lighting Used:
+											</td>
+											<td>
+												<input id="rwy_lighting" type="text" name="rwy_lighting" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												APP Lighting Used:
+											</td>
+											<td>
+												<input id="app_lighting" type="text" name="app_lighting" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any Other Comment:
+											</td>
+											<td>
+												<textarea style="width:200px; height:30px; font-size:15px; direction: ltr;" name="other_comment"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller 1 Name:
+											</td>
+											<td>
+												<input id="controller_1_name" type="text" name="controller_1_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Supervisor Name:
+											</td>
+											<td>
+												<input id="sup_name" type="text" name="sup_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Headmaster:
+											</td>
+											<td>
+												<input id="headmaster" type="text" name="headmaster" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Filling Date & Time:
+											</td>
+											<td>
+												<input type="date" name="filling_date" />
+											</td>
+											<td style="width: 100px;">
+												<input type="time" name="filling_time" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table>
+				<tr style="float: left; border: none;">
+					<td>
+						<input style="text-transform: none;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>

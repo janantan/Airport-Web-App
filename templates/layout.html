@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        {% if "flight-form" in request.base_url %}
+            {% if flt_form_list[2] %}
+                <title>{{flt_form_list[0]}}{{flt_form_list[2]}}</title>
+            {% elif flt_form_list[4] %}
+                <title>{{flt_form_list[0]}}{{flt_form_list[4]}}</title>
+            {% else %}
+                <title>Airport WEB APP</title>
+            {% endif %}
+        {% else %}
+            <title>Airport WEB APP</title>
+        {% endif %}
+        <!--<meta charset="utf-8" />-->
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="description" content="Airport WEB APP" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="/static/css/atc_web_app.css" />
+        <link rel="shortcut icon" type="image/png" href="/static/img/icon/atc favicon.png"/>
+        {% if 'adsb' in request.url_rule.rule %}
+            {{ airport.js }}
+        {% endif %}
+    </head>
+    <body>
+        <header id="main-header" class="clearfix">
+            {% include 'includes/_navbar.html' %}
+        </header>
+
+                    
+        {% block body %}{% endblock %}
+
+        <!--{% include 'includes/_footer.html' %}-->
+    </body>
+</html>

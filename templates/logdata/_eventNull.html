@@ -1,0 +1,210 @@
+<fieldset id="event_duplicater{{counter}}" style="min-height: 160px; max-height: 250px;">
+	<table>
+		<thead>
+    		<tr style="background: yellow; border: none;">
+    			<th style="width:100px;">			            			         
+	             	<span>Event</span>
+		        </th>
+		        <td style="width:600px;">
+	            	<select name="event_title_{{counter}}" id="ev_{{counter}}" onchange="eventFunction('ev_{{counter}}')">
+						<option></option>
+						<option value="Communication">Communication</option>
+						<option value="Navigation">Navigation</option>
+						<option value="Surveillance">Surveillance</option>
+						<option value="RWY TWY">RWY TWY</option>
+						<option value="Lights">Lights</option>
+						<option value="Equipments">Equipments</option>
+						<option value="RWY in Use">RWY in Use</option>
+						<option value="RWY Inspection">RWY Inspection</option>
+						<option value="RPV">RPV</option>
+						<option value="Other">Other</option>
+					</select>
+		        </td>
+		        <td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction7('event_duplicater{{counter}}','del', 'ev_{{counter}}')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction7('event_duplicater{{counter}}','add', 'ev_{{counter}}')" title="add new" class="add-box">+</a>
+      			</td>
+		    </tr>
+	    </thead>
+		{% include 'logdata/_eventSelect.html' %}
+    </table>
+</fieldset>
+
+<script type="text/javascript">
+	var largest = "{{counter}}"
+	var o = largest;
+	function addrowFunction7(id_name, action, event) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "event_duplicater" + ++o;
+			var title = "title_"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+o);
+			var ev = "ev_"+id_name.substring(16, id_name.length);
+			for (ii = 0; ii < 100; ii++) {
+				clone.innerHTML = clone.innerHTML.replace(ev, "ev_"+o);
+			}
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "event_duplicater"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "event_duplicater"+o);			
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+		document.getElementById("ev_"+o+"-com0").style.display = "none";
+		document.getElementById("ev_"+o+"-nav0").style.display = "none";
+		document.getElementById("ev_"+o+"-sur0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy_twy0").style.display = "none";
+		document.getElementById("ev_"+o+"-lgt0").style.display = "none";
+		document.getElementById("ev_"+o+"-eqp0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-in-use0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-inspection0").style.display = "none";
+		document.getElementById("ev_"+o+"-rpv0").style.display = "none";
+		document.getElementById("ev_"+o+"-other0").style.display = "none";
+	}
+
+	function eventFunction(event) {
+		var x = document.getElementById(event).value;
+		com_0 = document.getElementById(event+"-com0")
+		nav_0 = document.getElementById(event+"-nav0")
+		sur_0 = document.getElementById(event+"-sur0")
+		rwy_twy_0 = document.getElementById(event+"-rwy_twy0")
+		lgt_0 = document.getElementById(event+"-lgt0")
+		eqp_0 = document.getElementById(event+"-eqp0")
+		rwy_in_use_0 = document.getElementById(event+"-rwy-in-use0")
+		rwy_inspection_0 = document.getElementById(event+"-rwy-inspection0")
+		rpv_0 = document.getElementById(event+"-rpv0")
+		other_0 = document.getElementById(event+"-other0")
+		if (x == 'Communication') {
+			document.getElementById(event+"-com1").innerHTML = x;
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			com_0.style.display = "block";
+		} else if (x == 'Navigation') {
+			document.getElementById(event+"-nav1").innerHTML = x;
+			com_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			nav_0.style.display = "block";
+		} else if (x == 'Surveillance') {
+			document.getElementById(event+"-sur1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			sur_0.style.display = "block";
+		} else if (x == 'RWY TWY') {
+			document.getElementById(event+"-rwy_twy1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_twy_0.style.display = "block";
+		} else if (x == 'Lights') {
+			document.getElementById(event+"-lgt1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			lgt_0.style.display = "block";
+		} else if (x == 'Equipments') {
+			document.getElementById(event+"-eqp1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			eqp_0.style.display = "block";
+		} else if (x == 'RWY in Use') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_in_use_0.style.display = "block";
+		} else if (x == 'RWY Inspection') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_inspection_0.style.display = "block";
+		} else if (x == 'RPV') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			other_0.style.display = "none";
+			rpv_0.style.display = "block";
+		} else if (x == 'Other') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "block";
+		}
+		else {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+		}
+	}
+</script>

@@ -1,0 +1,38 @@
+<div>
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td style="padding-bottom: 5px;">
+							<span>Please Fill out the Log Data:</span>
+						</td>
+					</tr>
+				</thead>
+				<tbody style="height: 70vh;">
+					{% for item in first_list %}
+					<tr>
+						<td>
+							{% include item %}
+						</td>
+					</tr>
+					{% endfor %}
+					{% for item in last_list %}
+					<tr>
+						<td>
+							{% include item %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<table>
+				<tr style="float: left; border: none; margin-top: 15px;">
+					<td style="padding-bottom: 0;">
+						<input style="text-transform: none;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>

@@ -1,0 +1,71 @@
+<fieldset>
+	<legend>RWY / TWY</legend>
+	<table class="freeze-table">
+		<thead>
+    		<tr style="background: yellow;">
+    			<th>			            			         
+	             	<span>Title</span>
+		        </th>
+		        <th>			            			         
+	             	<span>Status</span>
+		        </th>
+    			<th>			            			         
+	            	<span>Description</span>
+		        </th>
+		        <th style="width:90px;"></th>
+		    </tr>
+	    </thead>
+	    <tbody style="height: 160px;">
+		    <tr id="rwy_twy_duplicater1">
+    			<td>
+	            	<select name="rwy_twy_title_1" id="rwy_twy_title">
+						<option></option>
+						<option value="RWY 11">RWY 11</option>
+						<option value="RWY 29">RWY 29</option>
+						<option value="TWY A">TWY A</option>
+						<option value="TWY B">TWY B</option>
+					</select>
+		        </td>
+		        <td>
+		        	<input type="radio" name="rwy_twy_status_1" value="Clear" style="cursor:pointer;" />Clear
+					<input type="radio" name="rwy_twy_status_1" value="FOD" style="cursor:pointer;"/>FOD
+					<input type="radio" name="rwy_twy_status_1" value="Close" style="cursor:pointer;"/>Close
+		        </td>
+    			<td>
+    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="rwy_twy_description_1"></textarea>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction4('rwy_twy_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction4('rwy_twy_duplicater1','add')" title="add new" class="add-box">+</a>
+      			</td>
+		    </tr>
+	    </tbody>
+    </table>		
+</fieldset>
+
+<script>
+	var l = 1;
+	function addrowFunction4(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "rwy_twy_duplicater" + ++l;
+			var title = "title_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+l);
+			var status = "status_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+l);
+			var description = "description_"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+l);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "rwy_twy_duplicater"+id_name.substring(18, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

@@ -1,0 +1,17 @@
+<nav>
+  <ul>
+    <li><img id="iac" src="/static/img/icon/iac_2.png" alt="Iranian Airport Company" width="72" height="45"></li>
+    <li style="margin-top: 0.5vh;"><span style="color:rgb(2,18,77); font-weight:bold; font-size:16px;">Iranian Airport Company</span><br><span style="color:rgb(2,18,77); font-weight:bold; font-size:14px;">Airport Web Application</span></li>   
+  </ul>
+
+  <div id="registration">
+    <ul>
+      <li style="margin-top: 2vh;"><a class="navbar-link logout" href="/logout">Logout</a></li>
+      <li style="margin-top: 2vh;"><a class="navbar-link search" href="/search">Search</a></li>
+      <!--<li style="margin-top: 2vh;"><a class="navbar-link login" href="/login">Sign in</a></li>
+      <li style="margin-top: 2vh;"><a class="navbar-link register" href="/register">Sign up</a></li>-->
+      <li style="margin-top: 2vh;" class="alert-welcome"><a href="/change password" style="color:#303f9f" title="Change Password?">{{session['message']}}</a></li>
+      <!--<li style="margin: 2vh 0 0 0;"><a class="navbar-link home" href="/home">Home</a></li>-->
+    </ul>
+  </div>
+</nav>

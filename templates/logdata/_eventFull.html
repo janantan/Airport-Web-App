@@ -1,0 +1,915 @@
+{% for i in range(result['event_com']['title']|length) %}
+	<fieldset id="event_duplicater_com{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{i+1}}" id="ev_{{i+1}}" onchange="eventFunction('ev_{{i+1}}')">
+							<option>Communication</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_com{{i+1}}','del', 'ev_{{i+1}}', 'com')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">
+					 	<span>Communication</span><span> Title</span>
+					</th>
+					<th style="width:220px;">
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_com']['status'][i]=='Not OPR' %}{% set not_opr='checked' %}{% else %}{% set not_opr='' %}{% endif %}
+			        	{% if result['event_com']['status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['event_com']['status'][i]=='FLTCK EXP' %}{% set fltck_exp='checked' %}{% else %}{% set fltck_exp='' %}{% endif %}
+				    	<input type="radio" name="ev_{{i+1}}_com_status" value="Not OPR" style="cursor:pointer;" {{not_opr}}/>Not OPR
+						<input type="radio" name="ev_{{i+1}}_com_status" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="ev_{{i+1}}_com_status" value="FLTCK EXP" style="cursor:pointer;" {{fltck_exp}}/>FLTCK EXP
+				    </td>
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{i+1}}_com_title">
+							<option>{{result['event_com']['title'][i]}}</option>
+							<option value="ATIS (INFO) 126.800 MHz">ATIS (INFO) 126.800 MHz</option>
+							<option value="OICS HOTLINE">OICS HOTLINE</option>
+							<option value="ACC HOTLINE">ACC HOTLINE</option>
+							<option value="FM RADIO">FM RADIO</option>
+							<option value="OICI HOTLINE">OICI HOTLINE</option>
+							<option value="TWR FREQ 121.900 MHz">TWR FREQ 121.900 MHz</option>
+							<option value="EMERG FREQ 121.5 MHz">EMERG FREQ 121.5 MHz</option>
+							<option value="SEPAH HOTLINE">SEPAH HOTLINE</option>
+							<option value="SIGNALING LAMP">SIGNALING LAMP</option>
+							<option value="MIL HOTLINE">MIL HOTLINE</option>
+							<option value="I-COM">I-COM</option>
+							<option value="TWR FREQ 122.450 MHz">TWR FREQ 122.450 MHz</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">			            			         
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_com']['time'][i]}}" name="ev_{{i+1}}_com_time" />
+				    </td>	
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">			            			         
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{i+1}}_com_reason">{{result['event_com']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>	
+{% endfor %}
+
+{% for j in range(result['event_com']['title']|length, result['event_nav']['title']|length + result['event_com']['title']|length) %}
+	{% set i = (k - result['event_com']['title']|length) %}
+	<fieldset id="event_duplicater_nav{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{j+1}}" id="ev_{{j+1}}" onchange="eventFunction('ev_{{j+1}}')">
+							<option>Navigation</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_nav{{i+1}}','del', 'ev_{{j+1}}', 'nav')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">			            			         
+					 	<span>Navigation</span><span> Title</span>
+					</th>
+					<th style="width:220px;">			            			         
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_nav']['status'][i]=='Not OPR' %}{% set not_opr='checked' %}{% else %}{% set not_opr='' %}{% endif %}
+			        	{% if result['event_nav']['status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['event_nav']['status'][i]=='FLTCK EXP' %}{% set fltck_exp='checked' %}{% else %}{% set fltck_exp='' %}{% endif %}
+				    	<input type="radio" name="ev_{{j+1}}_nav_status" value="Not OPR" style="cursor:pointer;" {{not_opr}}/>Not OPR
+						<input type="radio" name="ev_{{j+1}}_nav_status" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="ev_{{j+1}}_nav_status" value="FLTCK EXP" style="cursor:pointer;" {{fltck_exp}}/>FLTCK EXP
+				    </td>	
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{j+1}}_nav_title">
+							<option>{{result['event_nav']['title'][i]}}</option>
+								<option value="ILS DME (CH 48X)">ILS DME (CH 48X)</option>
+								<option value="DVOR/DME (CH 93X) 114.600 MHz">DVOR/DME (CH 93X) 114.600 MHz</option>
+								<option value="LLZ 29 111.100 MHz">LLZ 29 111.100 MHz</option>
+								<option value="ILS GP 331.700 MHz">ILS GP 331.700 MHz</option>
+								<option value="NDB">NDB</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">			            			         
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_nav']['time'][i]}}" name="ev_{{j+1}}_nav_time" />
+				    </td>	
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">			            			         
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{j+1}}_nav_reason">{{result['event_nav']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+{% endfor %}
+
+{% for k in range((result['event_com']['title']|length + result['event_nav']['title']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length)) %}
+	{% set i = k - (result['event_com']['title']|length + result['event_nav']['title']|length) %}
+	<fieldset id="event_duplicater_sur{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{k+1}}" id="ev_{{k+1}}" onchange="eventFunction('ev_{{k+1}}')">
+							<option>Surveillance</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_sur{{i+1}}','del', 'ev_{{k+1}}', 'sur')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">			            			         
+					 	<span >Surveillance</span><span> Title</span>
+					</th>
+					<th style="width:220px;">			            			         
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_sur']['status'][i]=='Not OPR' %}{% set not_opr='checked' %}{% else %}{% set not_opr='' %}{% endif %}
+			        	{% if result['event_sur']['status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['event_sur']['status'][i]=='FLTCK EXP' %}{% set fltck_exp='checked' %}{% else %}{% set fltck_exp='' %}{% endif %}
+				    	<input type="radio" name="ev_{{k+1}}_sur_status" value="Not OPR" style="cursor:pointer;" {{not_opr}}/>Not OPR
+						<input type="radio" name="ev_{{k+1}}_sur_status" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="ev_{{k+1}}_sur_status" value="FLTCK EXP" style="cursor:pointer;" {{fltck_exp}}/>FLTCK EXP
+				    </td>	
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{k+1}}_sur_title">
+							<option>{{result['event_sur']['title'][i]}}</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">			            			         
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_sur']['time'][i]}}" name="ev_{{k+1}}_surt_time" />
+				    </td>	
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">			            			         
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{k+1}}_sur_reason">{{result['event_sur']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+{% endfor %}
+
+{% for l in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length)) %}
+	{% set i = (l - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length)) %}
+	<fieldset id="event_duplicater_rwy_twy{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{l+1}}" id="ev_{{l+1}}" onchange="eventFunction('ev_{{l+1}}')">
+							<option>RWY TWY</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_rwy_twy{{i+1}}','del', 'ev_{{l+1}}', 'rwy_twy')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">			            			         
+					 	<span>RWY TWY</span><span> Title</span>
+					</th>
+					<th style="width:220px;">			            			         
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_rwy_twy']['status'][i]=='Clear' %}{% set clear='checked' %}{% else %}{% set clear='' %}{% endif %}
+			        	{% if result['event_rwy_twy']['status'][i]=='FOD' %}{% set fod='checked' %}{% else %}{% set fod='' %}{% endif %}
+			        	{% if result['event_rwy_twy']['status'][i]=='Close' %}{% set close='checked' %}{% else %}{% set close='' %}{% endif %}
+				    	<input type="radio" name="ev_{{l+1}}_rwy_twy_status" value="Clear" style="cursor:pointer;" {{clear}}/>Clear
+						<input type="radio" name="ev_{{l+1}}_rwy_twy_status" value="FOD" style="cursor:pointer;" {{fod}}/>FOD
+						<input type="radio" name="ev_{{l+1}}_rwy_twy_status" value="Close" style="cursor:pointer;" {{close}}/>Close
+				    </td>	
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{l+1}}_rwy_twy_title">
+							<option>{{result['event_rwy_twy']['title'][i]}}</option>
+							<option value="RWY 11">RWY 11</option>
+							<option value="RWY 29">RWY 29</option>
+							<option value="TWY A">TWY A</option>
+							<option value="TWY B">TWY B</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">			            			         
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_rwy_twy']['time'][i]}}" name="ev_{{l+1}}_rwy_twy_time" />
+				    </td>	
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">			            			         
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{l+1}}_rwy_twy_reason">{{result['event_rwy_twy']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+{% endfor %}	
+
+{% for m in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length)) %}
+	{% set i = m - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length) %}
+	<fieldset id="event_duplicater_lgt{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{m+1}}" id="ev_{{m+1}}" onchange="eventFunction('ev_{{m+1}}')">
+							<option>Lights</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_lgt{{i+1}}','del', 'ev_{{m+1}}', 'lgt')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">			            			         
+					 	<span>Lights</span><span> Title</span>
+					</th>
+					<th style="width:220px;">			            			         
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_lgt']['status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['event_lgt']['status'][i]=='NIL' %}{% set nil='checked' %}{% else %}{% set nil='' %}{% endif %}
+				    	<input type="radio" name="ev_{{m+1}}_lgt_status" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="ev_{{m+1}}_lgt_status" value="NIL" style="cursor:pointer;" {{nil}}/>NIL
+				    </td>	
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{m+1}}_lgt_title">
+							<option>{{result['event_lgt']['title'][i]}}</option>
+							<option value="RWY 29 END LGT">RWY 29 END LGT</option>
+							<option value="RWY 29 THR LGT">RWY 29 THR LGT</option>
+							<option value="RWY 29 APP LGT">RWY 29 APP LGT</option>
+							<option value="RWY 11 END LGT">RWY 11 END LGT</option>
+							<option value="RWY 29/11 EDGE LGT">RWY 29/11 EDGE LGT</option>
+							<option value="TWY A EDGE LGT">TWY A EDGE LGT</option>
+							<option value="TWY B EDGE LGT">TWY B EDGE LGT</option>
+							<option value="PAPI 29">PAPI 29</option>
+							<option value="ABN">ABN</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">			            			         
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_lgt']['time'][i]}}" name="ev_{{m+1}}_lgt_time" />
+				    </td>	
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">			            			         
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{m+1}}_lgt_reason">{{result['event_lgt']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+{% endfor %}
+
+{% for n in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length)) %}
+	{% set i = n - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length) %}
+	<fieldset id="event_duplicater_eqp{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{n+1}}" id="ev_{{n+1}}" onchange="eventFunction('ev_{{n+1}}')">
+							<option>Equipments</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_eqp{{i+1}}','del', 'ev_{{n+1}}', 'eqp')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:240px;">			            			         
+					 	<span>Equipments</span><span> Title</span>
+					</th>
+					<th style="width:220px;">
+					 	<span>Status</span>
+					</th>
+					<td style="width:300px; font-size: 13px;">
+						{% if result['event_eqp']['status'][i]=='Not OPR' %}{% set not_opr='checked' %}{% else %}{% set not_opr='' %}{% endif %}
+			        	{% if result['event_eqp']['status'][i]=='US' %}{% set us='checked' %}{% else %}{% set us='' %}{% endif %}
+			        	{% if result['event_eqp']['status'][i]=='FLTCK EXP' %}{% set fltck_exp='checked' %}{% else %}{% set fltck_exp='' %}{% endif %}
+				    	<input type="radio" name="ev_{{n+1}}_eqp_status" value="Not OPR" style="cursor:pointer;" {{not_opr}}/>Not OPR
+						<input type="radio" name="ev_{{n+1}}_eqp_status" value="US" style="cursor:pointer;" {{us}}/>US
+						<input type="radio" name="ev_{{n+1}}_eqp_status" value="FLTCK EXP" style="cursor:pointer;" {{fltck_exp}}/>FLTCK EXP
+				    </td>	
+				</tr>
+				<tr>
+				    <td style="width:240px;">
+				    	<select name="ev_{{n+1}}_eqp_title">
+							<option>{{result['event_eqp']['title'][i]}}</option>
+							<option value="RVR 11">RVR 11</option>
+							<option value="RVR 29">RVR 29</option>
+							<option value="RVR MID">RVR MID</option>
+							<option value="WDI-TWR">WDI-TWR</option>
+							<option value="CRASH ALARM">CRASH ALARM</option>
+							<option value="WINDSOCK">WINDSOCK</option>
+						</select>
+				    </td>
+				    <th style="width:220px;">
+				     	<span>Time (UTC)</span>
+				    </th>
+				    <td style="width:300px;">
+				    	<input type="time" value="{{result['event_eqp']['time'][i]}}" name="ev_{{n+1}}_eqp_time" />
+				    </td>
+				</tr>
+				<tr>
+					<td style="width:240px;"></td>
+					<th style="width:220px;">
+						<span>Reason</span>
+					</th>
+					<td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{n+1}}_eqp_reason">{{result['event_eqp']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>	
+{% endfor %}
+
+{% for n in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length)) %}
+	{% set i = n - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length) %}
+	<fieldset id="event_duplicater_rwy_in_use{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{i+1}}" id="ev_{{i+1}}" onchange="eventFunction('ev_{{i+1}}')">
+							<option>RWY in Use</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_rwy_in_use{{i+1}}','del', 'ev_{{i+1}}', 'rwy_in_use')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:300px;">			            			         
+					 	<span>Text</span>
+					</th>
+					<th style="width:240px;">
+					 	<span>Time (UTC)</span>
+					</th>
+					<th style="width:300px;">
+						<span>Reason</span>
+					</th>
+				</tr>
+				<tr>
+				    <td style="width:300px;">
+						<textarea style="width:200px; height:18px; font-size:15px; direction:ltr;" name="ev_{{i+1}}_rwy-in-use_text">{{result['event_rwy_in_use']['text'][i]}}</textarea>
+					</td>
+				    <td style="width:240px;">
+				    	<input type="time" value="{{result['event_rwy_in_use']['time'][i]}}" name="ev_{{i+1}}_rwy-in-use_time" />
+				    </td>
+				    <td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{i+1}}_rwy-in-use_reason">{{result['event_rwy_in_use']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>	
+{% endfor %}
+
+{% for o in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length)) %}
+	{% set i = o - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length) %}
+	<fieldset id="event_duplicater_rwy_inspection{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{o+1}}" id="ev_{{o+1}}" onchange="eventFunction('ev_{{o+1}}')">
+							<option>RWY Inspection</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_rwy_inspection{{o+1}}','del', 'ev_{{i+1}}', 'rwy_inspection')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:300px;">			            			         
+					 	<span>Inspector</span>
+					</th>
+					<th style="width:240px;">
+					 	<span>Time (UTC)</span>
+					</th>
+					<th style="width:300px;">
+						<span>Reason</span>
+					</th>
+				</tr>
+				<tr>
+				    <td style="width:300px;">
+						<input type="text" value="{{result['event_rwy_inspection']['inspector'][i]}}" name="ev_{{o+1}}_rwy-inspection_inspector" size="15" />
+					</td>
+				    <td style="width:240px;">
+				    	<input type="time" value="{{result['event_rwy_inspection']['time'][i]}}" name="ev_{{o+1}}_rwy-inspection_time" />
+				    </td>
+				    <td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{o+1}}_rwy-inspection_reason">{{result['event_rwy_inspection']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>	
+{% endfor %}
+
+{% for p in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length + result['event_rpv']['call_sign']|length)) %}
+	{% set i = p - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length) %}
+	<fieldset id="event_duplicater_rpv{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{p+1}}" id="ev_{{p+1}}" onchange="eventFunction('ev_{{p+1}}')">
+							<option>RPV</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_rpv{{i+1}}','del', 'ev_{{p+1}}', 'rpv')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 200px;">
+				<tr id="rpv-first-row">
+					<th>
+					 	<span>Call Sign</span>
+					</th>
+					<th>
+					 	<span>Take-off Time</span>
+					</th>
+					<th>
+					 	<span>Landing Time</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input type="text" value="{{result['event_rpv']['call_sign'][i]}}" name="ev_{{p+1}}_rpv_call_sign" size="10" />
+					</td>
+				    <td>
+				    	<input type="time" value="{{result['event_rpv']['takeoff_time'][i]}}" name="ev_{{p+1}}_rpv_takeoff_time" />
+				    </td>
+				    <td style="font-size: 13px;">
+				    	{% if result['event_rpv']['landing_time'][i]=='To Be Continued' %}{% set continued='checked' %}{% else %}{% set continued='' %}{% endif %}
+			        	{% if result['event_rpv']['landing_time'][i]=='Ended' %}{% set ended='checked' %}{% else %}{% set ended='' %}{% endif %}
+				    	<input type="radio" name="ev_{{p+1}}_rpv_landing_time" value="To Be Continued" style="cursor:pointer;" {{continued}}/>To Be Continued
+						<input type="radio" name="ev_{{p+1}}_rpv_landing_time" value="Ended" style="cursor:pointer;" {{ended}}/>Ended
+				    </td>
+				</tr>
+				<tr id="rpv-second-row" style="margin-top: 15px;">
+					<th>
+						<span>Reason</span>
+					</th>
+					<th></th>
+					<th>
+						<span>Inspection Result</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<textarea style="width:300px; height:40px; font-size:15px; direction:ltr;" name="ev_{{p+1}}_rpv_reason">{{result['event_rpv']['reason'][i]}}</textarea>
+					</td>
+					<td></td>
+				    <td>
+						<textarea style="width:300px; height:40px; font-size:15px; direction:ltr;" name="ev_{{p+1}}_rpv_description">{{result['event_rpv']['description'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>	
+{% endfor %}
+
+{% for q in range((result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length + result['event_rpv']['call_sign']|length), (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length + result['event_rpv']['call_sign']|length + result['event_other']['title']|length)) %}
+	{% set i = q - (result['event_com']['title']|length + result['event_nav']['title']|length + result['event_sur']['title']|length + result['event_rwy_twy']['title']|length + result['event_lgt']['title']|length + result['event_eqp']['title']|length + result['event_rwy_in_use']['text']|length + result['event_rwy_inspection']['inspector']|length + result['event_rpv']['call_sign']|length) %}
+	<fieldset id="event_duplicater_other{{i+1}}" style="min-height: 160px;">
+		<table>
+			<thead>
+	    		<tr style="background: yellow; border: none;">
+	    			<th style="width:100px;">			            			         
+		             	<span>Event</span>
+			        </th>
+			        <td style="width:600px;">
+		            	<select name="event_title_{{q+1}}" id="ev_{{q+1}}" onchange="eventFunction('ev_{{q+1}}')">
+							<option>Other</option>
+							<option value="Communication">Communication</option>
+							<option value="Navigation">Navigation</option>
+							<option value="Surveillance">Surveillance</option>
+							<option value="RWY TWY">RWY TWY</option>
+							<option value="Lights">Lights</option>
+							<option value="Equipments">Equipments</option>
+							<option value="RWY in Use">RWY in Use</option>
+							<option value="RWY Inspection">RWY Inspection</option>
+							<option value="RPV">RPV</option>
+							<option value="Other">Other</option>
+						</select>
+			        </td>
+			        <td style="width:70px;" id="last_child">
+	      				<a href="javascript:addrowFunction7('event_duplicater_other{{i+1}}','del', 'ev_{{q+1}}', other)" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+	      			</td>
+			    </tr>
+		    </thead>
+			<tbody style="border: none; margin-top: 15px; height: 160px;">
+				<tr>
+					<th style="width:300px;">			            			         
+					 	<span>Title</span>
+					</th>
+					<th style="width:240px;">
+					 	<span>Time (UTC)</span>
+					</th>
+					<th style="width:300px;">
+						<span>Reason</span>
+					</th>
+				</tr>
+				<tr>
+				    <td style="width:300px;">
+						<input type="text" value="{{result['event_other']['title'][i]}}" name="ev_{{q+1}}_other_title" size="15" />
+					</td>
+				    <td style="width:240px;">
+				    	<input type="time" value="{{result['event_other']['time'][i]}}" name="ev_{{q+1}}_other_time" />
+				    </td>
+				    <td style="width:300px;">
+						<textarea style="width:240px; height:30px; font-size:15px; direction:ltr;" name="ev_{{q+1}}_other_reason">{{result['event_other']['reason'][i]}}</textarea>
+					</td>
+				</tr>
+			</tbody>
+	    </table>
+	</fieldset>
+{% endfor %}
+
+<script type="text/javascript">
+	var com = "{{result['event_com']['title']|length}}";
+	var nav = "{{result['event_nav']['title']|length}}";
+	var sur = "{{result['event_sur']['title']|length}}";
+	var rwy_twy = "{{result['event_rwy_twy']['title']|length}}";
+	var lgt = "{{result['event_lgt']['title']|length}}";
+	var eqp = "{{result['event_eqp']['title']|length}}";
+	var rwy_in_use = "{{result['event_rwy_in_use']['text']|length}}";
+	var rwy_inspection = "{{result['event_rwy_inspection']['inspector']|length}}";
+	var rpv = "{{result['event_rpv']['call_sign']|length}}";
+	var other = "{{result['event_other']['title']|length}}";
+	function addrowFunction7(id_name, action, event, indicator) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			if (indicator=='com'){o = com;}
+			else if (indicator=='nav'){o = nav;}
+			else if (indicator=='sur'){o = sur;}
+			else if (indicator=='rwy_twy'){o = rwy_twy;}
+			else if (indicator=='lgt'){o = lgt;}
+			else if (indicator=='eqp'){o = eqp;}
+			else if (indicator=='rwy_in_use'){o = rwy_in_use;}
+			else if (indicator=='rwy_inspection'){o = rwy_inspection;}
+			else if (indicator=='rpv'){o = rpv;}
+			else if (indicator=='other'){o = other;}
+			clone.id = "event_duplicater" + ++o;
+			var title = "title_"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+o);
+			var ev = "ev_"+id_name.substring(16, id_name.length);
+			for (ii = 0; ii < 100; ii++) {
+				clone.innerHTML = clone.innerHTML.replace(ev, "ev_"+o);
+			}
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "event_duplicater"+id_name.substring(16, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "event_duplicater"+o);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+		document.getElementById("ev_"+o+"-com0").style.display = "none";
+		document.getElementById("ev_"+o+"-nav0").style.display = "none";
+		document.getElementById("ev_"+o+"-sur0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy_twy0").style.display = "none";
+		document.getElementById("ev_"+o+"-lgt0").style.display = "none";
+		document.getElementById("ev_"+o+"-eqp0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-in-use0").style.display = "none";
+		document.getElementById("ev_"+o+"-rwy-inspection0").style.display = "none";
+		document.getElementById("ev_"+o+"-rpv0").style.display = "none";
+		document.getElementById("ev_"+o+"-other0").style.display = "none";
+		document.getElementById("option").innerHTML = "";
+	}
+
+	function eventFunction(event) {
+		var x = document.getElementById(event).value;
+		com_0 = document.getElementById(event+"-com0")
+		nav_0 = document.getElementById(event+"-nav0")
+		sur_0 = document.getElementById(event+"-sur0")
+		rwy_twy_0 = document.getElementById(event+"-rwy_twy0")
+		lgt_0 = document.getElementById(event+"-lgt0")
+		eqp_0 = document.getElementById(event+"-eqp0")
+		rwy_in_use_0 = document.getElementById(event+"-rwy-in-use0")
+		rwy_inspection_0 = document.getElementById(event+"-rwy-inspection0")
+		rpv_0 = document.getElementById(event+"-rpv0")
+		other_0 = document.getElementById(event+"-other0")
+		if (x == 'Communication') {
+			document.getElementById(event+"-com1").innerHTML = x;
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			com_0.style.display = "block";
+		} else if (x == 'Navigation') {
+			document.getElementById(event+"-nav1").innerHTML = x;
+			com_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			nav_0.style.display = "block";
+		} else if (x == 'Surveillance') {
+			document.getElementById(event+"-sur1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			sur_0.style.display = "block";
+		} else if (x == 'RWY TWY') {
+			document.getElementById(event+"-rwy_twy1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_twy_0.style.display = "block";
+		} else if (x == 'Lights') {
+			document.getElementById(event+"-lgt1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			lgt_0.style.display = "block";
+		} else if (x == 'Equipments') {
+			document.getElementById(event+"-eqp1").innerHTML = x;
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			eqp_0.style.display = "block";
+		} else if (x == 'RWY in Use') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_in_use_0.style.display = "block";
+		} else if (x == 'RWY Inspection') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+			rwy_inspection_0.style.display = "block";
+		} else if (x == 'RPV') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			other_0.style.display = "none";
+			rpv_0.style.display = "block";
+		} else if (x == 'Other') {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "block";
+		}
+		else {
+			com_0.style.display = "none";
+			nav_0.style.display = "none";
+			sur_0.style.display = "none";
+			rwy_twy_0.style.display = "none";
+			lgt_0.style.display = "none";
+			eqp_0.style.display = "none";
+			rwy_in_use_0.style.display = "none";
+			rwy_inspection_0.style.display = "none";
+			rpv_0.style.display = "none";
+			other_0.style.display = "none";
+		}
+	}
+</script>

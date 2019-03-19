@@ -1,0 +1,75 @@
+<fieldset>
+	<legend>Lights</legend>
+	<table class="freeze-table">
+		<thead>
+    		<tr style="background: yellow;">
+    			<th>			            			         
+	             	<span>Title</span>
+		        </th>
+		        <th>			            			         
+	             	<span>Status</span>
+		        </th>
+    			<th>			            			         
+	            	<span>Description</span>
+		        </th>
+		        <th style="width:90px;"></th>
+		    </tr>
+	    </thead>
+	    <tbody style="height: 160px;">
+		    <tr id="lgt_duplicater1">
+    			<td>
+	            	<select name="lgt_title_1" id="lgt_title">
+						<option></option>
+						<option value="RWY 29 END LGT">RWY 29 END LGT</option>
+						<option value="RWY 29 THR LGT">RWY 29 THR LGT</option>
+						<option value="RWY 29 APP LGT">RWY 29 APP LGT</option>
+						<option value="RWY 11 END LGT">RWY 11 END LGT</option>
+						<option value="RWY 29/11 EDGE LGT">RWY 29/11 EDGE LGT</option>
+						<option value="TWY A EDGE LGT">TWY A EDGE LGT</option>
+						<option value="TWY B EDGE LGT">TWY B EDGE LGT</option>
+						<option value="PAPI 29">PAPI 29</option>
+						<option value="ABN">ABN</option>
+					</select>
+		        </td>
+		        <td>
+					<input type="radio" name="lgt_status_1" value="US" style="cursor:pointer;"/>US
+					<input type="radio" name="lgt_status_1" value="FLTCK EXP" style="cursor:pointer;"/>NIL
+		        </td>
+    			<td>
+    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="lgt_description_1"></textarea>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction5('lgt_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction5('lgt_duplicater1','add')" title="add new" class="add-box">+</a>
+      			</td>
+		    </tr>
+	    </tbody>
+    </table>		
+</fieldset>
+
+<script>
+	var m = 1;
+	function addrowFunction5(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "lgt_duplicater" + ++m;
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+m);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+m);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+m);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "lgt_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

@@ -1,0 +1,32 @@
+
+{% extends 'layout.html' %}
+
+{% block body %}
+	<div style="margin-top: 2vh;">
+		{% include 'includes/_firstPageMessage.html' %}
+	</div>	
+	<div onclick="defaultOpacity()">
+	  <aside id="first-statement" class="clearfix">
+        <figure>
+          <img id="bg-img" src="/static/img/bg_img_1.png" alt="IAC Web Application" />
+        </figure>
+      </aside>
+	</div>
+	
+	{% if navigator == "register" %}
+		{% include 'includes/_firstPageRegister.html' %}
+	{% else %}
+		{% include 'includes/_firstPageLogin.html' %}
+	{% endif %}
+
+	<script type="text/javascript">
+	  function defaultOpacity() {
+	    document.getElementById("bg-img").style.opacity = "0.7";
+	    document.getElementById("fp-login").style.background = "none";
+	    document.getElementById("login").style.background = "none";
+    	document.getElementById("register").style.background = "none";
+    	document.getElementById("register").style.background = "no-repeat left";
+    	document.getElementById("register").style.backgroundImage = "url(/static/img/icon/register.png)";
+	  }
+	</script>
+{% endblock %}

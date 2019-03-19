@@ -1,0 +1,216 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	<div class="container">
+		<main>
+			<div class="leftpane card">
+				<div class="navigator">
+					<span>Navigator</span>
+				</div>
+				<table id="freeze" style="width: 100%;">
+					<thead></thead>
+					<tbody style="width: 15vw; height: 80vh;">
+						{% if session['username'] == 'Babalou' %}
+							<tr style="padding: 0;">
+								<td style="padding: 0;">
+									<fieldset style="max-height:10vh;">
+						            	<legend style="font-weight: bold;">Extra Access</legend>
+										<table class="leftpane-table">
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/team" class="navigator-links">Team Members</a>
+												</td>												
+											</tr>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+						{% endif %}
+						{% if session['department'] == 'Air Traffic Management' %}
+							<tr style="padding: 0;">
+								<td style="padding: 0;">
+									<fieldset style="max-height:27vh;">
+						            	<legend style="font-weight: bold;">ATC Electronic Log</legend>
+										<table class="leftpane-table">
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/duty" class="navigator-links">On-Duty Info</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/log data" class="navigator-links">Log Data</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/logs/{{session['log_no']}}" class="navigator-links">The Previous Logs</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/other forms/E101" class="navigator-links">The Other Forms</a>
+												</td>
+											</tr>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+							<tr style="padding: 0;">
+								<td style="padding: 0;">
+									<fieldset style="max-height:27vh;">
+						            	<legend style="font-weight: bold;">ATC Flight Form</legend>
+										<table class="leftpane-table">
+											<tr>
+												<td style="font-size: 14px; text-align: left; width:11vw;">
+													<a href="/flight-schedule-data" class="navigator-links">Enter Flight Schedule Data</a>
+												</td>
+												<td style="font-size: 14px; text-align: left; width:11vw;">
+													<a href="/flight-schedule" class="navigator-links">Weekly Flight Schedule</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/flight-form" class="navigator-links">Flight Form</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/statistics" class="navigator-links">Statistics</a>
+												</td>					
+											</tr>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+						{% endif %}
+						{% if session['department'] == 'Aeronautical Information and Communication Technology' %}
+							<tr style="padding: 0;">
+								<td style="padding: 0;">
+									<fieldset style="max-height:27vh;">
+						            	<legend style="font-weight: bold;">A-ICT Electronic Log</legend>
+										<table class="leftpane-table">
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/amhs log form" class="navigator-links">AMHS Watch Log</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/it log" class="navigator-links">IT Watch Log</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/amhs logs/{{session['amhs_log_no']}}" class="navigator-links">The Previous Logs</a>
+												</td>
+											</tr>
+											<tr>
+												<td style="font-size: 14px; text-align: left;">
+													<a href="/other forms/E101" class="navigator-links">The Other Forms</a>
+												</td>
+											</tr>
+										</table>
+									</fieldset>
+								</td>
+							</tr>
+						{% endif %}
+						<tr style="padding: 0;">
+							<td style="padding: 0;">
+								<fieldset style="max-height:15vh;">
+					            	<legend style="font-weight: bold;">FIDS</legend>
+									<table class="leftpane-table">
+										<tr>
+											<td style="font-size: 14px; text-align: left;">
+												<a href="/fids/OICC/all" class="navigator-links">Kermanshah FIDS</a>
+											</td>
+											<td style="font-size: 14px; text-align: left;">
+												<a href="/fids/OIII/all" class="navigator-links">Mehrabad FIDS</a>
+											</td>				
+										</tr>
+									</table>
+								</fieldset>
+							</td>
+						</tr>
+						<tr style="padding: 0;">
+							<td style="padding: 0;">
+								<fieldset style="max-height:10vh;">
+					            	<legend style="font-weight: bold;">ADSB</legend>
+									<table class="leftpane-table">
+										<tr>
+											<td style="font-size: 14px; text-align: left;">
+												<a href="/adsb/OIII" class="navigator-links">Mehrabad Airport</a>
+											</td>
+										</tr>
+									</table>
+								</fieldset>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="middlepane card" id="flight-schedule">
+				<div class="navigator">
+					<span>Work in Progress</span>
+				</div>
+				{% include 'includes/_messages.html' %}
+				{% if navigator == "login" %}
+					{% include 'includes/_login.html' %}
+				{% elif navigator == "register" %}
+					{% include 'includes/_register.html' %}
+				{% elif navigator == "change password" %}
+					{% include 'includes/_changePassword.html' %}
+				{% elif navigator == "search" %}
+					{% include 'includes/_search.html' %}
+				{% elif navigator == "team" %}
+					{% include 'includes/_team.html' %}
+				{% elif navigator == "amhs log form" %}
+					{% include 'includes/_amhsLogForm.html' %}
+				{% elif navigator == "amhs logs" %}
+					{% include 'includes/_amhsLogs.html' %}
+				{% elif navigator == "edit amhs logs" %}
+					{% include 'includes/_editAmhsLog.html' %}
+				{% elif navigator == "duty" %}
+					{% include 'includes/_duty.html' %}
+				{% elif navigator == "log data" %}
+					{% include 'includes/_logData.html' %}
+				{% elif navigator == "filled log data" %}
+					{% include 'includes/_filledLogData.html' %}
+				{% elif navigator == "logs" %}
+					{% include 'includes/_logs.html' %}
+				{% elif navigator == "logs edit" %}
+					{% include 'includes/_editLog.html' %}
+				{% elif navigator == "other forms" %}
+					{% include 'includes/_otherForms.html' %}				
+				{% elif navigator == "map" %}
+					{% include '/map.html' %}
+				{% elif navigator == "flight-schedule" %}
+					{% include 'includes/_flightSchedule.html' %}
+				{% elif navigator == "flight-schedule-data" %}
+					{% include 'includes/_flightScheduleData.html' %}
+				{% elif navigator == "flight-form" %}
+					{% include 'includes/_flightForm.html' %}
+				{% elif navigator == "statistics" %}
+					{% include 'includes/_tab.html' %}
+					{% include 'includes/_statistics.html' %}
+				{% elif navigator == "fids" %}
+					{% include 'includes/_fids.html' %}
+				{% endif %}
+			</div>
+			<div class="rightpane card" >
+				<div class="navigator">
+					<span>Information</span>
+				</div>
+				{% include 'includes/_logo.html' %}
+				{% if session['department'] == 'Air Traffic Management' %}
+					{% include 'includes/_atcInformation.html' %}
+				{% elif session['department'] == 'Aeronautical Information and Communication Technology' %}
+					{% include 'includes/_aictInformation.html' %}
+				{% endif %}
+				{% if session['metar'] %}
+					{% include 'includes/_metar.html' %}
+				{% endif %}
+			</div>
+		</main>
+	</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+<fieldset>
+	<legend>Navigation</legend>
+	<table class="freeze-table">
+		<thead>
+    		<tr style="background: yellow;">
+    			<th>			            			         
+	             	<span>Title</span>
+		        </th>
+		        <th style="width:300px;">			            			         
+	             	<span>Status</span>
+		        </th>
+    			<th>			            			         
+	            	<span>Description</span>
+		        </th>
+		        <th style="width:90px;"></th>
+		    </tr>
+	    </thead>										    
+		<tbody style="height: 160px;">
+		    <tr id="nav_duplicater1">
+    			<td>
+	            	<select name="nav_title_1" id="nav_title">
+						<option></option>
+						<option value="ILS DME (CH 48X)">ILS DME (CH 48X)</option>
+						<option value="DVOR/DME (CH 93X) 114.600 MHz">DVOR/DME (CH 93X) 114.600 MHz</option>
+						<option value="LLZ 29 111.100 MHz">LLZ 29 111.100 MHz</option>
+						<option value="ILS GP 331.700 MHz">ILS GP 331.700 MHz</option>
+						<option value="NDB">NDB</option>
+					</select>
+		        </td>
+		        <td style="width:300px;">
+		        	<input type="radio" name="nav_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+					<input type="radio" name="nav_status_1" value="US" style="cursor:pointer;"/>US
+					<input type="radio" name="nav_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+		        </td>
+    			<td>
+    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="nav_description_1"></textarea>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction2('nav_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction2('nav_duplicater1','add')" title="add new" class="add-box">+</a>
+      			</td>
+		    </tr>
+		</tbody>											
+    </table>
+</fieldset>
+
+<script>
+	var j = 1;
+	function addrowFunction2(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "nav_duplicater" + ++j;
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+j);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+j);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+j);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "nav_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

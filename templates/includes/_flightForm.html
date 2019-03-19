@@ -1,0 +1,147 @@
+<div class="container">
+	<main class="card" style="min-height: 0">
+		<div id="flight-form">			
+			<section>
+				<form method="POST" action="">
+					<fieldset>
+	            		<legend>Please Fill out the Flight Form</legend>
+	            		<table>
+		            		<tr style="background: yellow;">
+		            			<th>			            			         
+					            	<span>Date</span>
+						        </th>
+						        <th>			            			         
+					             	<span>Airline</span>						            
+						        </th>
+		            			<th>			            			         
+					             	<span>Type</span>
+						        </th>
+						        <th>				            		         
+						            <span>Register</span>						            
+						        </th>
+						    </tr>
+						    <tr>
+						    	{% if flag %}
+			            			<td>
+						            	<span style="color:red; font-weight:bold;">{{flt_form_list[15]}}</span>
+							        </td>
+						        {% else %}
+						        	<td>
+						            	<span style="color:red; font-weight:bold;">{{datetime}}</span>
+							        </td>
+						        {% endif %}
+						        <td>
+						        	<select name="airline" id="airline" required>
+										<option>{{flt_form_list[0]}}</option>
+										<option value="IRA">IRA</option>
+										<option value="IRC">IRC</option>
+										<option value="IRB">IRB</option>
+										<option value="KIS">KIS</option>
+										<option value="CPN">CPN</option>
+										<option value="QSM">QSM</option>
+										<option value="TBZ">TBZ</option>
+										<option value="TBN">TBN</option>
+										<option value="IZG">IZG</option>
+										<option value="KRU">KRU</option>
+										<option value="Other Airlines">Other Airlines</option>
+										<option value="Military">Military</option>
+									</select>
+						        </td>
+		            			<td>
+		              				<input id="type" type="text" name="type" value="{{flt_form_list[1]}}" size="10" required />
+						        </td>
+						        <td>
+			              			<input id="reg" type="text" name="reg" value="{{flt_form_list[9]}}" size="10" required />
+						        </td>
+						    </tr>
+
+						    <tr class="spacer" style="background: yellow;">
+		            			<th>
+					             	<span>Arrival Flight Number</span>
+						        </th>
+						        <th>
+						            <span>Arrival From</span>
+						        </th>
+						        <th>
+					             	<span>Arrival Time</span>
+						        </th>
+						        <th>
+						            <span>Arrival Delay Source</span>
+						        </th>
+						    </tr>
+						    <tr>
+		            			<td>
+		              				<input id="arr-flt-no" type="text" name="arr-flt-no" value="{{flt_form_list[2]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="arr-from" type="text" name="arr-from" value="{{flt_form_list[3]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="arr-time" type="time" name="arr-time" value="{{flt_form_list[7]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="arr-dla" type="text" name="arr-dla" value="{{flt_form_list[10]}}" size="10" />
+						        </td>
+						    </tr>
+
+						    <tr style="background: yellow;">
+		            			<th>         
+					             	<span>Departure Flight Number</span>
+						        </th>
+						        <th>     
+						            <span>Departure to</span>
+						        </th>
+						        <th>
+					             	<span>Departure Time</span>
+						        </th>
+						        <th>
+						            <span>Departure Delay Source</span>
+						        </th>
+						    </tr>
+						    <tr>
+		            			<td>
+		              				<input id="dep-flt-no" type="text" name="dep-flt-no" value="{{flt_form_list[4]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="dep-to" type="text" name="dep-to" value="{{flt_form_list[5]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="dep-time" type="time" name="dep-time" value="{{flt_form_list[8]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<input id="dep-dla" type="text" name="dep-dla" value="{{flt_form_list[11]}}" size="10" />
+						        </td>
+						    </tr>
+
+						    <tr style="background: yellow;">
+						    	<th>
+						            <span>Light</span>
+						        </th>
+						        <th>
+						            <span>Remarks</span>
+						        </th>
+						        <th>
+					            	<span>Initial</span>
+						        </th>
+						    </tr>
+						    <tr>
+						    	<td>
+		              				<input id="light" type="text" name="light" value="{{flt_form_list[12]}}" size="10" required />
+						        </td>
+						        <td>
+		              				<textarea style="width:200px; height:40px; font-size:15px;" name="remarks">{{flt_form_list[13]}}</textarea>
+						        </td>
+						        <td>
+					            	<input id="initial" type="text" name="initial" value="{{flt_form_list[14]}}" size="10" required />
+						        </td>
+						    </tr>
+					    </table>
+					</fieldset>
+					<div>
+						<input style="text-transform: none;" type="submit" value="Save" /> 
+					</div>
+				</form>
+			</section>
+		</div>
+	</main>
+</div>

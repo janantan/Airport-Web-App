@@ -1,0 +1,84 @@
+<fieldset>
+	<legend>Communication</legend>
+	<table class="freeze-table">
+		<thead>
+    		<tr style="background: yellow;">
+    			<th style="width:20px;"></th>
+    			<th>
+	             	<span>Title</span>
+		        </th>
+		        <th style="width:300px;">
+	             	<span>Status</span>
+		        </th>
+    			<th>
+	            	<span>Description</span>
+		        </th>
+		        <th style="width:90px;"></th>
+		    </tr>
+	    </thead>
+	    <tbody style="height: 160px;">
+		    <tr id="com_duplicater1">
+		    	<!--<td style="width:20px; color: red; font-weight: bold;">
+		    		<span id="counter">1</span>
+		    	</td>-->
+    			<td>
+	            	<select name="com_title_1" id="com_title">
+						<option></option>
+						<option value="ATIS (INFO) 126.800 MHz">ATIS (INFO) 126.800 MHz</option>
+						<option value="OICS HOTLINE">OICS HOTLINE</option>
+						<option value="ACC HOTLINE">ACC HOTLINE</option>
+						<option value="FM RADIO">FM RADIO</option>
+						<option value="OICI HOTLINE">OICI HOTLINE</option>
+						<option value="TWR FREQ 121.900 MHz">TWR FREQ 121.900 MHz</option>
+						<option value="EMERG FREQ 121.5 MHz">EMERG FREQ 121.5 MHz</option>
+						<option value="SEPAH HOTLINE">SEPAH HOTLINE</option>
+						<option value="SIGNALING LAMP">SIGNALING LAMP</option>
+						<option value="MIL HOTLINE">MIL HOTLINE</option>
+						<option value="I-COM">I-COM</option>
+						<option value="TWR FREQ 122.450 MHz">TWR FREQ 122.450 MHz</option>
+					</select>
+		        </td>
+		        <td style="width:300px;">
+		        	<input type="radio" name="com_status_1" value="Not OPR" style="cursor:pointer;" />Not OPR
+					<input type="radio" name="com_status_1" value="US" style="cursor:pointer;"/>US
+					<input type="radio" name="com_status_1" value="FLTCK EXP" style="cursor:pointer;"/>FLTCK EXP
+		        </td>
+    			<td>
+    				<textarea style="width:200px; height:20px; font-size:15px; direction:ltr;" name="com_description_1"></textarea>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction1('com_duplicater1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+      			</td>
+      			<td style="width:10px;" id="last_child">
+      				<a href="javascript:addrowFunction1('com_duplicater1', 'add')" title="add new" class="add-box"> + </a>
+      			</td>
+		    </tr>
+	    </tbody>
+    </table>		
+</fieldset>
+
+<script>
+	var i = 1;
+	function addrowFunction1(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "com_duplicater" + ++i;
+			//clone.children[0].textContent = j;
+			var title = "title_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+i);
+			var status = "status_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			clone.innerHTML = clone.innerHTML.replace(status, "status_"+i);
+			var description = "description_"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(description, "description_"+i);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "com_duplicater"+id_name.substring(14, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			original.parentNode.removeChild(original);
+		}
+	}
+</script>

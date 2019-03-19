@@ -1,0 +1,81 @@
+{% if result['on_duty_description']['name'] %}
+	{% for i in range(result['on_duty_description']['name']|length) %}
+		<tr id="duty_info_{{i+1}}" style="display: block; border: none;">
+			<td style="width:250px; padding-bottom: 10px;">
+		    	<select name="name_{{i+1}}">
+					<option>{{result['on_duty_description']['name'][i][1]}}</option>
+					{% for member in team_members %}
+						<option value="{{member[0]}}">{{member[0]}}</option>
+					{% endfor %}
+				</select>
+		    </td>
+		    <td style="width:200px;  font-size: 13px; padding-bottom: 10px;">
+		    	<select name="duty_status_{{i+1}}">
+					<option>{{result['on_duty_description']['status'][i]}}</option>
+					<option value="on leave">on leave</option>
+					<option value="absent">absent</option>
+					<option value="on medical rest">on medical rest</option>
+					<option value="mission">mission</option>
+					<option value="replaced by">replaced by</option>
+					<option value="other">other</option>
+				</select>
+		    </td>
+		    <td style="width:250px; padding-bottom: 10px;">
+		    	<select name="shift_switch_{{i+1}}">
+					<option>{{result['on_duty_description']['shift_switch'][i][1]}}</option>
+					{% for member in team_members %}
+						<option value="{{member[0]}}">{{member[0]}}</option>
+					{% endfor %}
+				</select>
+		    </td>
+			<td style="width:250px; padding-bottom: 10px;">
+				<textarea style="width:170px; height:20px; font-size:15px; direction:ltr;" name="duty_description_{{i+1}}">{{result['on_duty_description']['description'][i]}}</textarea>
+			</td>
+			<td style="width:5px; padding-right: 3px; padding-bottom: 10px;" id="last_child">
+				<a href="javascript:addDutyInfo('duty_info_{{i+1}}','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+			</td>
+			<td style="width:5px; padding-left: 3px; padding-bottom: 10px;" id="last_child">
+				<a href="javascript:addDutyInfo('duty_info_{{i+1}}','add')" title="add new" class="add-box">+</a>
+			</td>	
+		</tr>
+	{% endfor %}
+{% else %}
+	<tr id="duty_info_1" style="display: block; border: none;">
+		<td style="width:250px; padding-bottom: 10px;">
+        	<select name="name_1">
+				<option></option>
+				{% for member in team_members %}
+					<option value="{{member[0]}}">{{member[0]}}</option>
+				{% endfor %}
+			</select>
+        </td>
+        <td style="width:200px;  font-size: 13px; padding-bottom: 10px;">
+        	<select name="duty_status_1">
+				<option></option>
+				<option value="on leave">on leave</option>
+				<option value="absent">absent</option>
+				<option value="on medical rest">on medical rest</option>
+				<option value="mission">mission</option>
+				<option value="replaced by">replaced by</option>
+				<option value="other">other</option>
+			</select>
+        </td>
+        <td style="width:250px; padding-bottom: 10px;">
+        	<select name="shift_switch_1">
+				<option></option>
+				{% for member in team_members %}
+					<option value="{{member[0]}}">{{member[0]}}</option>
+				{% endfor %}
+			</select>
+        </td>
+		<td style="width:250px; padding-bottom: 10px;">
+			<textarea style="width:170px; height:20px; font-size:15px; direction:ltr;" name="duty_description_1"></textarea>
+			</td>
+			<td style="width:5px; padding-right: 3px; padding-bottom: 10px;" id="last_child">
+				<a href="javascript:addDutyInfo('duty_info_1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+			</td>
+			<td style="width:5px; padding-left: 3px; padding-bottom: 10px;" id="last_child">
+				<a href="javascript:addDutyInfo('duty_info_1','add')" title="add new" class="add-box">+</a>
+			</td>
+    </tr>
+{% endif %}

@@ -1,0 +1,385 @@
+<div id="logdata-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Add Record in Occurrence Report (E106)</span></td>
+					</tr>
+				</thead>
+				<tbody style="height:66vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms" >
+								<table>
+									<thead></thead>
+									<tbody style="margin-top:-1vh;">
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="occurrence_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Date of Occurrence:
+											</td>
+											<td>
+												<input type="date" name="occurrence_date" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Aircraft(s) Type:
+											</td>
+											<td>
+												<input id="acft_type" type="text" name="acft_type" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Location:
+											</td>
+											<td>
+												<input id="location" type="text" name="location" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Operator:
+											</td>
+											<td>
+												<input id="operator" type="text" name="operator" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Aircraft(s) Register:
+											</td>
+											<td>
+												<input id="acft_register" type="text" name="acft_register" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Operational Details</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												FLT No / Call Sign:
+											</td>
+											<td>
+												<input type="text" name="call_sign" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Altitude:
+											</td>
+											<td>
+												<input type="text" name="altitude" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Altitude Level:
+											</td>
+											<td>
+												<select name="altitude_level">
+													<option></option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY Used:
+											</td>
+											<td>
+												<input id="rwy_used" type="text" name="rwy_used" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Departure Point:
+											</td>
+											<td>
+												<input id="dep_point" type="text" name="dep_point" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Destination Point:
+											</td>
+											<td>
+												<input id="dest_point" type="text" name="dest_point" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Nearest Reporting Point (NRP):
+											</td>
+											<td>
+												<input id="nrp" type="text" name="nrp" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Bearing from NRP:
+											</td>
+											<td>
+												<input id="bearing_from_nrp" type="text" name="bearing_from_nrp" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Distance from NRP (NM):
+											</td>
+											<td>
+												<input id="distance_from_nrp" type="text" name="distance_from_nrp" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Rules of the Air:
+											</td>
+											<td>
+												<select name="rules_of_air">
+													<option></option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												WX Condition:
+											</td>
+											<td>
+												<select name="wx_condition">
+													<option></option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Domestic:
+											</td>
+											<td>
+												<label style="display: inline-block;"><input type="radio" name="domestic" value="domestic"/>domestic</label>
+												<label style="display: inline-block;"><input type="radio" name="domestic" value="international"/>international</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Scheduled:
+											</td>
+											<td>
+												<label style="display: inline-block;"><input type="radio" name="scheduled" value="scheduled"/>scheduled</label>
+												<label style="display: inline-block;"><input type="radio" name="scheduled" value="non-scheduled"/>non-scheduled</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												State:
+											</td>
+											<td>
+												<input type="checkbox" name="state" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Type of Occurrence</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Airspace Incident:
+											</td>
+											<td colspan="3" style="text-align: left;">
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>near collision</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>unauthorised airspace incursion</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>clearance/instruction deficiency</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>loss of separation</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>breach of other clearance</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>flight information deficiency</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>unauthorised altitude penetration</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>pilot flight planning deficiency</label>
+												<label style="display: inline-block;"><input type="checkbox" name="airspace_incident"/>other</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												TCAS Alert:
+											</td>
+											<td>
+												<input type="checkbox" name="tcas_alert"/>
+											</td>
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<td>
+												RA:
+											</td>
+											<td>
+												<input type="checkbox" name="ra"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												TA:
+											</td>
+											<td>
+												<input type="checkbox" name="ta"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Intruder Relative Altitude in Feet:
+											</td>
+											<td>
+												<input type="text" name="intruder_altitude" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Relative Position (O'clock):
+											</td>
+											<td>
+												<input type="text" name="relative_position" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Nature of Flight:
+											</td>
+											<td colspan="3" style="text-align: left;">
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>local</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>agricultural</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>training</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>private/ul</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>passenger</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>other aerial work</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>parachuting</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>freight only</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>test or ferry/position</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>air ambulance</label>
+												<label style="display: inline-block;"><input type="checkbox" name="nature_of_flt"/>other (specify)</label>
+											</td>
+										</tr>
+										<tr style="background: #eee;">
+											<td>
+												Flight Phase:
+											</td>
+											<td colspan="3" style="text-align: left;">
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="parked" {{day_ck}}/>parked</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="climb" {{night_ck}}/>climb</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="ciruit" {{night_ck}}/>ciruit</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="descent" {{night_ck}}/>descent</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="taxing" {{night_ck}}/>taxing</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="hover" {{night_ck}}/>hover</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="aerobatics" {{night_ck}}/>aerobatics</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="approach" {{day_ck}}/>approach</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="take-off" {{day_ck}}/>take-off</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="cruise" {{day_ck}}/>cruise</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="holding" {{day_ck}}/>holding</label>
+												<label style="display: inline-block;"><input type="radio" name="flt_phase" value="landing" {{night_ck}}/>landing</label>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Effect on Flight:
+											</td>
+											<td colspan="3" style="text-align: left;">
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>nil</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>failure to get airborne</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>go-around/missed app</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>QRF</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>avoiding action</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>runway excursion</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>flight delayed/cancelled</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>EMERG / precaution descent</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>abnormal approach</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>engine(s) shutdown</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>overweight landing</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>aborted take-of</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>EMERG / precaution landing</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>diversion</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>sig loss of control/perform</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>abnormal landing</label>
+												<label style="display: inline-block;"><input type="checkbox" name="effect_on_flt"/>other (specify)</label>
+											</td>											
+										</tr>
+										<tr>
+											<td></td><td></td><td></td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Description of Occurrence:
+											</td>
+											<td>
+												<textarea style="width:300px; height:50px; font-size:15px; direction: ltr;" name="occurrence_description"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Supervisor and Local ATS Authority Description of Incident Including Diagnoses and recommendations:
+											</td>
+											<td>
+												<textarea style="width:300px; height:50px; font-size:15px; direction: ltr;" name="sup_description"></textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table>
+				<tr style="float: left; border: none;">
+					<td>
+						<input style="text-transform: none;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>

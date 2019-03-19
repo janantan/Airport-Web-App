@@ -1,0 +1,49 @@
+<div id="login-form">
+  <section>
+    <form method="POST" action="">
+      <fieldset>
+        <legend>Please assign team members:</legend>
+        <div>         
+          <label for="team_number">Team</label>
+          <input id="team_number" type="text" name="team_number" required />
+        </div>
+
+        <div>
+          <label>Add Members</label>
+          <div id="member_1">
+            <input id="members_name_1" type="text" name="members_name_1" placeholder="Full Name" required />
+            <input id="members_initial_1" type="text" name="members_initial_1" placeholder="Initial" required />
+            <a href="javascript:addMember('member_1', 'del')" title="delete" class="add-box" style="padding: 3px 7px; color: red; text-align: center;"> - </a>
+            <a href="javascript:addMember('member_1', 'add')" title="add new" class="add-box" style="padding: 3px 7px; text-align: center;"> + </a>
+          </div>
+        </div>
+      </fieldset>
+
+      <div>
+        <input type="submit" value="Save" /> 
+      </div>      
+    </form>
+  </section>
+</div>
+
+<script type="text/javascript">
+  var i = 1
+  function addMember(id_name, action) {
+      var original = document.getElementById(id_name);
+    var clone = original.cloneNode(true); // "deep" clone
+    if (action == 'add'){
+      clone.id = "member_" + ++i;
+      var members_name = "members_name_"+id_name.substring(7, id_name.length);
+      var members_initial = "members_initial_"+id_name.substring(7, id_name.length);
+      for (j = 0; j < 100; j++) {
+        clone.innerHTML = clone.innerHTML.replace(members_name, "members_name_"+i);
+        clone.innerHTML = clone.innerHTML.replace(members_initial, "members_initial_"+i);
+      }
+      var id = "member_"+id_name.substring(7, id_name.length);
+      clone.innerHTML = clone.innerHTML.replace(id, "member_"+i);
+      original.parentNode.appendChild(clone);
+    } else {
+      original.parentNode.removeChild(original);
+    }
+  }
+</script>

@@ -1,0 +1,67 @@
+<form method="POST" action="">
+	<fieldset>
+		<legend>Please Fill out the Weekly Flight Schedule</legend>
+		<table>
+			<tr style="background: yellow;">
+				<th>			
+					<span>Week Day</span>
+				</th>
+				<th style="width:150px">
+					<span>Flight Number</span>
+				</th>
+				<th style="width:70px">
+					<span>Airline</span>
+				</th>
+				<th style="width:180px">
+					<span>Route</span>
+				</th>
+				<th>
+					<span>Arrival Time</span>
+				</th>
+				<th>
+					<span>Departure Time</span>
+				</th>
+				<th style="width:70px">
+					<span>Type of Aircraft</span>
+				</th>
+			</tr>
+			<tr>
+				<td>
+					<select name="week_day" id="week_day">
+						<option></option>
+						<option value="Saturday">Saturday</option>
+						<option value="Sunday">Sunday</option>
+						<option value="Monday">Monday</option>
+						<option value="Tuesday">Tuesday</option>
+						<option value="Wednesday">Wednesday</option>
+						<option value="Thursday">Thursday</option>
+						<option value="Friday">Friday</option>
+					</select>			
+				</td>		
+				<td style="width:150px">
+					<input id="arr-flt-no" type="text" name="arr-flt-no" size="1" required /> - 
+					<input id="dep-flt-no" type="text" name="dep-flt-no" size="1" required />
+				</td>
+				<td style="width:70px">
+					<input id="airline" type="text" name="airline" size="1" required />
+				</td>
+				<td style="width:180px">
+					<input id="arr-from" type="text" name="arr-from" size="1" required /> - OICC - 
+					<input id="dep-to" type="text" name="dep-to" size="1" required />
+				</td>
+				<td>
+					<input id="arr-time" type="time" name="arr-time" required />
+				</td>
+				<td>
+					<input id="dep-time" type="time" name="dep-time" required />
+				</td>
+				<td style="width:70px">
+					<input id="type" type="text" name="type" size="1" required />
+				</td>
+			</tr>
+		</table>		
+	</fieldset>
+	<div style="float: right; margin-right: 15px;">
+		<input style="text-transform: none;" type="submit" value="Save" /> 
+	</div>
+</form>

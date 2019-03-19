@@ -1,0 +1,231 @@
+<table id="freeze-wholelog">
+	<thead>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<fieldset style="background: #fefefe; height:26vh;">
+					<legend style="font-weight: bold;">Shift Brief</legend>
+					<table id="shift-brief">
+						<tr>
+							<td>
+								<span class="font-style">Team NO:</span>
+							</td>
+							<td class="right-border" style="color: red;">
+								<span>{{result['team']}}</span>
+							</td>
+							<td>
+								<span class="font-style">Airport:</span>
+							</td>
+							<td>										
+								<span>OICC</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="font-style">On-Duty:</span>
+							</td>
+							<td class="right-border" style="color: red;">
+								<span>{{(', '.join(result['on_duty']))}}</span>
+							</td>
+							<td>
+								<span class="font-style">UTC Date:</span>
+							</td>
+							<td>
+								<span>{{result['shift_date']}}</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="font-style">Shift Switch:</span>
+							</td>
+							<td class="right-border">
+								<span>{{(', '.join(result['shift_switch']))}}</span>
+							</td>
+							<td>
+								<span class="font-style">LCL Date:</span>
+							</td>
+							<td>
+								<span>{{result['shift_jdate']}}</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="font-style">Overtime:</span>
+							</td>
+							<td class="right-border">
+								<span>{{(', '.join(result['overtime']))}}</span>
+							</td>
+							<td>
+								<span class="font-style">Week Day:</span>
+							</td>
+							<td>
+								<span>{{result['day']}}</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="font-style">Daily Leave:</span>
+							</td>
+							<td class="right-border">
+								<span>{{(', '.join(result['daily_leave']))}}</span>
+							</td>
+							<td>
+								<span class="font-style">Day/Night:</span>
+							</td>
+							<td>
+								<span>{{result['shift']}}</span>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset id="second-fieldset" style="background: #fefefe; min-height: 200px; height:38vh;">
+            		<legend style="font-weight: bold;">Log Data</legend>
+            		<table>
+            			<thead></thead>
+            			<tbody style="height:35vh;">
+            				<tr>
+		            			<th style="padding-top: 20px;">
+		            				<span style="color: red;">Network Status</span>
+		            			</th>
+		            			<th style="padding-top: 20px;">
+					             	<span>Server</span><hr>
+						        </th>
+						        <th style="padding-top: 20px;">
+					             	<span>Supervisor</span><hr>
+						        </th>
+		            			<th style="padding-top: 20px;">
+					            	<span>Workstation</span><hr>
+						        </th>
+						        <th style="padding-top: 20px;">
+					             	<span>Printer</span><hr>
+						        </th>
+						    </tr>
+						    
+						    <tr>
+		            			<td></td>
+		            			{% for item in network %}
+			            			{% if item in result['network'] %}
+				            			<td>
+							             	<span>OK</span>
+								        </td>
+								    {% else %}
+								    	<td>
+							             	<span>US</span>
+								        </td>
+								    {% endif %}
+						        {% endfor %}
+						    </tr>						    
+		            		<tr>
+		            			<th>
+		            				<span style="color: red;">Channels</span>
+		            			</th>
+		            			<th>
+					             	<span>CCT</span><hr>
+						        </th>
+						        <th>
+					             	<span>During Duty</span><hr>
+						        </th>
+		            			<th>
+					            	<span style="font-size: 14px;">Interruption Time</span><hr>
+						        </th>
+						        <th>
+					             	<span>Reason</span><hr>
+						        </th>
+		            			<th>
+					            	<span>End of Duty</span><hr>
+						        </th>
+						        <th>
+					            	<span>LR/LS</span><hr>
+						        </th>
+						    </tr>
+						    {% for ch in channel_list %}
+							    <tr>
+							    	<td></td>
+							    	<td>
+							    		{{ch.upper()}}
+							    	</td>
+							    	<td>
+							    		{{result[ch+'_during']}}
+							    	</td>
+							    	<td>
+							    		{%if result[ch+'_from']%}from {%endif%} {{result[ch+'_from']}}
+							    		{%if result[ch+'_to']%} to {%endif%} {{result[ch+'_to']}}
+							    	</td>
+							    	<td>
+							    		{{result[ch+'_reason']}}
+							    	</td>
+							    	<td>
+							    		{{result[ch+'_end']}}
+							    	</td>
+							    	<td>
+							    		{{result[ch+'_lrls']}}
+							    	</td>
+							    </tr>
+							{% endfor %}
+							<tr>
+		            			<th>
+		            				<span style="color: red;">Messages</span>
+		            			</th>
+		            			<th>
+					             	<span>Message Type</span><hr>
+						        </th>
+						        <th colspan="4">
+					             	<span>Description</span><hr>
+						        </th>
+						    </tr>
+						    {% for msg in msg_list %}
+						    	{% if result[msg] %}
+								    <tr>
+				            			<td></td>
+				            			<td>
+							             	<span>{{msg.upper()}}</span>
+								        </td>
+								        <td colspan="4">
+							             	<span>{{result[msg]}}</span>
+								        </td>
+								    </tr>
+								{% endif %}
+						    {% endfor %}
+						    <tr>
+		            			<th>
+		            				<span style="color: red;">Remarks</span>
+		            			</th>
+		            			<th colspan="6">
+		            				<span></span><hr>
+		            			</th>
+						    </tr>
+						    <tr>
+		            			<td></td>
+		            			<td colspan="6" style="text-align: right; direction: rtl;">
+		            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
+		            			</td>
+						    </tr>
+						</tbody>
+				    </table>
+				</fieldset>
+			</td>
+		</tr>
+	</tbody>
+	<table id="wholelog-links">
+		<tr>
+			<td>
+				<ul>
+					<li style="margin-top: -3vh;"><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+					<li style="margin-top: -3vh;"><a href="/pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
+					{% if log_no >= session['amhs_log_no'] %}
+						<li style="float: right; margin-top: -3vh;"><a class="next" title="Next Shift"></a></li>
+					{% else %}
+						<li style="float: right; margin-top: -3vh;"><a href="/amhs logs/{{log_no+1}}" class="next" title="Next Shift"></a></li>
+					{% endif %}
+					<li style="float: right; font-size: 16px; margin-top: -3vh;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
+					{% if log_no > 1 %}
+						<li style="float: right; margin-top: -3vh;"><a href="/amhs logs/{{log_no-1}}" class="previous" title="Previous Shift"></a></li>
+					{% else %}
+						<li style="float: right; margin-top: -3vh;"><a class="previous" title="Previous Shift"></a></li>
+					{% endif %}
+				</ul>
+			</td>
+		</tr>
+	</table>	
+</table>

@@ -1,0 +1,306 @@
+<div id="flight-form" onclick="hideCheckboxes()">
+	<section>
+		<form method="POST" action="">
+			<fieldset>
+        		<legend>Please Fill out On-Duty Information</legend>
+        		<table  id="freeze">
+        			<thead></thead>
+        			<tbody style="margin-top: 15px;">
+	            		<tr style="background: yellow;">
+	            			<th style="width: 210px;">			            			         
+				             	<span>Taken Over From</span>
+					        </th>
+					        <th style="width: 210px;">			            			         
+				             	<span>Time Taken Over From</span>
+					        </th>
+	            			<th style="width: 210px;">			            			         
+				            	<span>Hand Over To</span>
+					        </th>
+					        <th style="width: 210px;">
+					            <span>RWY In Use</span>
+					        </th>
+					    </tr>
+					    <tr>
+	            			<td>
+				            	<span>{{taken_over_from}}</span>
+					        </td>
+					        <td>
+					        	<span>{{hand_over_time}}</span>
+					        </td>
+	            			<td>
+	              				<input id="hand_over_to" type="text" name="hand_over_to" value="{{result['hand_over_to']}}" size="10" required />
+					        </td>
+					        <td>
+	              				<select name="rwy_in_use" id="rwy_in_use">
+									<option>{{result['rwy_in_use']}}</option>
+									<option value="11">11</option>
+									<option value="29">29</option>
+								</select>
+					        </td>
+					    </tr>
+
+					    <tr style="background: yellow;">
+	            			<th>         
+				             	<span>Team NO.</span>
+					        </th>
+					        <th>     
+					            <span>Week Day</span>
+					        </th>
+					        <th>
+				             	<span>Day-Night</span>
+					        </th>
+					        <th>
+					            <span>Date</span>
+					        </th>
+					    </tr>
+					    <tr>
+					    	{% if result['team'] %}
+		            			<td>
+		              				<select name="team" id="team">
+										<option>{{result['team']}}</option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
+						        </td>
+						        <td>						        	
+		              				<select name="week_day" id="week_day">
+										<option>{{result['week_day']}}</option>
+										<option value="Monday">Monday</option>
+										<option value="Tuesday">Tuesday</option>
+										<option value="Wednesday">Wednesday</option>
+										<option value="Thursday">Thursday</option>
+										<option value="Friday">Friday</option>
+										<option value="Saturday">Saturday</option>
+										<option value="Sunday">Sunday</option>
+									</select>
+						        </td>
+						        <td>
+						        	{% if result['shift'] == "Day" %}{% set day_ck = 'checked' %}{% else %}{% set day_ck = '' %}{% endif %}
+						        	{% if result['shift'] == "Night" %}{% set night_ck = 'checked' %}{% else %}{% set night_ck = '' %}{% endif %}
+	              					<label style="display:inline-block;"><input type="radio" name="shift" value="Day" {{day_ck}}/>Day</label>
+									<label style="display:inline-block;"><input type="radio" name="shift" value="Night" {{night_ck}}/>Night</label>
+						        </td>
+					        {% else %}
+					        	<td>
+		              				<select name="team" id="team">
+										<option></option>
+										<option value="1">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
+						        </td>
+						        <td>
+									<select name="week_day" id="week_day">
+										<option>{{wd}}</option>
+										<option value="Monday">Monday</option>
+										<option value="Tuesday">Tuesday</option>
+										<option value="Wednesday">Wednesday</option>
+										<option value="Thursday">Thursday</option>
+										<option value="Friday">Friday</option>
+										<option value="Saturday">Saturday</option>
+										<option value="Sunday">Sunday</option>
+									</select>
+						        </td>
+						        <td>
+						        	{% if today_shift == "Day" %}{% set day_ck = 'checked' %}{% else %}{% set day_ck = '' %}{% endif %}
+						        	{% if today_shift == "Night" %}{% set night_ck = 'checked' %}{% else %}{% set night_ck = '' %}{% endif %}
+	              					<label style="display:inline-block;"><input type="radio" name="shift" value="Day" {{day_ck}}/>Day</label>
+									<label style="display:inline-block;"><input type="radio" name="shift" value="Night" {{night_ck}}/>Night</label>
+						        </td>
+					        {% endif %}
+					        <td>
+	              				<p class="alert-datetime">{{datetime}}</p>
+								<p class="alert-datetime">{{jdatetime}}</p>
+					        </td>
+					    </tr>
+
+					    <tr style="background: yellow;">					    	
+					    	<th style="width: 210px;">
+					            <span>Time of Inspection</span>
+					        </th>
+					        <th style="width: 210px;">
+					            <span>Inspector</span>
+					        </th>
+					        <th style="width: 210px;">
+					            <span>Inspection Result</span>
+					        </th>
+					        <th style="width: 210px; font-size: 14px;">
+					            <span>Present Members</span>
+					        </th>
+					    </tr>
+					    <tr>					    	
+					    	<td style="width: 210px;">
+	              				<input id="inspection_time" type="time" name="inspection_time" value="{{result['inspection_time']}}" required />
+					        </td>
+					        <td style="width: 210px;">
+	              				<input id="inspector" type="text" name="inspector" value="{{result['inspector']}}" size="10" required />
+					        </td>
+					        <td style="width: 210px;">
+					        	<textarea style="width:200px; height:40px; font-size:15px; direction: ltr;" name="inspection_result">{{result['inspection_result']}}</textarea>
+					        </td>
+					    	<td>
+					    		<div class="multiselect" style="margin-bottom: 0;">
+								    <div class="selectBox" onclick="showCheckboxes()" style="margin-bottom: 0; width: 100%;">
+										<select style="font-size:10px;">
+											<option id="present_members">{{(', '.join(result['present_members']))}}</option>
+										</select>
+										<div class="overSelect" style="margin-bottom: 0;"></div>
+									</div>
+									<div style="overflow: visible; position: absolute; margin-bottom:0; display: block; background:#fff;">
+										<div id="checkboxes" style="margin-bottom:0; width:200px;">
+											{% for key in each_team_members %}
+												{% for i in range(each_team_members[key]|length) %}
+													<label style="text-align: left; font-size: 13px; margin:0;">
+													<input type="checkbox" name="present_members" onclick="ckboxFunction('ckbox{{key}}{{i+1}}')" id="ckbox{{key}}{{i+1}}" value="{{each_team_members[key][i][1]}}" {% if each_team_members[key][i][1] in (', '.join(result['present_members'])) %}checked{% endif %}/>{{each_team_members[key][i][0]}}</label>
+												{% endfor %}
+											{% endfor %}
+									    </div>
+									</div>
+								</div>
+					    	</td>
+					    </tr>			    
+					    <tr style="background: yellow; display: block;">
+	            			<th style="width:250px;">			            			         
+				             	<span>Name</span>
+					        </th>
+					        <th style="width:200px;">			            			         
+				             	<span>Status</span>
+					        </th>
+	            			<th style="width:250px;">			            			         
+				            	<span>Shift Switch</span>
+					        </th>
+					        <th style="width:250px;">
+					        	<span>Description</span>
+					        </th>
+					        <th style="width:50px;"></th>
+					    </tr>
+					    {% if result['on_duty_description'] %}
+					    	{% include 'logdata/_except.html' %}						    
+						{% else %}
+							<tr id="duty_info_1" style="display: block; border: none;">
+		            			<td style="width:250px; padding-bottom: 10px;">
+					            	<select name="name_1">
+										<option></option>
+										{% for member in team_members %}
+											<option value="{{member[0]}}">{{member[0]}}</option>
+										{% endfor %}
+									</select>
+						        </td>
+						        <td style="width:200px;  font-size: 13px; padding-bottom: 10px;">
+						        	<select name="duty_status_1">
+										<option></option>
+										<option value="on leave">on leave</option>
+										<option value="absent">absent</option>
+										<option value="on medical rest">on medical rest</option>
+										<option value="mission">mission</option>
+										<option value="replaced by">replaced by</option>
+										<option value="other">other</option>
+									</select>
+						        </td>
+						        <td style="width:250px; padding-bottom: 10px;">
+					            	<select name="shift_switch_1">
+										<option></option>
+										{% for member in team_members %}
+											<option value="{{member[0]}}">{{member[0]}}</option>
+										{% endfor %}
+									</select>
+						        </td>
+		            			<td style="width:250px; padding-bottom: 10px;">
+		            				<textarea style="width:170px; height:20px; font-size:15px; direction:ltr;" name="duty_description_1"></textarea>
+		              			</td>
+		              			<td style="width:5px; padding-right: 3px; padding-bottom: 10px;" id="last_child">
+		              				<a href="javascript:addDutyInfo('duty_info_1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+		              			</td>
+		              			<td style="width:5px; padding-left: 3px; padding-bottom: 10px;" id="last_child">
+		              				<a href="javascript:addDutyInfo('duty_info_1','add')" title="add new" class="add-box">+</a>
+		              			</td>
+						    </tr>
+						{% endif %}
+					</tbody>
+			    </table>
+			</fieldset>
+			<div>
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>
+
+<script type="text/javascript">
+	var k = 1;
+	var k_list = ['duty_info_1'];
+	
+	function addDutyInfo(id_name, action) {
+		var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "duty_info_" + ++k;
+			k_list.push(clone.id);
+			var on_duty = "name_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(on_duty, "name_"+k);
+			var status = "duty_status_"+id_name.substring(10, id_name.length);
+			for (i = 0; i < 10; i++) {
+				clone.innerHTML = clone.innerHTML.replace(status, "duty_status_"+k);
+			}
+			var shift_switch = "shift_switch_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(shift_switch, "shift_switch_"+k);
+			var duty_description = "duty_description_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(duty_description, "duty_description_"+k);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "duty_info_"+id_name.substring(10, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, clone.id);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (k_list.length > 1) {
+				original.parentNode.removeChild(original);
+				k_list.splice(k_list.indexOf(id_name), 1);
+			}
+		}
+	}
+
+	var expanded = true;
+	if (document.getElementById("present_members").value) {
+		var select_values = (document.getElementById("present_members").value).split(', ')
+	} else {
+		var select_values = []
+	}
+
+	function showCheckboxes() {
+		expanded = false;
+		//var team = (document.getElementById("team").value).toString();
+		//var ckbox_id = "ckbox"+team;
+		//for (i=1; i<21; i++) {
+			//document.getElementById(ckbox_id+i).checked = true;
+			//select_values.push(document.getElementById(ckbox_id+i).value);
+			//document.getElementById("present_members").innerHTML = select_values;
+		//}
+	}
+
+	function hideCheckboxes() {
+		var checkboxes = document.getElementById("checkboxes");
+		if (!expanded) {
+			checkboxes.style.display = "block";
+			expanded = true;
+		}
+		else {
+			checkboxes.style.display = "none";
+		}
+	}
+
+	function ckboxFunction(id_name) {
+		expanded = false;
+		if (document.getElementById(id_name).checked == true) {
+			select_values.push(document.getElementById(id_name).value);
+			document.getElementById("present_members").innerHTML = select_values;
+		} else {
+			var index = select_values.indexOf(document.getElementById(id_name).value);
+			select_values.splice(index, 1);
+			document.getElementById("present_members").innerHTML = select_values;
+		}
+	}
+</script>

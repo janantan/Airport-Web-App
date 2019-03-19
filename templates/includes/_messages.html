@@ -1,0 +1,16 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+  		<div id="flash_message">
+      <script>      
+        var x = document.getElementById("flash_message");
+        setTimeout(function(){ x.style.display = "none" }, 3000);
+      </script>
+        <div class="alert alert-{{category}}">
+  				{{message}}
+  				<a class="close-box" href="javascript:window.location.href=window.location.href" title="close the message" style="font-size:22px">×</a>
+  			</div>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}

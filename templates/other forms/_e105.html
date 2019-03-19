@@ -1,0 +1,330 @@
+<div id="logdata-form">
+	<section>
+		<form method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Add Record in Operating Below Minima (E105)</span></td>
+					</tr>
+				</thead>
+				<tbody style="height:67vh; margin-top:-1vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms" >
+								<legend>Flight Information</legend>
+								<table>
+									<thead></thead>
+									<tbody style="margin-top:-2vh;">
+										<tr>
+											<td>
+												Call Sign:
+											</td>
+											<td>
+												<input id="call_sign" type="text" name="call_sign" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ACFT Register:
+											</td>
+											<td>
+												<input id="acft_reg" type="text" name="acft_reg" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Operator:
+											</td>
+											<td>
+												<input id="operator" type="text" name="operator" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Type of ACFT:
+											</td>
+											<td>
+												<input id="acft_type" type="text" name="acft_type" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												FLT Rules:
+											</td>
+											<td>
+												<input id="flt_rules" type="text" name="flt_rules" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												DEP AD:
+											</td>
+											<td>
+												<input id="dep_ad" type="text" name="dep_ad" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												DEST AD:
+											</td>
+											<td>
+												<input id="dest_ad" type="text" name="dest_ad" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												SSR Code:
+											</td>
+											<td>
+												<input id="ssr_code" type="text" name="ssr_code" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ALTN & ETA (if used):
+											</td>
+											<td>
+												<input id="altn_eta" type="text" name="altn_eta" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Initial Contact (Time & PSN):
+											</td>
+											<td>
+												<input id="Initial" type="text" name="initial" />
+											</td>
+											<td style="width: 100px;">
+												<input id="event_time" type="time" name="event_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Day or Night:
+											</td>
+											<td>
+												<label style="display: inline-block;"><input type="radio" name="day_night" value="Day"/>Day</label>
+												<label style="display: inline-block;"><input type="radio" name="day_night" value="Night"/>Night</label>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Pilot Request</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Pilot Request<br>(Non compliance with minima; can use plane language in Farsi):
+											</td>
+											<td>
+												<textarea style="width:300px; height:50px; font-size:15px; direction: ltr;" name="pilot_request"></textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Controller Actions</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Has ACC Already Informed:
+											</td>
+											<td>
+												<input type="checkbox" name="if_acc_informed"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												ATC Supervisor Informed at Time:
+											</td>
+											<td>
+												<input type="time" name="atc_supervisor_informed_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												At Time:
+											</td>
+											<td>
+												<input type="time" name="atc_supervisor" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Present Weather</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												VIS / RVR:
+											</td>
+											<td>
+												<input id="vis_rvr" type="text" name="vis_rvr" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												RWY in Use:
+											</td>
+											<td>
+												<input id="rwy_in_use" type="text" name="rwy_in_use" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any Other Significant Phenomena which affect the VIS/RVR:
+											</td>
+											<td>
+												<input id="other_phenomena" type="text" name="other_phenomena" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Air Traffic Management</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Needed any Special Priority:
+											</td>
+											<td>
+												<input id="special_priority" type="text" name="special_priority" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Type of Approach:
+											</td>
+											<td>
+												<input id="type_of_approach" type="text" name="type_of_approach" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Any Other Comment:
+											</td>
+											<td>
+												<textarea style="width:200px; height:30px; font-size:15px; direction: ltr;" name="other_comment"></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller 1 Name:
+											</td>
+											<td>
+												<input id="controller_1_name" type="text" name="controller_1_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Working PSN:
+											</td>
+											<td>
+												<input id="working_psn_1" type="text" name="working_psn_1" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Controller 2 Name:
+											</td>
+											<td>
+												<input id="controller_2_name" type="text" name="controller_2_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Working PSN:
+											</td>
+											<td>
+												<input id="working_psn_2" type="text" name="working_psn_2" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Other Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Airport Name:
+											</td>
+											<td>
+												<input id="airport_name" type="text" name="airport_name" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="event_time" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Date:
+											</td>
+											<td>
+												<input type="date" name="date" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												E105 Report File:
+											</td>
+											<td>
+												<input type="file" name="report_file" />
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table>
+				<tr style="float: left; border: none; margin-top:-7vh;">
+					<td>
+						<input style="text-transform: none;" type="submit" value="Save" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</section>
+</div>

@@ -1,0 +1,15 @@
+<div id="logo" style="margin-bottom: 15px;">
+	<figure class="figure">
+		{% if session['username'] %}
+			{% if not photo %}
+				<img id="photo" src="{{ session['photo_path'] }}" width="90" height="90" />
+			{% else %}
+				{% for ph in photo %}
+					<img id="photo" src="{{ ph }}" alt="{{ session['username'] }}" width="90" height="90" />
+				{% endfor %}
+			{% endif %}
+		{% endif %}
+	</figure>
+	<!--<span>Department:</span>
+	<span>{{session['administration']}}</span>-->
+</div> 

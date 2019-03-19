@@ -1,0 +1,282 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+	<div class="container">
+		<main>
+			<div class="leftpane card">
+				<div class="navigator">
+					<span>Navigator</span>
+				</div>
+				<table>
+					{% if session['username'] == 'babalou' %}
+						<tr>
+							<td>
+								<a id="extra-link" style="float:left; font-weight:bold; margin-bottom:20px;" href="javascript:showTable('extra')"><span>Extra Access</span></a>
+							</td>
+						</tr>
+						<tr style="padding: 0;">
+							<td style="padding: 0;">
+								<fieldset style="display: none;" id="extra">
+					            	<legend style="font-weight: bold;">Extra Access</legend>
+									<table class="leftpane-table">
+										<tr>
+											<td>
+												<a href="/team" class="navigator-links">Team Members</a>
+											</td>
+										</tr>
+									</table>
+								</fieldset>
+							</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td>
+							<a id="log-link" style="float:left; font-weight:bold; margin-bottom:20px;" href="javascript:showTable('log')"><span>ATC Electronic Log</span></a>
+						</td>
+					</tr>
+					<tr style="padding: 0;">
+						<td style="padding: 0;">							
+							<fieldset id="log" style="display: none;">
+				            	<legend style="font-weight: bold;">ATC Electronic Log</legend>
+								<table class="leftpane-table">
+									<tr>
+										<td>
+											<a href="/duty" class="navigator-links">On-Duty Info</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="/log data" class="navigator-links">Log Data</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="/logs/{{session['log_no']}}" class="navigator-links">The Previous Logs</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="/other forms" class="navigator-links">The Other Forms</a>
+										</td>
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a id="form-link" style="float:left; font-weight:bold; margin-bottom:20px;" href="javascript:showTable('form')"><span>ATC Flight Form</span></a>
+						</td>
+					</tr>
+					<tr style="padding: 0;">
+						<td style="padding: 0;">							
+							<fieldset style="display: none;" id="form">
+				            	<legend style="font-weight: bold;">ATC Flight Form</legend>
+								<table class="leftpane-table">
+									<tr>
+										<td style="font-size: 15px;">
+											<a href="/flight-schedule-data" class="navigator-links">Enter Flight Schedule Data</a>
+										</td>
+										<td style="font-size: 15px;">
+											<a href="/flight-schedule" class="navigator-links">Weekly Flight Schedule</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="/flight-form" class="navigator-links">Flight Form</a>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<a href="/statistics" class="navigator-links">Statistics</a>
+										</td>					
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a id="fids-link" style="float:left; font-weight:bold; margin-bottom:20px;" href="javascript:showTable('fids')"><span>FIDS</span></a>
+						</td>
+					</tr>
+					<tr style="padding: 0;">
+						<td style="padding: 0;">							
+							<fieldset style="display: none;" id="fids">
+				            	<legend style="font-weight: bold;">FIDS</legend>
+								<table class="leftpane-table">
+									<tr>
+										<td>
+											<a href="/fids/OICC/all" class="navigator-links">Kermanshah FIDS</a>
+										</td>
+										<td>
+											<a href="/fids/OIII/all" class="navigator-links">Mehrabad FIDS</a>
+										</td>				
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a id="adsb-link" style="float:left; font-weight:bold; margin-bottom:20px;" href="javascript:showTable('adsb')"><span>ADSB</span></a>
+						</td>
+					</tr>
+					<tr style="padding: 0;">
+						<td style="padding: 0;">							
+							<fieldset style="display: none;" id="adsb">
+				            	<legend style="font-weight: bold;">ADSB</legend>
+								<table class="leftpane-table">
+									<tr>
+										<td>
+											<a href="/adsb/OIII" class="navigator-links">Mehrabad Airport</a>
+										</td>
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="middlepane card" id="flight-schedule">
+				<div class="navigator">
+					<span>Work in Progress</span>
+				</div>
+				{% include 'includes/_messages.html' %}
+				{% if navigator == "login" %}
+					{% include 'includes/_login.html' %}
+				{% elif navigator == "register" %}
+					{% include 'includes/_register.html' %}
+				{% elif navigator == "change password" %}
+					{% include 'includes/_changePassword.html' %}
+				{% elif navigator == "search" %}
+					{% include 'includes/_search.html' %}
+				{% elif navigator == "team" %}
+					{% include 'includes/_team.html' %}
+				{% elif navigator == "duty" %}
+					{% include 'includes/_duty.html' %}
+				{% elif navigator == "log data" %}
+					{% include 'includes/_logData.html' %}
+				{% elif navigator == "filled log data" %}
+					{% include 'includes/_filledLogData.html' %}
+				{% elif navigator == "logs" %}
+					{% include 'includes/_logs.html' %}
+				{% elif navigator == "logs edit" %}
+					{% include 'includes/_editLog.html' %}
+				{% elif navigator == "other forms" %}
+					{% include 'includes/_otherForms.html' %}				
+				{% elif navigator == "map" %}
+					{% include '/map.html' %}
+				{% elif navigator == "flight-schedule" %}
+					<table id="freeze">
+						<thead>
+							<tr style="background: yellow;">
+								<th style="width:80px">
+									<span>Day</span>
+								</th>
+								<th style="width:120px">
+									<span>Flight Number</span>
+								</th>
+								<th style="width:90px">
+									<span>Airline</span>
+								</th>
+								<th style="width:160px">
+									<span>Route</span>
+								</th>
+								<th>
+									<span>Arrival Time</span>
+								</th>
+								<th>
+									<span>Departure Time</span>
+								</th>
+								<th>
+									<span>Type of Aircraft</span>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for day in week_days %}
+								{% set i = loop.index - 1 %}
+								<tr>
+									<th rowspan="{{result_count_list[i]+1}}" style="width:80px; background:yellow;">
+										<span>{{flt_scheldule_dict[day][i][0]}}</span>
+									</th>
+								</tr>
+								{% for j in range (result_count_list[i]) %}
+									<tr class="rows">
+										<td style="width:120px">
+											<span>{{flt_scheldule_dict[day][j][1]}} - {{flt_scheldule_dict[day][j][2]}}</span>
+										</td>
+										<td style="width:90px">
+											<a href="/flight-form/{{flt_scheldule_dict[day][j][9]}}"><span style="color:blue">{{flt_scheldule_dict[day][j][3]}}</span></a>
+										</td>
+										<td style="width:160px">
+											<span>{{flt_scheldule_dict[day][j][4]}} - OICC - {{flt_scheldule_dict[day][j][5]}}</span>
+										</td>
+										<td>
+											<span>{{flt_scheldule_dict[day][j][6]}}</span>
+										</td>
+										<td>
+											<span>{{flt_scheldule_dict[day][j][7]}}</span>
+										</td>
+										<td>
+											<span>{{flt_scheldule_dict[day][j][8]}}</span>
+										</td>
+									</tr>
+								{% endfor %}							
+							{% endfor %}
+						</tbody>
+					</table>
+				{% elif navigator == "flight-schedule-data" %}
+					{% include 'includes/_flightScheduleData.html' %}
+				{% elif navigator == "flight-form" %}
+					{% include 'includes/_flightForm.html' %}
+				{% elif navigator == "statistics" %}
+					{% include 'includes/_tab.html' %}
+					{% include 'includes/_statistics.html' %}
+				{% elif navigator == "fids" %}
+					{% include 'includes/_fids.html' %}
+				{% endif %}
+			</div>
+			<div class="rightpane card" >
+				<div class="navigator">
+					<span>Shift Brief</span>
+				</div>
+				{% include 'includes/_information.html' %}
+			</div>
+		</main>
+	</div>
+
+<script type="text/javascript">
+	if ("{{ session['username'] }}" == 'babalou') {
+		var extra_table = document.getElementById("extra");
+		var extra_link = document.getElementById("extra-link");
+	}
+	var log_table = document.getElementById("log");
+	var log_link = document.getElementById("log-link");
+	var form_table = document.getElementById("form");
+	var form_link = document.getElementById("form-link");
+	var fids_table = document.getElementById("fids");
+	var fids_link = document.getElementById("fids-link");
+	var adsb_table = document.getElementById("adsb");
+	var adsb_link = document.getElementById("adsb-link");
+	function showTable(id_name) {
+		var table = document.getElementById(id_name);
+		var link = document.getElementById(id_name+"-link");
+		if ("{{ session['username'] }}" == 'babalou') {
+			extra_table.style.display = "none";
+			extra_link.style.display = "block";
+		}
+		log_link.style.display = "block";
+		form_link.style.display = "block";
+		fids_link.style.display = "block";
+		adsb_link.style.display = "block";
+		log_table.style.display = "none";
+		form_table.style.display = "none";
+		fids_table.style.display = "none";
+		adsb_table.style.display = "none";
+		link.style.display = "none";
+		table.style.display = "block";
+	}
+</script>
+{% endblock %}

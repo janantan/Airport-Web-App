@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en-US" id="register-html">
+    <head>
+        <title>Airport WEB APP</title>
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="description" content="Airport WEB APP" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="/static/css/atc_web_app.css" />
+        <link rel="shortcut icon" type="image/png" href="/static/img/icon/atc favicon.png"/>
+    </head>
+    <body>
+        <header id="main-header" class="clearfix">
+            {% include 'includes/_navbar.html' %}
+        </header>
+
+                    
+        <div style="margin-top: 2vh;">
+			{% include 'includes/_firstPageMessage.html' %}
+		</div>
+		{% include 'includes/_firstPageRegister.html' %}
+
+        <!--{% include 'includes/_footer.html' %}-->
+    </body>
+</html>
