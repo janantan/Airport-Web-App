@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html style="background: #fff; padding-top: 0;">
+    <head>
+        <title>Airport WEB APP</title>
+        <link rel="stylesheet" type="text/css" href="E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/css/atc_web_app.css" />
+    </head>
+    <body style="background: #fff;">
+    	<p class="font-style" style="padding-bottom: 25px;">Log Number: <span style="font-family: 'Bradley Hand ITC'; color: red;">{{log_no}}</span></p>
+        <fieldset id="second-fieldset" style="background: #fefefe; height:70vh;">
+			<legend style="font-weight: bold;">Log Number: {{log_no}}</legend>
+			<table id="shift-brief">
+				<thead></thead>
+				<tbody style="height: 68vh;">
+					<tr>
+						<td>
+							<span class="font-style">Team NO:</span>
+						</td>
+						<td colspan="2" class="right-border" style="color: red;">
+							<span>{{result['team']}}</span>
+						</td>
+						<td colspan="2">
+							<span class="font-style">Airport:</span>
+						</td>
+						<td>										
+							<span>OICC</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="font-style">On-Duty:</span>
+						</td>
+						<td colspan="2" class="right-border" style="color: red;">
+							<span>{{(', '.join(result['on_duty']))}}</span>
+						</td>
+						<td colspan="2">
+							<span class="font-style">UTC Date:</span>
+						</td>
+						<td>
+							<span>{{result['shift_date']}}</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="font-style">Shift Switch:</span>
+						</td>
+						<td colspan="2" class="right-border">
+							<span>{{(', '.join(result['shift_switch']))}}</span>
+						</td>
+						<td colspan="2">
+							<span class="font-style">LCL Date:</span>
+						</td>
+						<td>
+							<span>{{result['shift_jdate']}}</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="font-style">Overtime:</span>
+						</td>
+						<td colspan="2" class="right-border">
+							<span>{{(', '.join(result['overtime']))}}</span>
+						</td>
+						<td colspan="2">
+							<span class="font-style">Week Day:</span>
+						</td>
+						<td>
+							<span>{{result['day']}}</span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<span class="font-style">Daily Leave:</span>
+						</td>
+						<td colspan="2" class="right-border">
+							<span>{{(', '.join(result['daily_leave']))}}</span>
+						</td>
+						<td colspan="2">
+							<span class="font-style">Day/Night:</span>
+						</td>
+						<td>
+							<span>{{result['shift']}}</span>
+						</td>
+					</tr>
+    				<tr>
+            			<th style="padding-top: 40px;">
+            				<span style="color: red;">Network Status</span>
+            			</th>
+            			<th style="padding-top: 40px;">
+			             	<span>Server</span><hr>
+				        </th>
+				        <th style="padding-top: 40px;">
+			             	<span>Supervisor</span><hr>
+				        </th>
+            			<th style="padding-top: 40px;">
+			            	<span>Workstation</span><hr>
+				        </th>
+				        <th style="padding-top: 40px;">
+			             	<span>Printer</span><hr>
+				        </th>
+				    </tr>
+				    
+				    <tr>
+            			<td></td>
+            			{% for item in network %}
+	            			{% if item in result['network'] %}
+		            			<td>
+					             	<span>OK</span>
+						        </td>
+						    {% else %}
+						    	<td>
+					             	<span>US</span>
+						        </td>
+						    {% endif %}
+				        {% endfor %}
+				    </tr>						    
+            		<tr>
+            			<th>
+            				<span style="color: red;">Channels</span>
+            			</th>
+            			<th>
+			             	<span>CCT</span><hr>
+				        </th>
+				        <th>
+			             	<span>During Duty</span><hr>
+				        </th>
+            			<th>
+			            	<span style="font-size: 14px;">Interruption Time</span><hr>
+				        </th>
+				        <th>
+			             	<span>Reason</span><hr>
+				        </th>
+            			<th>
+			            	<span>End of Duty</span><hr>
+				        </th>
+				        <th>
+			            	<span>LR/LS</span><hr>
+				        </th>
+				    </tr>
+				    {% for ch in channel_list %}
+					    <tr>
+					    	<td></td>
+					    	<td>
+					    		{{ch.upper()}}
+					    	</td>
+					    	<td>
+					    		{{result[ch+'_during']}}
+					    	</td>
+					    	<td>
+					    		{%if result[ch+'_from']%}from {%endif%} {{result[ch+'_from']}}
+					    		{%if result[ch+'_to']%} to {%endif%} {{result[ch+'_to']}}
+					    	</td>
+					    	<td>
+					    		{{result[ch+'_reason']}}
+					    	</td>
+					    	<td>
+					    		{{result[ch+'_end']}}
+					    	</td>
+					    	<td>
+					    		{{result[ch+'_lrls']}}
+					    	</td>
+					    </tr>
+					{% endfor %}
+					<tr>
+            			<th>
+            				<span style="color: red;">Messages</span>
+            			</th>
+            			<th>
+			             	<span>Message Type</span><hr>
+				        </th>
+				        <th colspan="4">
+			             	<span>Description</span><hr>
+				        </th>
+				    </tr>
+				    {% for msg in msg_list %}
+				    	{% if result[msg] %}
+						    <tr>
+		            			<td></td>
+		            			<td>
+					             	<span>{{msg.upper()}}</span>
+						        </td>
+						        <td colspan="4">
+					             	<span>{{result[msg]}}</span>
+						        </td>
+						    </tr>
+						{% endif %}
+				    {% endfor %}
+				    <tr>
+            			<th>
+            				<span style="color: red;">Remarks</span>
+            			</th>
+            			<th colspan="6">
+            				<span></span><hr>
+            			</th>
+				    </tr>
+				    <tr>
+            			<td></td>
+            			<td colspan="6" style="text-align: right; direction: rtl;">
+            				<span style="margin-right: 30px;"><span>{{result['remarks']}}</span></span>
+            			</td>
+				    </tr>
+				</tbody>
+		    </table>
+		</fieldset>
+    </body>
+</html>

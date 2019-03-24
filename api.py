@@ -250,27 +250,55 @@ def change_password():
         log_records_list=session['log_records_list']
         )
 
-@app.route('/pdf/<log_no>')
-def pdf(log_no):
+@app.route('/atc-pdf/<log_no>')
+def atc_pdf(log_no):
 
     team_members = []
     result = cursor.log_records.find_one({"id": int(log_no)})
     for name in result['team_members']:
         team_members.append(name)
 
-    pdfkit.from_string(render_template('includes/_forPdf.html',
+    pdfkit.from_string(render_template('includes/_forAtcPdf.html',
         result=result,
         log_records_list=session['log_records_list'],
         log_no=int(log_no),
         team_members=team_members,
         sorted_events=session['sorted_events']
         ), 'static/pdf/log number '+log_no+'.pdf')
-    os.startfile('E:/AFTN-AMHS/Python/projects/ATC web app/static/pdf/log number '+log_no+'.pdf')
+    os.startfile('E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/pdf/log number '+log_no+'.pdf')
 
     return render_template('index.html',
         navigator="logs",
         log_no=int(log_no),
         result=result,
+        log_records_list=session['log_records_list']
+        )
+
+@app.route('/amhs-pdf/<log_no>')
+def amhs_pdf(log_no):
+
+    result = amhs_cursor.records.find_one({"id": int(log_no)})
+    channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
+    msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
+    network = ['server', 'supervisor', 'workstation', 'printer']
+
+    pdfkit.from_string(render_template('includes/_forAmhsPdf.html',
+        result=result,
+        log_records_list=session['log_records_list'],
+        log_no=int(log_no),
+        channel_list=channel_list,
+        msg_list=msg_list,
+        network=network
+        ), 'static/pdf/amhs/log number '+log_no+'.pdf')
+    os.startfile('E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/pdf/amhs/log number '+log_no+'.pdf')
+
+    return render_template('index.html',
+        navigator="amhs logs",
+        log_no=int(log_no),
+        result=result,
+        channel_list=channel_list,
+        msg_list=msg_list,
+        network=network,
         log_records_list=session['log_records_list']
         )
 
@@ -806,6 +834,8 @@ def amhs_log_form():
 @app.route('/amhs logs/<id_no>', methods=['GET', 'POST'])
 def amhs_log(id_no):
     if 'username' in session:
+        print(int(id_no))
+        print(session['amhs_log_no'])
         result = amhs_cursor.records.find_one({"id": int(id_no)})
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']

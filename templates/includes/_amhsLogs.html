@@ -199,28 +199,28 @@
 						</tbody>
 				    </table>
 				</fieldset>
-			</td>
+			</td>			
 		</tr>
-	</tbody>
-	<table id="wholelog-links">
-		<tr>
+		
+		<table>
+		<tr id="wholelog-links">
 			<td>
-				<ul>
-					<li style="margin-top: -3vh;"><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-					<li style="margin-top: -3vh;"><a href="/pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
+				<ul style="margin-top: -3vh;">
+					<li><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+					<li><a href="/amhs-pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
 					{% if log_no >= session['amhs_log_no'] %}
-						<li style="float: right; margin-top: -3vh;"><a class="next" title="Next Shift"></a></li>
+						<li style="float: right;"><a class="next" title="Next Shift"></a></li>
 					{% else %}
-						<li style="float: right; margin-top: -3vh;"><a href="/amhs logs/{{log_no+1}}" class="next" title="Next Shift"></a></li>
+						<li style="float: right;"><a href="/amhs logs/{{log_no+1}}" class="next" title="Next Shift"></a></li>
 					{% endif %}
-					<li style="float: right; font-size: 16px; margin-top: -3vh;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
+					<li style="float: right; font-size: 16px;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
 					{% if log_no > 1 %}
-						<li style="float: right; margin-top: -3vh;"><a href="/amhs logs/{{log_no-1}}" class="previous" title="Previous Shift"></a></li>
+						<li style="float: right;"><a href="/amhs logs/{{log_no-1}}" class="previous" title="Previous Shift"></a></li>
 					{% else %}
-						<li style="float: right; margin-top: -3vh;"><a class="previous" title="Previous Shift"></a></li>
+						<li style="float: right;"><a class="previous" title="Previous Shift"></a></li>
 					{% endif %}
 				</ul>
 			</td>
 		</tr>
-	</table>	
+	</tbody>
 </table>
