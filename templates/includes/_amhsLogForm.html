@@ -159,9 +159,6 @@
 									        <th style="width: 200px;">			            			         
 								             	<span>End of Duty</span>
 									        </th>
-					            			<th style="width: 100px;">			            			         
-								             	<span>LR/LS</span>
-									        </th>
 									    </tr>
 				        			</thead>
 				        			<tbody style="margin-top: 15px; min-height: 35vh;">
@@ -212,9 +209,6 @@
 														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" />US</label>
 											        </td>
 											    {% endif %}
-										        </td>
-						            			<td style="width: 100px; padding-bottom:7px;">
-									             	<input type="text" name="{{channel_list[i]}}_lrls" value="{{result[channel_list[i]+'_lrls']}}" maxlength="4" size="2" />
 										        </td>
 										    </tr>
 										{% endfor %}

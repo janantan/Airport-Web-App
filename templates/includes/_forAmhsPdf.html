@@ -132,9 +132,6 @@
             			<th>
 			            	<span>End of Duty</span><hr>
 				        </th>
-				        <th>
-			            	<span>LR/LS</span><hr>
-				        </th>
 				    </tr>
 				    {% for ch in channel_list %}
 					    <tr>
@@ -154,9 +151,6 @@
 					    	</td>
 					    	<td>
 					    		{{result[ch+'_end']}}
-					    	</td>
-					    	<td>
-					    		{{result[ch+'_lrls']}}
 					    	</td>
 					    </tr>
 					{% endfor %}
@@ -184,18 +178,38 @@
 						    </tr>
 						{% endif %}
 				    {% endfor %}
+				    {% if result['remarks'] %}
+					    <tr>
+	            			<th>
+	            				<span style="color: red;">Remarks</span>
+	            			</th>
+	            			<th colspan="6">
+	            				<span></span><hr>
+	            			</th>
+					    </tr>
+					    <tr>
+	            			<td></td>
+	            			<td colspan="6" style="text-align: right; direction: rtl;">
+	            				<span style="margin-right: 30px;"><span>{{result['remarks']}}</span></span>
+	            			</td>
+					    </tr>
+					{% endif %}
 				    <tr>
             			<th>
-            				<span style="color: red;">Remarks</span>
+            				<span style="color: red;">Signature</span>
             			</th>
-            			<th colspan="6">
+            			<th colspan="5">
             				<span></span><hr>
             			</th>
 				    </tr>
 				    <tr>
             			<td></td>
-            			<td colspan="6" style="text-align: right; direction: rtl;">
-            				<span style="margin-right: 30px;"><span>{{result['remarks']}}</span></span>
+            			<td colspan="5">
+            				<figure id="signature">
+								{% for sign in result['signature_path'] %}
+									<img src="{{sign}}" width="100" height="100" />
+								{% endfor %}
+							</figure>
             			</td>
 				    </tr>
 				</tbody>

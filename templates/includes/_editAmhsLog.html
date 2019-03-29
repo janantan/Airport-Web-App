@@ -145,21 +145,18 @@
 										            			<td style="padding:0;width: 5vw;">
 														            <span>CCT</span>
 														        </td>
-														        <td style="padding:0;width: 15vw;">			            			         
+														        <td style="padding:0;width: 15vw;">	
 													             	<span>During Duty</span>
 														        </td>
-										            			<td style="padding:0;width: 33vw;">			            			         
+										            			<td style="padding:0;width: 33vw;">
 													             	<span>Interruption Time</span>
 													             	<span><pre style="margin:5px 0;">From        To</pre></span>
 														        </td>					        
-										            			<td style="padding:0;width: 16vw;">			            			         
+										            			<td style="padding:0;width: 16vw;">
 													            	<span>Reason</span>
 														        </td>
-														        <td style="padding:0;width: 15vw;">			            			         
+														        <td style="padding:0;width: 15vw;">
 													             	<span>End of Duty</span>
-														        </td>
-										            			<td style="padding:0;width: 5vw;">			            			         
-													             	<span>LR/LS</span>
 														        </td>
 														    </tr>
 									        				{% for i in range(channel_list|length) %}
@@ -194,9 +191,6 @@
 														        		{% if result[channel_list[i]+'_end'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
 														             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" {{ok}}/>OK</label>
 																		<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" {{us}}/>US</label>
-															        </td>
-											            			<td style="padding-bottom:7px;">
-														             	<input type="text" name="{{channel_list[i]}}_lrls" value="{{result[channel_list[i]+'_lrls']}}" maxlength="4" size="2" />
 															        </td>
 															    </tr>
 															{% endfor %}

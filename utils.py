@@ -27,11 +27,17 @@ def file_empty_logs():
     last_inserted_id = cursor.records.estimated_document_count()
     result = cursor.records.find_one({"id": last_inserted_id})
     d = datetime.datetime.strptime(result['shift_date'], '%Y - %m - %d')
+    if jdatetime.datetime.now().month > 6:
+        A = 3
+        B = 15
+    else:
+        A = 2
+        B = 14
     if result['shift'] == "N":
         d = d + datetime.timedelta(days=1)
-        end_of_last_duty = d.replace(day=d.day, hour=3, minute=30, second=0, microsecond=0)
+        end_of_last_duty = d.replace(day=d.day, hour=A, minute=30, second=0, microsecond=0)
     else:
-        end_of_last_duty = d.replace(day=d.day, hour=15, minute=30, second=0, microsecond=0)
+        end_of_last_duty = d.replace(day=d.day, hour=B, minute=30, second=0, microsecond=0)
 
     h = 12
     while True:
@@ -204,10 +210,18 @@ def if_today_shift(result):
     d = datetime.datetime.utcnow().strftime('%Y - %m - %d')
     jd = jdatetime.datetime.now().strftime('%Y - %m - %d')
     today = d
-    if datetime.time(3, 30) <  datetime.datetime.utcnow().time() <= datetime.time(15, 30):
+
+    if jdatetime.datetime.now().month > 6:
+        A = datetime.time(3, 30)
+        B = datetime.time(15, 30)
+    else:
+        A = datetime.time(2, 30)
+        B = datetime.time(14, 30)
+
+    if A <  datetime.datetime.utcnow().time() <= B:
         today_shift = 'Day'
         today_wd = fetch_day(str(wd+1))
-    elif datetime.datetime.utcnow().time() <= datetime.time(3, 30):
+    elif datetime.datetime.utcnow().time() <= A:
         d = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
         jd = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
         today = d

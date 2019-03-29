@@ -85,7 +85,7 @@ def home():
             session['filled_log_data_flag'] = 0
     if not session.get('log_records_list', default=None):
         session['log_records_list'] = []
-    WD = datetime.datetime.today().weekday()
+    WD = datetime.datetime.utcnow().weekday()
     today = utils.fetch_day(str(WD+1))
     result_count = cursor.flights_schedule.count_documents({"week_day": today})
     result = cursor.flights_schedule.find({"week_day": today})
@@ -703,14 +703,20 @@ def team():
 def amhs_log_form():
     if 'username' in session:
         result = amhs_cursor.records.find_one({"id": amhs_cursor.records.estimated_document_count()})
-        wd = datetime.datetime.today().weekday()
+        wd = datetime.datetime.utcnow().weekday()
         session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
         session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
         today = session['datetime']
-        if datetime.time(3, 30) <  datetime.datetime.utcnow().time() <= datetime.time(15, 30):
+        if jdatetime.datetime.now().month > 6:
+            A = datetime.time(3, 30)
+            B = datetime.time(15, 30)
+        else:
+            A = datetime.time(2, 30)
+            B = datetime.time(14, 30)
+        if A <  datetime.datetime.utcnow().time() <= B:
             today_shift = 'Day'
             today_wd = utils.fetch_day(str(wd+1))
-        elif datetime.datetime.utcnow().time() <= datetime.time(3, 30):
+        elif datetime.datetime.utcnow().time() <= A:
             session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
             session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
             today = session['datetime']
@@ -751,7 +757,6 @@ def amhs_log_form():
                     record[ch+'_to'] = request.form.get(ch+'_to')
                     record[ch+'_reason'] = request.form.get(ch+'_reason')
                     record[ch+'_end'] = request.form.get(ch+'_end')
-                    record[ch+'_lrls'] = request.form.get(ch+'_lrls')
                 for i in range(3):
                     record[msg_list[i]] = request.form.get(msg_list[i])
                 record['remarks'] = request.form.get('remarks')
@@ -780,31 +785,26 @@ def amhs_log_form():
                     'tsa_to': request.form.get('tsa_to'),
                     'tsa_reason': request.form.get('tsa_reason'),
                     'tsa_end': request.form.get('tsa_end'),
-                    'tsa_lrls': request.form.get('tsa_lrls'),
                     'sta_during': request.form.get('sta_during'),
                     'sta_from': request.form.get('sta_from'),
                     'sta_to': request.form.get('sta_to'),
                     'sta_reason': request.form.get('sta_reason'),
                     'sta_end': request.form.get('sta_end'),
-                    'sta_lrls': request.form.get('sta_lrls'),
                     'cfa_during': request.form.get('cfa_during'),
                     'cfa_from': request.form.get('cfa_from'),
                     'cfa_to': request.form.get('cfa_to'),
                     'cfa_reason': request.form.get('cfa_reason'),
                     'cfa_end': request.form.get('cfa_end'),
-                    'cfa_lrls': request.form.get('cfa_lrls'),
                     'tia_during': request.form.get('tia_during'),
                     'tia_from': request.form.get('tia_from'),
                     'tia_to': request.form.get('tia_to'),
                     'tia_reason': request.form.get('tia_reason'),
                     'tia_end': request.form.get('tia_end'),
-                    'tia_lrls': request.form.get('tia_lrls'),
                     'mca_during': request.form.get('mca_during'),
                     'mca_from': request.form.get('mca_from'),
                     'mca_to': request.form.get('mca_to'),
                     'mca_reason': request.form.get('mca_reason'),
                     'mca_end': request.form.get('mca_end'),
-                    'mca_lrls': request.form.get('mca_lrls'),
                     'fpl': request.form.get('fpl'),
                     'dla': request.form.get('dla'),
                     'chg': request.form.get('chg'),
@@ -834,8 +834,6 @@ def amhs_log_form():
 @app.route('/amhs logs/<id_no>', methods=['GET', 'POST'])
 def amhs_log(id_no):
     if 'username' in session:
-        print(int(id_no))
-        print(session['amhs_log_no'])
         result = amhs_cursor.records.find_one({"id": int(id_no)})
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
@@ -876,31 +874,26 @@ def edit_amhs_log(id_no):
                 'tsa_to': request.form.get('tsa_to'),
                 'tsa_reason': request.form.get('tsa_reason'),
                 'tsa_end': request.form.get('tsa_end'),
-                'tsa_lrls': request.form.get('tsa_lrls'),
                 'sta_during': request.form.get('sta_during'),
                 'sta_from': request.form.get('sta_from'),
                 'sta_to': request.form.get('sta_to'),
                 'sta_reason': request.form.get('sta_reason'),
                 'sta_end': request.form.get('sta_end'),
-                'sta_lrls': request.form.get('sta_lrls'),
                 'cfa_during': request.form.get('cfa_during'),
                 'cfa_from': request.form.get('cfa_from'),
                 'cfa_to': request.form.get('cfa_to'),
                 'cfa_reason': request.form.get('cfa_reason'),
                 'cfa_end': request.form.get('cfa_end'),
-                'cfa_lrls': request.form.get('cfa_lrls'),
                 'tia_during': request.form.get('tia_during'),
                 'tia_from': request.form.get('tia_from'),
                 'tia_to': request.form.get('tia_to'),
                 'tia_reason': request.form.get('tia_reason'),
                 'tia_end': request.form.get('tia_end'),
-                'tia_lrls': request.form.get('tia_lrls'),
                 'mca_during': request.form.get('mca_during'),
                 'mca_from': request.form.get('mca_from'),
                 'mca_to': request.form.get('mca_to'),
                 'mca_reason': request.form.get('mca_reason'),
                 'mca_end': request.form.get('mca_end'),
-                'mca_lrls': request.form.get('mca_lrls'),
                 'fpl': request.form.get('fpl'),
                 'dla': request.form.get('dla'),
                 'chg': request.form.get('chg'),
@@ -931,7 +924,7 @@ def duty():
             each_team = cursor.team.find_one({'team_number':str(i)})
             each_team_members[i] = each_team['members']
 
-        wd = datetime.datetime.today().weekday()
+        wd = datetime.datetime.utcnow().weekday()
 
         on_duty_description = {'name':[], 'status':[], 'shift_switch':[], 'description':[]}
 
@@ -940,10 +933,18 @@ def duty():
         session['current_id'] = cursor.log_records.estimated_document_count()
         session['log_no'] = session['current_id']
         today = session['datetime']
-        if datetime.time(3, 30) <  datetime.datetime.utcnow().time() <= datetime.time(15, 30):
+
+        if jdatetime.datetime.now().month > 6:
+            A = datetime.time(3, 30)
+            B = datetime.time(15, 30)
+        else:
+            A = datetime.time(2, 30)
+            B = datetime.time(14, 30)
+
+        if A <  datetime.datetime.utcnow().time() <= B:
             today_shift = 'Day'
             today_wd = utils.fetch_day(str(wd+1))
-        elif datetime.datetime.utcnow().time() <= datetime.time(3, 30):
+        elif datetime.datetime.utcnow().time() <= A:
             session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
             session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
             today = session['datetime']
