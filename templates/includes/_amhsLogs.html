@@ -170,9 +170,23 @@
 				            			<td>
 							             	<span>{{msg.upper()}}</span>
 								        </td>
-								        <td colspan="4">
-							             	<span>{{result[msg]}}</span>
-								        </td>
+								        {% if msg == 'notam' %}
+								        	<td colspan="4">
+								        	{% for m in result[msg] %}
+									             (<a href="javascript:window.open('/Notam/', 'NOTAM', 'width=800,height=500');" title=""><span style="color:blue">{{m[0]}} {{m[1]}}</span></a>)
+									        {% endfor %}
+									        </td>
+								        {% elif msg == 'perm' %}
+									        <td colspan="4">
+								            {% for m in result[msg] %}
+									            (<a href="javascript:window.open('/Permission/{{log_no}}/{{perm[P][0]}}/{{ref[P]}}/{{if_granted[P]}}', 'Permission', 'width=800,height=500');" title="{{granted[P]}} {{ir_fpn[P]}}"><span style="color:blue">{{m[0]}} {{m[1]}}</span></a>)
+									        {% endfor %}
+									        </td>
+									    {% else %}
+									    	<td colspan="4">
+									    		{{result[msg]}}
+									    	</td>
+								        {% endif %}
 								    </tr>
 								{% endif %}
 						    {% endfor %}

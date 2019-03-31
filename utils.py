@@ -235,3 +235,51 @@ def if_today_shift(result):
         return True
     else:
         return False
+
+def notam_processing(notam):
+    m = re.search('ZCZC (\w+)', notam)
+    tsa = m.groups()[0] if m else None
+    m = re.search('\((\w+/\w+)', notam)
+    notam_no = m.groups()[0] if m else None
+    m = re.search('A\)(\w+)', notam)
+    aero = m.groups()[0] if m else None
+    m = re.search('E\)([\s\S]+)', notam)
+    e = m.groups()[0] if m else None
+    e = ("E)"+(e.replace(')', '')).replace('NNNN', '')).rstrip()
+    processed_notam = [tsa, notam_no, aero, e]
+    return processed_notam
+
+def permission_processing(perm):
+    m = re.search('ZCZC (\w+)', perm)
+    tsa = m.groups()[0] if m else None
+    m = re.search('OUR REF(.+)', perm)
+    perm_ref = m.groups()[0] if m else None
+    if perm_ref:
+        perm_ref = ((perm_ref.rstrip()).replace(" ", '')).replace(':', '')
+    #m = re.search('QTE\r\n(\w+)', perm)
+    #org_ref = m.groups()[0] if m else None
+    m = re.findall('\r\n(\d{6} )', perm)
+    org_ref = m if m else None
+    if (org_ref) and (len(org_ref) > 1):
+        org_ref = (org_ref[1]).replace(' ', '')
+        print(org_ref)
+    m = re.search('FROM:(.+)', perm)
+    From = m.groups()[0] if m else None
+    m = re.search('OPERATOR:(.+)', perm)
+    operator = m.groups()[0] if m else None
+    m = re.search('IR FPN(.+)', perm)
+    ir_fpn = m.groups()[0] if m else None
+    m = re.search('PERMISSION IS (\w+)', perm)
+    gr = m.groups()[0] if m else None
+    if not gr:
+        granted = 'NO'
+    elif gr == 'GRANTED':
+        granted = 'YES'
+    else:
+        granted = None
+    m = re.search('REF YR MSG (\s\w+)', perm)
+    granted_ref = m.groups()[0] if m else None
+    if granted_ref:
+        granted_ref = granted_ref.replace(' ', '')
+    processed_permission = [tsa, perm_ref, From, operator, ir_fpn, granted, org_ref, granted_ref]
+    return processed_permission

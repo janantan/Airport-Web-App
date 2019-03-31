@@ -1,0 +1,21 @@
+<div id="login-form">
+	<section>
+		<form method="POST">
+			<fieldset>
+				<legend>Please insert the message in the box below:</legend>
+				<div id="new-message">
+					<textarea name="new-message" style="width:100%; height:80%; color:black; font-size:18px;"></textarea>
+				</div>
+			</fieldset>
+			<div style="margin: 10px;">
+				<input type="submit" value="Save" />
+			</div>      
+		</form>									
+	</section>
+</div>
+<script type="text/javascript">
+	window.onunload = refreshParent;
+	function refreshParent() {
+		window.opener.location.reload();
+	}
+</script>

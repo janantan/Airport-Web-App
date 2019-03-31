@@ -45,6 +45,7 @@ def allowed_file(filename):
 def home():
     session['log_no'] = cursor.log_records.estimated_document_count()
     session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
+    session['initial'] = cursor.users.find_one({'username': session['username']})['initial']
     session['adsb_db'] = []
     session['statistics_flag'] = 0
     session['sorted_events'] = []
@@ -731,104 +732,163 @@ def amhs_log_form():
         if (today==result['shift_date'] and today_shift==result['shift']):
             logdata = result
             session['log_records_list'] = utils.shift_brief(result, session['department'])
+            if result['notam']:
+                result_notam = amhs_cursor.notam.find({"id": result['id']})
+                notam_tsa = []
+                if result_notam:
+                    E = []
+                    notam_no = []
+                    for item in result_notam:
+                        notam_tsa.append(item['tsa'])
+                        E.append(item['E'])
+                        notam_no.append(item['notam_no'].replace('/', '-'))
+                else:
+                    E = None
+                    notam_no = None
+                notam_data = {'notam_tsa': notam_tsa, 'E':E, 'notam_no':notam_no}
+            else:
+                notam_data = None
+            if result['perm']:
+                result_permission = amhs_cursor.permission.find({"id": result['id']})
+                if_granted = []
+                granted = []
+                ir_fpn = []
+                perm_tsa = []
+                ref = []
+                gr = ""
+                if result_permission:
+                    for item in result_permission:
+                        if item['granted'] == 'YES':                    
+                            gr = '''PERMISSION IS GRANTED!
+IR FPN: '''                  
+                        else:
+                            gr = '''
+                    OK SENT.
+GRANTED NOT RECIEVED!
+IR FPN: '''
+                        perm_tsa.append(item['tsa'])
+                        granted.append(gr)
+                        if_granted.append(item['granted'])
+                        ir_fpn.append(item['ir fpn'])
+                        perm_tsa.append(item['tsa'])
+                        ref.append(item['perm_ref'].replace('/', '-'))
+                else:
+                    ref = None
+                perm_data = {'perm_tsa':perm_tsa, 'granted':granted, 'if_granted':if_granted,
+                'ir_fpn':ir_fpn, 'perm_tsa':perm_tsa, 'ref':ref}
+            else:
+                perm_data = None
         else:
             logdata = None
-
-        record = {'event_date': datetime.datetime.utcnow()}
-        if request.method == 'POST':
-            if not logdata:
-                if amhs_cursor.records.estimated_document_count():
-                    record['id'] = amhs_cursor.records.estimated_document_count()+1
-                else:
-                    record['id'] = 1
-                record['shift_date'] = session['datetime']
-                record['shift_jdate'] = session['jdatetime']
-                record['on_duty'] = utils.regex(request.form.get('on_duty').upper())
-                record['shift_switch'] = utils.regex(request.form.get('shift_switch').upper())
-                record['overtime'] = utils.regex(request.form.get('overtime').upper())
-                record['daily_leave'] = utils.regex(request.form.get('daily_leave').upper())
-                record['team'] = request.form.get('team')
-                record['day'] = request.form.get('day')
-                record['shift'] = request.form.get('shift')
-                record['network'] = request.form.getlist('network')
-                for ch in channel_list:
-                    record[ch+'_during'] = request.form.get(ch+'_during')
-                    record[ch+'_from'] = request.form.get(ch+'_from')
-                    record[ch+'_to'] = request.form.get(ch+'_to')
-                    record[ch+'_reason'] = request.form.get(ch+'_reason')
-                    record[ch+'_end'] = request.form.get(ch+'_end')
-                for i in range(3):
-                    record[msg_list[i]] = request.form.get(msg_list[i])
-                record['remarks'] = request.form.get('remarks')
-                amhs_cursor.records.insert_one(record)
-                flash('Saved Successfuly!', 'success')
-                if not session['log_records_list']:
-                    result = amhs_cursor.records.find_one({"id": amhs_cursor.records.estimated_document_count()})
-                    session['log_records_list'] = utils.shift_brief(result, session['department'])
-                session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
-                return redirect(url_for('amhs_log_form'))
+            notam_data = None
+            perm_data = None
+            record = {'event_date': datetime.datetime.utcnow()}
+            if amhs_cursor.records.estimated_document_count():
+                record['id'] = amhs_cursor.records.estimated_document_count()+1
             else:
-                amhs_cursor.records.update_many(
+                record['id'] = 1
+            record['shift_date'] = session['datetime']
+            record['shift_jdate'] = session['jdatetime']
+            record['on_duty'] = utils.regex(session['initial'])
+            record['day'] = today_wd
+            record['shift'] = today_shift
+            record['team'] = ''
+            record['network'] = ["server", "supervisor", "workstation", "printer"]
+            for ch in channel_list:
+                record[ch+'_during'] = 'OK'
+                record[ch+'_end'] = 'OK'
+            record['notam'] = record['perm'] = []
+            record['signature_path']=[]
+            record['signature_path'].append(session['signature_path'])
+            amhs_cursor.records.insert_one(record)
+            session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
+
+        if request.method == 'POST':
+            amhs_cursor.records.update_many(
+                {"id": session['amhs_log_no']},
+                {'$set': {
+                'id': session['amhs_log_no'],
+                'on_duty': utils.regex(request.form.get('on_duty').upper()),
+                'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
+                'overtime': utils.regex(request.form.get('overtime').upper()),
+                'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
+                'team': request.form.get('team'),
+                'day': request.form.get('day'),
+                'shift': request.form.get('shift'),
+                'network': request.form.getlist('network'),
+                'tsa_during': request.form.get('tsa_during'),
+                'tsa_from': request.form.get('tsa_from'),
+                'tsa_to': request.form.get('tsa_to'),
+                'tsa_reason': request.form.get('tsa_reason'),
+                'tsa_end': request.form.get('tsa_end'),
+                'sta_during': request.form.get('sta_during'),
+                'sta_from': request.form.get('sta_from'),
+                'sta_to': request.form.get('sta_to'),
+                'sta_reason': request.form.get('sta_reason'),
+                'sta_end': request.form.get('sta_end'),
+                'cfa_during': request.form.get('cfa_during'),
+                'cfa_from': request.form.get('cfa_from'),
+                'cfa_to': request.form.get('cfa_to'),
+                'cfa_reason': request.form.get('cfa_reason'),
+                'cfa_end': request.form.get('cfa_end'),
+                'tia_during': request.form.get('tia_during'),
+                'tia_from': request.form.get('tia_from'),
+                'tia_to': request.form.get('tia_to'),
+                'tia_reason': request.form.get('tia_reason'),
+                'tia_end': request.form.get('tia_end'),
+                'mca_during': request.form.get('mca_during'),
+                'mca_from': request.form.get('mca_from'),
+                'mca_to': request.form.get('mca_to'),
+                'mca_reason': request.form.get('mca_reason'),
+                'mca_end': request.form.get('mca_end'),
+                'fpl': request.form.get('fpl'),
+                'dla': request.form.get('dla'),
+                'chg': request.form.get('chg'),
+                'remarks': request.form.get('remarks')
+                }
+                }
+                )
+            update_signature = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
+            update_signature_path=[]
+            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+            for initial in od+ov:
+                signature_result = cursor.users.find_one({'initial': initial})
+                if signature_result['signature']:
+                    file_like = io.BytesIO(signature_result['signature'])
+                    signature = PIL.Image.open(file_like)
+                    if signature_result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                else:
+                    initial_signature = url_for('static', filename='img/no_signature.jpg')
+                update_signature_path.append(initial_signature)
+
+            amhs_cursor.records.update_many(
                     {"id": session['amhs_log_no']},
-                    {'$set': {
-                    'id': session['amhs_log_no'],
-                    'on_duty': utils.regex(request.form.get('on_duty').upper()),
-                    'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
-                    'overtime': utils.regex(request.form.get('overtime').upper()),
-                    'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
-                    'team': request.form.get('team'),
-                    'day': request.form.get('day'),
-                    'shift': request.form.get('shift'),
-                    'network': request.form.getlist('network'),
-                    'tsa_during': request.form.get('tsa_during'),
-                    'tsa_from': request.form.get('tsa_from'),
-                    'tsa_to': request.form.get('tsa_to'),
-                    'tsa_reason': request.form.get('tsa_reason'),
-                    'tsa_end': request.form.get('tsa_end'),
-                    'sta_during': request.form.get('sta_during'),
-                    'sta_from': request.form.get('sta_from'),
-                    'sta_to': request.form.get('sta_to'),
-                    'sta_reason': request.form.get('sta_reason'),
-                    'sta_end': request.form.get('sta_end'),
-                    'cfa_during': request.form.get('cfa_during'),
-                    'cfa_from': request.form.get('cfa_from'),
-                    'cfa_to': request.form.get('cfa_to'),
-                    'cfa_reason': request.form.get('cfa_reason'),
-                    'cfa_end': request.form.get('cfa_end'),
-                    'tia_during': request.form.get('tia_during'),
-                    'tia_from': request.form.get('tia_from'),
-                    'tia_to': request.form.get('tia_to'),
-                    'tia_reason': request.form.get('tia_reason'),
-                    'tia_end': request.form.get('tia_end'),
-                    'mca_during': request.form.get('mca_during'),
-                    'mca_from': request.form.get('mca_from'),
-                    'mca_to': request.form.get('mca_to'),
-                    'mca_reason': request.form.get('mca_reason'),
-                    'mca_end': request.form.get('mca_end'),
-                    'fpl': request.form.get('fpl'),
-                    'dla': request.form.get('dla'),
-                    'chg': request.form.get('chg'),
-                    #'notam': request.form.get('notam'),
-                    #'perm': request.form.get('perm'),
-                    'remarks': request.form.get('remarks')
-                    }
-                    }
+                    {'$set': {'signature_path': update_signature_path}}
                     )
-                flash('Saved Successfuly!', 'success')
-                if not session['log_records_list']:
-                    result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
-                    session['log_records_list'] = utils.shift_brief(result, session['department'])
-                return redirect(url_for('amhs_log_form'))
+            flash('Saved Successfuly!', 'success')
+            if not session['log_records_list']:
+                result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
+                session['log_records_list'] = utils.shift_brief(result, session['department'])
+            return redirect(url_for('amhs_log_form'))
 
 
     return render_template('index.html',
         navigator="amhs log form",
+        log_no=session['amhs_log_no'],
         wd=today_wd,
         result = logdata,
         today_shift=today_shift,
         channel_list=channel_list,
         msg_list=msg_list,
-        log_records_list=session['log_records_list']
+        log_records_list=session['log_records_list'],
+        notam_data=notam_data,
+        perm_data=perm_data
         )
 
 @app.route('/amhs logs/<id_no>', methods=['GET', 'POST'])
@@ -897,8 +957,6 @@ def edit_amhs_log(id_no):
                 'fpl': request.form.get('fpl'),
                 'dla': request.form.get('dla'),
                 'chg': request.form.get('chg'),
-                #'notam': request.form.get('notam'),
-                #'perm': request.form.get('perm'),
                 'remarks': request.form.get('remarks')
                 }
                 }
@@ -1865,6 +1923,129 @@ def adsb_get_data(airport):
         log_records_list=session['log_records_list'],
         airport=airport
     )
+
+@app.route('/New Message/<msg_type>/<log_no>', methods=['GET', 'POST'])
+def new_message(msg_type, log_no):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    else:
+        new_msg = {}
+        if request.method == 'POST':
+            new_msg['datetime'] = datetime.datetime.utcnow()
+            new_msg['full_message'] = request.form.get('new-message')
+            new_msg['id'] = int(log_no)
+
+            if msg_type == 'Notam':
+                processed_notam = utils.notam_processing(new_msg['full_message'])
+                new_msg['tsa'] = processed_notam[0]
+                new_msg['notam_no'] = processed_notam[1]
+                new_msg['aero'] = processed_notam[2]
+                new_msg['E'] = processed_notam[3]
+
+                amhs_cursor.notam.insert_one(new_msg)
+                result_records = amhs_cursor.records.find_one({"id": int(log_no)})
+                if result_records['notam']:
+                    notam_item = result_records['notam']
+                else:
+                    notam_item = []
+                notam_item.append(new_msg['notam_no'])
+                amhs_cursor.records.update_many(
+                            {"id": new_msg['id']},
+                            {'$set': {
+                            'notam': notam_item
+                            }
+                            }
+                            )
+            elif msg_type == 'Permission':
+                processed_perm = utils.permission_processing(new_msg['full_message'])
+                new_msg['tsa'] = processed_perm[0]
+                new_msg['perm_ref'] = processed_perm[1]
+                new_msg['from'] = processed_perm[2]
+                new_msg['operatore'] = processed_perm[3]
+                new_msg['ir fpn'] = processed_perm[4]
+                new_msg['granted'] = processed_perm[5]
+                new_msg['origin_ref'] = processed_perm[6]
+                new_msg['granted_ref'] = processed_perm[7]
+                if new_msg['granted_ref']:
+                    perm_res = amhs_cursor.permission.find_one({"origin_ref": new_msg['granted_ref']})
+                    if perm_res:
+                        new_msg['perm_ref'] = perm_res['perm_ref']
+                        new_msg['from'] = perm_res['from']
+                        new_msg['operatore'] = perm_res['operatore']
+                        new_msg['origin_ref'] = perm_res['origin_ref']
+                    else:
+                        new_msg['perm_ref'] = "ref not found"
+                amhs_cursor.permission.insert_one(new_msg)
+                result_records = amhs_cursor.records.find_one({"id": int(log_no)})
+                if result_records['perm']:
+                    perm_item = result_records['perm']
+                else:
+                    perm_item = []
+                perm_item.append((new_msg['tsa'], new_msg['perm_ref']))
+                amhs_cursor.records.update_many(
+                            {"id": new_msg['id']},
+                            {'$set': {
+                            'perm': perm_item
+                            }
+                            }
+                            )
+
+    return render_template('includes/_newNotamPermMessage.html')
+
+@app.route('/Notam/<notam_no>')
+def notam(notam_no):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    else:
+        notam_no = notam_no.replace('-', '/')
+        result_notam = amhs_cursor.notam.find_one({"notam_no": notam_no})
+        notam_msg = result_notam['full_message']
+    return render_template('includes/_notampermMessage.html', msg=notam_msg)
+
+@app.route('/Permission/<id_num>/<tsa>/<ref>/<granted>')
+def permission(id_num, tsa, ref, granted):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    else:
+        print(id_num, ref, granted)
+        if "not found" not in ref:
+            print(ref)
+            ref = ref.replace('-', '/')
+            result_permission = amhs_cursor.permission.find_one({"perm_ref": ref, "granted":granted})
+        else:
+            print(ref)
+            result_permission = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "granted":granted})
+        perm_msg = result_permission['full_message']
+    return render_template('includes/_notampermMessage.html', msg=perm_msg)
+
+@app.route('/Delete/<id_num>/<tsa>/<indicator>')
+def delete(id_num, tsa, indicator):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    else:
+        indicator = indicator.replace('-', '/')
+        if indicator[0] in ('A', 'B'):
+            selected_notam = amhs_cursor.notam.find_one({"notam_no": indicator})
+            if selected_notam:
+                related_log = amhs_cursor.records.find_one({"id": selected_notam['id']})
+                amhs_cursor.notam.delete_one({"notam_no": indicator})
+                index = related_log['notam'].index(indicator)
+                related_log['notam'].pop(index)
+                amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'notam': related_log['notam']}})
+                return redirect(request.referrer)
+        else:
+            selected_perm = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
+            if selected_perm:
+                related_log = amhs_cursor.records.find_one({"id": selected_perm['id']})
+                amhs_cursor.permission.delete_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
+                index = related_log['perm'].index([tsa, indicator])
+                related_log['perm'].pop(index)
+                amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'perm': related_log['perm']}})
+                return redirect(request.referrer)
 
 @app.errorhandler(500)
 def internal_error(exception):

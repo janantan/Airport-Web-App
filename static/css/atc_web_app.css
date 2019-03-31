@@ -879,12 +879,34 @@ a.navigator-links:hover {
     margin-bottom: 20px;
     border: 1px solid #e1e1e1;
     border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.del-box {
+    background-color: white;
+    color: red;
+    padding: 0 5px;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
     font-size: 15px;
     font-weight: bold;
 }
 
 .other-forms tbody {
     height: 100% !important;
+}
+
+.input-notam {
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    padding: 7px;
+    background: #f7f7f7;
+    margin: 0;
+    width: 90%;
+    height: 16px;
+    text-align: left;
+    display: inline-block;
 }
 
 body > footer {
