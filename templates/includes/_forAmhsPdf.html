@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html style="background: #fff; padding-top: 0;">
+<html style="background: #fff; padding-top: 0;" lang="fa-IR">
     <head>
+    	<meta charset="utf-8" />
         <title>Airport WEB APP</title>
         <link rel="stylesheet" type="text/css" href="E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/css/atc_web_app.css" />
     </head>
@@ -154,30 +155,50 @@
 					    	</td>
 					    </tr>
 					{% endfor %}
-					<tr>
-            			<th>
-            				<span style="color: red;">Messages</span>
-            			</th>
-            			<th>
-			             	<span>Message Type</span><hr>
-				        </th>
-				        <th colspan="4">
-			             	<span>Description</span><hr>
-				        </th>
-				    </tr>
-				    {% for msg in msg_list %}
-				    	{% if result[msg] %}
-						    <tr>
-		            			<td></td>
-		            			<td>
-					             	<span>{{msg.upper()}}</span>
-						        </td>
-						        <td colspan="4">
-					             	<span>{{result[msg]}}</span>
-						        </td>
-						    </tr>
-						{% endif %}
-				    {% endfor %}
+					{% if msg_flag %}
+						<tr>
+	            			<th>
+	            				<span style="color: red;">Messages</span>
+	            			</th>
+	            			<th>
+				             	<span>Message Type</span><hr>
+					        </th>
+					        <th colspan="4">
+				             	<span>Description</span><hr>
+					        </th>
+					    </tr>
+					    {% for msg in msg_list %}
+					    	{% if result[msg] %}
+							    <tr>
+			            			<td></td>
+			            			<td>
+						             	{% if msg == 'perm' %}
+							            	<span>FLT PERM</span>
+							            {% else %}
+							            	<span>{{msg.upper()}}</span>
+							            {% endif %}
+							        </td>
+							        {% if msg == 'notam' %}
+							        	<td colspan="4">
+							        	{% for i in range(result[msg]|length) %}
+				        					(<span style="color:blue">{{notam_data['notam_tsa'][i]}} {{result[msg][i]}}</span>)
+				        				{% endfor %}
+								        </td>
+							        {% elif msg == 'perm' %}
+								        <td colspan="4">
+							            {% for i in range(result[msg]|length) %}
+								            (<span style="color:blue">{{result[msg][i][0]}} {{result[msg][i][1]}}</span>)
+								        {% endfor %}
+								        </td>
+								    {% else %}
+								    	<td colspan="4">
+								    		{{result[msg]}}
+								    	</td>
+							        {% endif %}
+							    </tr>
+							{% endif %}
+					    {% endfor %}
+				    {% endif %}
 				    {% if result['remarks'] %}
 					    <tr>
 	            			<th>
@@ -190,7 +211,7 @@
 					    <tr>
 	            			<td></td>
 	            			<td colspan="6" style="text-align: right; direction: rtl;">
-	            				<span style="margin-right: 30px;"><span>{{result['remarks']}}</span></span>
+	            				<span style="margin-right:30px; font-size:13px;">{{result['remarks']}}</span>
 	            			</td>
 					    </tr>
 					{% endif %}
@@ -206,7 +227,7 @@
             			<td></td>
             			<td colspan="5">
             				<figure id="signature">
-								{% for sign in result['signature_path'] %}
+								{% for sign in signature_path %}
 									<img src="{{sign}}" width="100" height="100" />
 								{% endfor %}
 							</figure>

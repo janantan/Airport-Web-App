@@ -7,11 +7,11 @@
 				<div class="navigator">
 					<span>Navigator</span>
 				</div>
-					{% if session['department'] == 'Air Traffic Management' %}
-						{% include 'includes/_atcLeftpaneIndex.html' %}
-					{% elif session['department'] == 'Aeronautical Information and Communication Technology' %}
-						{% include 'includes/_amhsLeftpaneIndex.html' %}
-					{% endif %}
+				{% if session['department'] == 'Air Traffic Management' %}
+					{% include 'includes/_atcLeftpaneIndex.html' %}
+				{% elif session['department'] == 'Aeronautical Information and Communication Technology' %}
+					{% include 'includes/_amhsLeftpaneIndex.html' %}
+				{% endif %}
 			</div>
 			<div class="middlepane card" id="flight-schedule">
 				<div class="navigator">

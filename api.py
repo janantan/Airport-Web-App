@@ -16,12 +16,13 @@ import json
 import datetime
 import jdatetime
 import pdfkit
+import pathlib
 import utils, config
 
 cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.DB_NAME)
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
-UPLOAD_FOLDER = 'E:/AFTN-AMHS/Python/projects/ATC web app/static/uploded_files/save_folder'
-SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/ATC web app/static/img'
+UPLOAD_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/uploded_files/save_folder'
+SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
@@ -282,6 +283,16 @@ def amhs_pdf(log_no):
     channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
     msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
     network = ['server', 'supervisor', 'workstation', 'printer']
+    msg_flag = 0
+    for msg in msg_list:
+        if result[msg]:
+            msg_flag = 1
+            break
+    (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+    
+    signature_path = []
+    for sign in result['signature_path']:
+        signature_path.append('E:/AFTN-AMHS/Python/projects/Airport-Web-App'+sign)
 
     pdfkit.from_string(render_template('includes/_forAmhsPdf.html',
         result=result,
@@ -289,19 +300,15 @@ def amhs_pdf(log_no):
         log_no=int(log_no),
         channel_list=channel_list,
         msg_list=msg_list,
-        network=network
+        network=network,
+        msg_flag=msg_flag,
+        notam_data=notam_data,
+        perm_data=perm_data,
+        signature_path=signature_path
         ), 'static/pdf/amhs/log number '+log_no+'.pdf')
     os.startfile('E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/pdf/amhs/log number '+log_no+'.pdf')
 
-    return render_template('index.html',
-        navigator="amhs logs",
-        log_no=int(log_no),
-        result=result,
-        channel_list=channel_list,
-        msg_list=msg_list,
-        network=network,
-        log_records_list=session['log_records_list']
-        )
+    return redirect(url_for('amhs_log', id_no=int(log_no)))
 
 @app.route('/logout')
 def logout():

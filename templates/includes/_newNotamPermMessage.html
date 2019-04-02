@@ -1,21 +1,34 @@
-<div id="login-form">
-	<section>
-		<form method="POST">
-			<fieldset>
-				<legend>Please insert the message in the box below:</legend>
-				<div id="new-message">
-					<textarea name="new-message" style="width:100%; height:80%; color:black; font-size:18px;"></textarea>
-				</div>
-			</fieldset>
-			<div style="margin: 10px;">
-				<input type="submit" value="Save" />
-			</div>      
-		</form>									
-	</section>
-</div>
-<script type="text/javascript">
-	window.onunload = refreshParent;
-	function refreshParent() {
-		window.opener.location.reload();
-	}
-</script>
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Airport WEB APP</title>
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="description" content="Airport WEB APP" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/png" href="/static/img/icon/atc favicon.png"/>
+    </head>
+
+    <body>
+    	<div id="login-form">
+			<section>
+				<form method="POST">
+					<fieldset style="height: 85vh;">
+						<legend>Please insert the message in the box below:</legend>
+						<div id="new-message">
+							<textarea name="new-message" style="width:100%; height:80vh; color:black; font-size:18px;"></textarea>
+						</div>
+					</fieldset>
+					<div style="margin: 10px;">
+						<input type="submit" value="Save" />
+					</div>      
+				</form>									
+			</section>
+		</div>
+		<script type="text/javascript">
+			window.onunload = refreshParent;
+			function refreshParent() {
+				window.opener.location.reload();
+			}
+		</script>
+    </body>
+</html>
