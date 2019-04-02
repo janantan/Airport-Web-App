@@ -206,18 +206,42 @@
 									        		<table bgcolor="#f2f2f2" style="width:100%;">
 									        			<thead></thead>
 									        			<tbody style="height: 32vh;">
-									        				{% for i in range(msg_list|length) %}
+									        				{% for msg in msg_list %}
 											            		<tr style="width:100%;">
 											            			<td style="width: 100px; padding-bottom:7px;">
-											            				{% if i == (msg_list|length)-1 %}
+											            				{% if msg == 'perm' %}
 															            	<span>FLT PERM</span>
 															            {% else %}
-															            	<span>{{msg_list[i].upper()}}</span>
+															            	<span>{{msg.upper()}}</span>
 															            {% endif %}
 															        </td>
-															       	<td style="padding-bottom:7px; width:70vw;">
-					                									<input style="width: 90%; text-align:left;" type="text" name="{{msg_list[i]}}" value="{{result[msg_list[i]]}}" />
-															        </td>
+															       	{% if msg == 'notam' %}
+															        	<td style="margin-bottom:0; padding-bottom:7px;">
+															        		<div class="input-notam">
+															        			{% if result[msg] %}
+															        				{% for i in range(result[msg]|length) %}
+															        					(<a href="javascript:window.open('/Notam/{{notam_data['notam_no'][i]}}', 'NOTAM', 'width=800,height=500');" title="{{notam_data['E'][i]}}"><span style="color:blue">{{notam_data['notam_tsa'][i]}} {{result[msg][i]}}</span></a> <a class="del-box" href="/Delete/{{log_no}}/{{notam_data['notam_tsa'][i]}}/{{notam_data['notam_no'][i]}}" title="delete the notam">-</a>)
+															        				{% endfor %}
+															        			{% endif %}
+															        			<a class="add-box" href="javascript:window.open('/New Message/Notam/{{log_no}}', 'New Notam Message', 'width=800,height=500');" title="add new notam">Add</a>
+															        		</div>
+															        	</td>
+															        {% elif msg == 'perm' %}
+															        	<td style="margin-bottom:0; padding-bottom:7px;">
+															        		<div class="input-notam">
+															        			{% if result[msg] %}
+																        			{% for i in range(result[msg]|length) %}
+																			            (<a href="javascript:window.open('/Permission/{{log_no}}/{{result[msg][i][0]}}/{{perm_data['ref'][i]}}/{{perm_data['if_granted'][i]}}', 'Permission', 'width=800,height=500');" title="{{perm_data['granted'][i]}} {{perm_data['ir_fpn'][i]}}"><span style="color:blue">{{result[msg][i][0]}} {{result[msg][i][1]}}</span></a> <a class="del-box" href="/Delete/{{log_no}}/{{result[msg][i][0]}}/{{perm_data['ref'][i]}}" title="delete the permission">-</a>)
+																			        {% endfor %}
+																			    {% endif %}
+															        			<a class="add-box" href="javascript:window.open('/New Message/Permission/{{log_no}}', 'New Permission Message', 'width=800,height=500');" title="add new permission">Add</a>
+															        		</div>
+															        	</td>
+															        {% else %}
+																       	<td style="padding-bottom:7px; width:70vw;">
+						                									<input style="width: 90%; text-align:left;" type="text" name="{{msg}}" value="{{result[msg]}}" />
+																        </td>
+															        {% endif %}
 															        <td style="width:1px;"></td><td style="width:1px;"></td>
 															    </tr>
 															{% endfor %}
@@ -241,7 +265,9 @@
 												<fieldset class="signature">
 													<legend>Signature</legend>
 													<figure id="signature">
-														<img src="{{ session['signature_path'] }}" width="100" height="100" />
+														{% for sign in result['signature_path'] %}
+															<img src="{{ sign }}" width="100" height="100" />
+														{% endfor %}
 													</figure>
 												</fieldset>
 											</td>

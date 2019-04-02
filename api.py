@@ -732,52 +732,7 @@ def amhs_log_form():
         if (today==result['shift_date'] and today_shift==result['shift']):
             logdata = result
             session['log_records_list'] = utils.shift_brief(result, session['department'])
-            if result['notam']:
-                result_notam = amhs_cursor.notam.find({"id": result['id']})
-                notam_tsa = []
-                if result_notam:
-                    E = []
-                    notam_no = []
-                    for item in result_notam:
-                        notam_tsa.append(item['tsa'])
-                        E.append(item['E'])
-                        notam_no.append(item['notam_no'].replace('/', '-'))
-                else:
-                    E = None
-                    notam_no = None
-                notam_data = {'notam_tsa': notam_tsa, 'E':E, 'notam_no':notam_no}
-            else:
-                notam_data = None
-            if result['perm']:
-                result_permission = amhs_cursor.permission.find({"id": result['id']})
-                if_granted = []
-                granted = []
-                ir_fpn = []
-                perm_tsa = []
-                ref = []
-                gr = ""
-                if result_permission:
-                    for item in result_permission:
-                        if item['granted'] == 'YES':                    
-                            gr = '''PERMISSION IS GRANTED!
-IR FPN: '''                  
-                        else:
-                            gr = '''
-                    OK SENT.
-GRANTED NOT RECIEVED!
-IR FPN: '''
-                        perm_tsa.append(item['tsa'])
-                        granted.append(gr)
-                        if_granted.append(item['granted'])
-                        ir_fpn.append(item['ir fpn'])
-                        perm_tsa.append(item['tsa'])
-                        ref.append(item['perm_ref'].replace('/', '-'))
-                else:
-                    ref = None
-                perm_data = {'perm_tsa':perm_tsa, 'granted':granted, 'if_granted':if_granted,
-                'ir_fpn':ir_fpn, 'perm_tsa':perm_tsa, 'ref':ref}
-            else:
-                perm_data = None
+            (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         else:
             logdata = None
             notam_data = None
@@ -797,6 +752,7 @@ IR FPN: '''
             for ch in channel_list:
                 record[ch+'_during'] = 'OK'
                 record[ch+'_end'] = 'OK'
+            record['fpl'] = record['dla'] = record['chg'] = ""
             record['notam'] = record['perm'] = []
             record['signature_path']=[]
             record['signature_path'].append(session['signature_path'])
@@ -898,6 +854,13 @@ def amhs_log(id_no):
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
         network = ['server', 'supervisor', 'workstation', 'printer']
+        msg_flag = 0
+        for msg in msg_list:
+            if result[msg]:
+                msg_flag = 1
+                break
+        (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+
 
     return render_template('index.html',
         navigator="amhs logs",
@@ -905,8 +868,11 @@ def amhs_log(id_no):
         result = result,
         channel_list=channel_list,
         msg_list=msg_list,
+        msg_flag=msg_flag,
         network=network,
-        log_records_list=session['log_records_list']
+        log_records_list=session['log_records_list'],
+        notam_data=notam_data,
+        perm_data=perm_data
         )
 
 @app.route('/amhs logs/<id_no>/edit', methods=['GET', 'POST'])
@@ -916,6 +882,7 @@ def edit_amhs_log(id_no):
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
         network = ['server', 'supervisor', 'workstation', 'printer']
+        (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         if request.method == 'POST':
             amhs_cursor.records.update_many(
                 {"id": int(id_no)},
@@ -971,7 +938,9 @@ def edit_amhs_log(id_no):
         channel_list=channel_list,
         msg_list=msg_list,
         network=network,
-        log_records_list=session['log_records_list']
+        log_records_list=session['log_records_list'],
+        notam_data=notam_data,
+        perm_data=perm_data
         )
 
 @app.route('/duty', methods=['GET', 'POST'])

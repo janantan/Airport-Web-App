@@ -1,0 +1,108 @@
+<table id="freeze" style="width: 100%;">
+	<thead></thead>
+	<tbody style="width: 15vw; height: 80vh;">
+		{% if session['username'] == 'Babalou' %}
+			<tr style="padding: 0;">
+				<td style="padding: 0;">
+					<fieldset class='atc-fieldset' style="max-height:10vh;">
+		            	<legend style="font-weight: bold;">Extra Access</legend>
+						<table class="leftpane-table">
+							<tr>
+								<td style="font-size: 14px; text-align: left;">
+									<a href="/team" class="navigator-links">Team Members</a>
+								</td>												
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+		{% endif %}
+		<tr style="padding: 0;">
+			<td style="padding: 0;">
+				<fieldset class='atc-fieldset' style="max-height:27vh;">
+	            	<legend style="font-weight: bold;">ATC Electronic Log</legend>
+					<table class="leftpane-table">
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/duty" class="navigator-links">On-Duty Info</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/log data" class="navigator-links">Log Data</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/logs/{{session['log_no']}}" class="navigator-links">The Previous Logs</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/other forms/E101" class="navigator-links">The Other Forms</a>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+		<tr style="padding: 0;">
+			<td style="padding: 0;">
+				<fieldset class='atc-fieldset' style="max-height:27vh;">
+	            	<legend style="font-weight: bold;">ATC Flight Form</legend>
+					<table class="leftpane-table">
+						<tr>
+							<td style="font-size: 14px; text-align: left; width:11vw;">
+								<a href="/flight-schedule-data" class="navigator-links">Enter Flight Schedule Data</a>
+							</td>
+							<td style="font-size: 14px; text-align: left; width:11vw;">
+								<a href="/flight-schedule" class="navigator-links">Weekly Flight Schedule</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/flight-form" class="navigator-links">Flight Form</a>
+							</td>
+						</tr>
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/statistics" class="navigator-links">Statistics</a>
+							</td>					
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+		<tr style="padding: 0;">
+			<td style="padding: 0;">
+				<fieldset class='atc-fieldset' style="max-height:15vh;">
+	            	<legend style="font-weight: bold;">FIDS</legend>
+					<table class="leftpane-table">
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/fids/OICC/all" class="navigator-links">Kermanshah FIDS</a>
+							</td>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/fids/OIII/all" class="navigator-links">Mehrabad FIDS</a>
+							</td>				
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+		<tr style="padding: 0;">
+			<td style="padding: 0;">
+				<fieldset class='atc-fieldset' style="max-height:10vh;">
+	            	<legend style="font-weight: bold;">ADSB</legend>
+					<table class="leftpane-table">
+						<tr>
+							<td style="font-size: 14px; text-align: left;">
+								<a href="/adsb/OIII" class="navigator-links">Mehrabad Airport</a>
+							</td>
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+	</tbody>
+</table>

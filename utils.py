@@ -283,3 +283,53 @@ def permission_processing(perm):
         granted_ref = granted_ref.replace(' ', '')
     processed_permission = [tsa, perm_ref, From, operator, ir_fpn, granted, org_ref, granted_ref]
     return processed_permission
+
+def notam_permission_data(result, cursor):
+    if result['notam']:
+        result_notam = cursor.notam.find({"id": result['id']})
+        notam_tsa = []
+        if result_notam:
+            E = []
+            notam_no = []
+            for item in result_notam:
+                notam_tsa.append(item['tsa'])
+                E.append(item['E'])
+                notam_no.append(item['notam_no'].replace('/', '-'))
+        else:
+            E = None
+            notam_no = None
+        notam_data = {'notam_tsa': notam_tsa, 'E':E, 'notam_no':notam_no}
+    else:
+        notam_data = None
+    if result['perm']:
+        result_permission = cursor.permission.find({"id": result['id']})
+        if_granted = []
+        granted = []
+        ir_fpn = []
+        perm_tsa = []
+        ref = []
+        gr = ""
+        if result_permission:
+            for item in result_permission:
+                if item['granted'] == 'YES':                    
+                    gr = '''PERMISSION IS GRANTED!
+IR FPN: '''                  
+                else:
+                    gr = '''
+            OK SENT.
+GRANTED NOT RECIEVED!
+IR FPN: '''
+                perm_tsa.append(item['tsa'])
+                granted.append(gr)
+                if_granted.append(item['granted'])
+                ir_fpn.append(item['ir fpn'])
+                perm_tsa.append(item['tsa'])
+                ref.append(item['perm_ref'].replace('/', '-'))
+        else:
+            ref = None
+        perm_data = {'perm_tsa':perm_tsa, 'granted':granted, 'if_granted':if_granted,
+        'ir_fpn':ir_fpn, 'perm_tsa':perm_tsa, 'ref':ref}
+    else:
+        perm_data = None
+
+    return (notam_data, perm_data)

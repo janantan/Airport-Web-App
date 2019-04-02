@@ -152,44 +152,50 @@
 							    	</td>
 							    </tr>
 							{% endfor %}
-							<tr>
-		            			<th>
-		            				<span style="color: red;">Messages</span>
-		            			</th>
-		            			<th>
-					             	<span>Message Type</span><hr>
-						        </th>
-						        <th colspan="4">
-					             	<span>Description</span><hr>
-						        </th>
-						    </tr>
-						    {% for msg in msg_list %}
-						    	{% if result[msg] %}
-								    <tr>
-				            			<td></td>
-				            			<td>
-							             	<span>{{msg.upper()}}</span>
-								        </td>
-								        {% if msg == 'notam' %}
-								        	<td colspan="4">
-								        	{% for m in result[msg] %}
-									             (<a href="javascript:window.open('/Notam/', 'NOTAM', 'width=800,height=500');" title=""><span style="color:blue">{{m[0]}} {{m[1]}}</span></a>)
-									        {% endfor %}
+							{% if msg_flag %}
+								<tr>
+			            			<th>
+			            				<span style="color: red;">Messages</span>
+			            			</th>
+			            			<th>
+						             	<span>Message Type</span><hr>
+							        </th>
+							        <th colspan="4">
+						             	<span>Description</span><hr>
+							        </th>
+							    </tr>
+							    {% for msg in msg_list %}
+							    	{% if result[msg] %}
+									    <tr>
+					            			<td></td>
+					            			<td>
+								             	{% if msg == 'perm' %}
+									            	<span>FLT PERM</span>
+									            {% else %}
+									            	<span>{{msg.upper()}}</span>
+									            {% endif %}
 									        </td>
-								        {% elif msg == 'perm' %}
-									        <td colspan="4">
-								            {% for m in result[msg] %}
-									            (<a href="javascript:window.open('/Permission/{{log_no}}/{{perm[P][0]}}/{{ref[P]}}/{{if_granted[P]}}', 'Permission', 'width=800,height=500');" title="{{granted[P]}} {{ir_fpn[P]}}"><span style="color:blue">{{m[0]}} {{m[1]}}</span></a>)
-									        {% endfor %}
-									        </td>
-									    {% else %}
-									    	<td colspan="4">
-									    		{{result[msg]}}
-									    	</td>
-								        {% endif %}
-								    </tr>
-								{% endif %}
-						    {% endfor %}
+									        {% if msg == 'notam' %}
+									        	<td colspan="4">
+									        	{% for i in range(result[msg]|length) %}
+						        					(<a href="javascript:window.open('/Notam/{{notam_data['notam_no'][i]}}', 'NOTAM', 'width=800,height=500');" title="{{notam_data['E'][i]}}"><span style="color:blue">{{notam_data['notam_tsa'][i]}} {{result[msg][i]}}</span></a>)
+						        				{% endfor %}
+										        </td>
+									        {% elif msg == 'perm' %}
+										        <td colspan="4">
+									            {% for i in range(result[msg]|length) %}
+										            (<a href="javascript:window.open('/Permission/{{log_no}}/{{result[msg][i][0]}}/{{perm_data['ref'][i]}}/{{perm_data['if_granted'][i]}}', 'Permission', 'width=800,height=500');" title="{{perm_data['granted'][i]}} {{perm_data['ir_fpn'][i]}}"><span style="color:blue">{{result[msg][i][0]}} {{result[msg][i][1]}}</span></a>)
+										        {% endfor %}
+										        </td>
+										    {% else %}
+										    	<td colspan="4">
+										    		{{result[msg]}}
+										    	</td>
+									        {% endif %}
+									    </tr>
+									{% endif %}
+							    {% endfor %}
+						    {% endif %}
 						    {% if result['remarks'] %}
 							    <tr>
 			            			<th>
