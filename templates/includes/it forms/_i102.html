@@ -1,0 +1,185 @@
+<div id="logdata-form">
+	<section>
+		<form class="it-forms" method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Departure Terminal Equipment Room Check List:</span></td>
+					</tr>
+				</thead>
+				<tbody style="height: 67vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Inspection Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Inspector:
+											</td>
+											<td>
+												<input id="dep_term inspector" type="text" name="dep_term inspector" value="{{result['dep_term inspector']}}" size="15"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="dep_term inspection_time" value="{{result['dep_term inspection_time']}}"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Remark:
+											</td>
+											<td colspan="2">
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="dep_term fiber optic remark">{{result['dep_term fiber optic remark']}}</textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Cooling & UPS</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Air Condition 1',
+											'UPS BORRI 10KVA B8031FXS'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dep_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dep_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Day" {% if result['dep_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dep_term '+item}} remark">{{result['dep_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Server Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Server(1) Cisco UCS C240 M3',
+											'Server(2) Cisco UCS C240 M3',
+											'NEXSAN E18',
+											'SAN SWITCH QLOGIC'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dep_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dep_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Day" {% if result['dep_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dep_term '+item}} remark">{{result['dep_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Switching Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Cisco Switch 2960-x',
+											'Cisco Router 2811',
+											'Cisco Switch 3560',
+											'Access Point Smart Counter Cisco',
+											'PDH 34M',
+											'DSLAM Modem Hesabgar',
+											'Switch Planet IT',
+											'RouterBoard Mikrotik Hesabgar',
+											'Switch D-Link Hesabgar',
+											'Power Injector Hesabgar 1',
+											'Power Injector Hesabgar 2',
+											'Power Injector Hesabgar 3',
+											'Power Injector Hesabgar 4'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dep_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dep_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Day" {% if result['dep_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dep_term '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dep_term '+item}} remark">{{result['dep_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>FIDS System</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'First Check',
+											'End Check'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dep_term '+item}} remark">{{result['dep_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="margin:12px 0 0 15px;">
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>

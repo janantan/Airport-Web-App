@@ -1,0 +1,413 @@
+<div id="logdata-form">
+	<section>
+		<form class="it-forms" method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Data Center Check List:</span></td>
+					</tr>
+				</thead>
+				<tbody style="height: 67vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Inspection Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Inspector:
+											</td>
+											<td>
+												<input id="dc inspector" type="text" name="dc inspector" value="{{result['dc inspector']}}" size="15"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="dc inspection_time" value="{{result['dc inspection_time']}}"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Remark:
+											</td>
+											<td colspan="2">
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="dc fiber optic remark">{{result['dc fiber optic remark']}}</textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Cooling</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Room Temperature:
+											</td>
+											<td>
+												<input id="dc room_temp" type="text" name="dc room_temp" value="{{result['dc room_temp']}}" size="7"/>
+											</td>
+										</tr>
+										{% for item in [
+											'Air Condition 1',
+											'Air Condition 2'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Server Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Server(1) Cisco UCS C240 M3',
+											'Server(2) HP Proliant DL380 G6',
+											'Server(3) Cisco UCS C240 M3',
+											'Server(4) Cisco UCS C240 M3',
+											'Server(5) HP Proliant DL380 G9',
+											'SAN SWITCH QLOGIC',
+											'Server(6) Cisco UCS C220 M3',
+											'Server(7) Cisco UCS C220 M3',
+											'Server(8) Cisco UCS C240 M3',
+											'SAN (Promise)',
+											'J-BOD (Promise)',
+											'NEXSAN E18',
+											'Tape Backup Tandberg Data'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Switching Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Router(1) Cisco 2911',
+											'Router(2) Cisco 2911',
+											'Dslam Zyxel',
+											'Switch Cisco WS C3850-48(SF1)',
+											'Switch Cisco WS C3850 24-S(Corel)',
+											'Switch Cisco WS C3850-48(Corel)',
+											'Wireless Controller Cisco AIR-PWR-5500-AC',
+											'Firewall Amnafzar UTM1',
+											'Firewall Amnafzar UTM2',
+											'Level one GSW 2476',
+											'Switch Cisco WS C2960X48 FPSL',
+											'Thin Client Datacenter',
+											'HDD MY Cloud 6 TB',
+											'HDD MY Cloud 4 TB',
+											'VSAT',
+											'FXO',
+											'Sensor ITSH1-1',
+											'Switch Dlink DES-1005a Hesabgar',
+											'Power Injector Hesabgar',
+											'AXIS Access Control'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Fiber Optic Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Media Converter Planet Internet',
+											'Media Converter Planet MPLS Herasat',
+											'Media Converter Planet Hesabgar'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+										<tr>
+											<td>
+												No Active Equipment
+											</td>
+											<td>
+												<input type="checkbox" name="dc No Active Equipment" value="No Active Equipment" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Remark:
+											</td>
+											<td colspan="2">
+												<textarea style="width:500px; height:50px; font-size:15px; direction: ltr;" name="dc fiber optic remark">{{result['dc fiber optic remark']}}</textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Transmission Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'PTS 155',
+											'PED-MI-480-4ETH-GC (Backup 34MB)',
+											'Switch Cisco WS C2960G24 FPSL',
+											'HUAWEI OPTLX RTN950 (RADIO)',
+											'SMAX',
+											'PED-MI-480-4ETH-GC (Backup PDH 34MB)',
+											'PATTON Network G703 Bank Mellat',
+											'PATTON RocketLink G NTU'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Communication Rack</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'MEGATEL',
+											'Tellabs 8140'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Power Room</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Room Tempreture:
+											</td>
+											<td>
+												<input id="dc power_room_temp" type="text" name="dc power_room_temp" value="{{result['dc power_room_temp']}}" size="7"/>
+											</td>
+										</tr>
+										{% for item in [
+											'Air Condition 1 (power room)',
+											'Air Condition 2 (power room)',
+											'UPS Power Ware 9155-10 KVA(1)',
+											'UPS Power Ware 9155-10 KVA(2)',
+											'Rectifire'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['dc '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['dc '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Day" {% if result['dc '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'dc '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'dc '+item}} remark">{{result['dc '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset style="max-height: 26vh;">
+			            		<legend>Antivirus Check List</legend>
+			            		<table id="freeze-table">
+			            			<thead>
+					            		<tr style="background: yellow;">
+					            			<th>
+								             	<span>Computer Name</span>
+									        </th>
+									        <th>
+								             	<span>Username</span>
+									        </th>
+					            			<th>
+								            	<span>Found Viruses & Remark</span>
+									        </th>
+									        <th style="width:60px;"></th>
+									    </tr>
+								    </thead>
+								    <tbody style="height: 18vh;">
+								    	<tr id="antivirus_ck_list1">
+									    	<td>
+												<input type="text" name="dc com_name_1" value="" size="15"/>
+											</td>
+											<td>
+												<input type="text" name="dc username_1" value="" size="15"/>
+											</td>
+											<td>
+												<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="dc antevirus_remark_1"></textarea>
+											</td>
+											<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addAntivirusCkListRow('antivirus_ck_list1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+					              			</td>
+					              			<td style="width:10px;" id="last_child">
+					              				<a href="javascript:addAntivirusCkListRow('antivirus_ck_list1', 'add')" title="add new" class="add-box"> + </a>
+					              			</td>
+					              		</tr>
+					              	</tbody>
+					            </table>
+					        </fieldset>
+					    </td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="margin:12px 0 0 15px;">
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>
+
+<script type="text/javascript">
+	var i=1;
+	var i_list = ["antivirus_ck_list1"]
+	function addAntivirusCkListRow(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "antivirus_ck_list" + ++i;
+			i_list.push(clone.id);
+			var com_name = "com_name_"+id_name.substring(17, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(com_name, "com_name_"+i);
+			var username = "username_"+id_name.substring(17, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(username, "username_"+i);
+			var antevirus_remark = "antevirus_remark_"+id_name.substring(17, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(antevirus_remark, "antevirus_remark_"+i);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "antivirus_ck_list"+id_name.substring(17, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "antivirus_ck_list"+i);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (i_list.length > 1) {
+				original.parentNode.removeChild(original);
+				i_list.splice(i_list.indexOf(id_name), 1);
+			}
+		}
+
+	}
+</script>

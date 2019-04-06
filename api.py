@@ -736,35 +736,40 @@ def amhs_log_form():
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
 
-        if (today==result['shift_date'] and today_shift==result['shift']):
-            logdata = result
-            session['log_records_list'] = utils.shift_brief(result, session['department'])
-            (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+        if result:
+            if (today==result['shift_date'] and today_shift==result['shift']):
+                logdata = result
+                session['log_records_list'] = utils.shift_brief(result, session['department'])
+                (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+            else:
+                logdata = None
+                notam_data = None
+                perm_data = None
+                record = {'event_date': datetime.datetime.utcnow()}
+                if amhs_cursor.records.estimated_document_count():
+                    record['id'] = amhs_cursor.records.estimated_document_count()+1
+                else:
+                    record['id'] = 1
+                record['shift_date'] = session['datetime']
+                record['shift_jdate'] = session['jdatetime']
+                record['on_duty'] = utils.regex(session['initial'])
+                record['day'] = today_wd
+                record['shift'] = today_shift
+                record['team'] = ''
+                record['network'] = ["server", "supervisor", "workstation", "printer"]
+                for ch in channel_list:
+                    record[ch+'_during'] = 'OK'
+                    record[ch+'_end'] = 'OK'
+                record['fpl'] = record['dla'] = record['chg'] = ""
+                record['notam'] = record['perm'] = []
+                record['signature_path']=[]
+                record['signature_path'].append(session['signature_path'])
+                amhs_cursor.records.insert_one(record)
+                session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
         else:
             logdata = None
             notam_data = None
             perm_data = None
-            record = {'event_date': datetime.datetime.utcnow()}
-            if amhs_cursor.records.estimated_document_count():
-                record['id'] = amhs_cursor.records.estimated_document_count()+1
-            else:
-                record['id'] = 1
-            record['shift_date'] = session['datetime']
-            record['shift_jdate'] = session['jdatetime']
-            record['on_duty'] = utils.regex(session['initial'])
-            record['day'] = today_wd
-            record['shift'] = today_shift
-            record['team'] = ''
-            record['network'] = ["server", "supervisor", "workstation", "printer"]
-            for ch in channel_list:
-                record[ch+'_during'] = 'OK'
-                record[ch+'_end'] = 'OK'
-            record['fpl'] = record['dla'] = record['chg'] = ""
-            record['notam'] = record['perm'] = []
-            record['signature_path']=[]
-            record['signature_path'].append(session['signature_path'])
-            amhs_cursor.records.insert_one(record)
-            session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
 
         if request.method == 'POST':
             amhs_cursor.records.update_many(
@@ -948,6 +953,135 @@ def edit_amhs_log(id_no):
         log_records_list=session['log_records_list'],
         notam_data=notam_data,
         perm_data=perm_data
+        )
+
+@app.route('/it log form', methods=['GET', 'POST'])
+def it_log_form():
+    if 'username' in session:
+        result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
+        wd = datetime.datetime.utcnow().weekday()
+        session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
+        session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
+        today = session['datetime']
+        if jdatetime.datetime.now().month > 6:
+            A = datetime.time(3, 30)
+            B = datetime.time(15, 30)
+        else:
+            A = datetime.time(2, 30)
+            B = datetime.time(14, 30)
+        if A <  datetime.datetime.utcnow().time() <= B:
+            today_shift = 'Day'
+            today_wd = utils.fetch_day(str(wd+1))
+        elif datetime.datetime.utcnow().time() <= A:
+            session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
+            session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
+            today = session['datetime']
+            today_shift = 'Night'
+            today_wd = utils.fetch_day(str(wd))
+        else:
+            today_shift = 'Night'
+            today_wd = utils.fetch_day(str(wd+1))
+
+        if result:
+            if (today==result['shift_date'] and today_shift==result['shift']):
+                logdata = result
+                session['log_records_list'] = utils.shift_brief(result, session['department'])
+            else:
+                logdata = None
+                record = {'event_date': datetime.datetime.utcnow()}
+                if amhs_cursor.it_records.estimated_document_count():
+                    record['id'] = amhs_cursor.it_records.estimated_document_count()+1
+                else:
+                    record['id'] = 1
+                record['shift_date'] = session['datetime']
+                record['shift_jdate'] = session['jdatetime']
+                record['on_duty'] = utils.regex(session['initial'])
+                record['day'] = today_wd
+                record['shift'] = today_shift
+                record['team'] = ''
+                record['signature_path']=[]
+                record['signature_path'].append(session['signature_path'])
+                amhs_cursor.it_records.insert_one(record)
+                session['amhs_log_no'] = amhs_cursor.it_records.estimated_document_count()
+        else:
+            logdata = None
+        print(logdata)
+        print(amhs_cursor.it_records.estimated_document_count())
+
+        if request.method == 'POST':
+            amhs_cursor.it_records.update_many(
+                {"id": session['amhs_log_no']},
+                {'$set': {
+                'id': session['amhs_log_no'],
+                'on_duty': utils.regex(request.form.get('on_duty').upper()),
+                'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
+                'overtime': utils.regex(request.form.get('overtime').upper()),
+                'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
+                'team': request.form.get('team'),
+                'day': request.form.get('day'),
+                'shift': request.form.get('shift')
+                }
+                }
+                )
+            update_signature = amhs_cursor.it_records.find_one({"id": session['amhs_log_no']})
+            update_signature_path=[]
+            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+            for initial in od+ov:
+                signature_result = cursor.users.find_one({'initial': initial})
+                if signature_result['signature']:
+                    file_like = io.BytesIO(signature_result['signature'])
+                    signature = PIL.Image.open(file_like)
+                    if signature_result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                else:
+                    initial_signature = url_for('static', filename='img/no_signature.jpg')
+                update_signature_path.append(initial_signature)
+
+            amhs_cursor.it_records.update_many(
+                    {"id": session['amhs_log_no']},
+                    {'$set': {'signature_path': update_signature_path}}
+                    )
+            flash('Saved Successfuly!', 'success')
+            if not session['log_records_list']:
+                result = amhs_cursor.it_records.find_one({"id": session['amhs_log_no']})
+                session['log_records_list'] = utils.shift_brief(result, session['department'])
+            return redirect(url_for('amhs_log_form'))
+
+    return render_template('index.html',
+        navigator="it log form",
+        nav='',
+        log_no=session['amhs_log_no'],
+        wd=today_wd,
+        result = logdata,
+        today_shift=today_shift,
+        log_records_list=session['log_records_list']
+        )
+
+@app.route('/it forms/<form_number>', methods=['GET', 'POST'])
+def it_forms(form_number):
+    result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
+    logdata = result if result else None
+    if form_number == 'i101':
+        nav = "i101"
+    elif form_number == 'i102':
+        nav = "i102"
+    elif form_number == 'i103':
+        nav = "i103"
+    elif form_number == 'i104':
+        nav = "i104"
+    elif form_number == 'i105':
+        nav = "i105"
+
+    return render_template('index.html',
+        navigator="it log form",
+        nav=nav,
+        result=logdata,
+        log_records_list=session['log_records_list']
         )
 
 @app.route('/duty', methods=['GET', 'POST'])

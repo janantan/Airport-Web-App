@@ -1,0 +1,145 @@
+<div id="logdata-form">
+	<section>
+		<form class="it-forms" method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>Office Building Equipment Room Check List:</span></td>
+					</tr>
+				</thead>
+				<tbody style="height: 67vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Inspection Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Inspector:
+											</td>
+											<td>
+												<input id="office_bld inspector" type="text" name="office_bld inspector" value="{{result['office_bld inspector']}}" size="15"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="office_bld inspection_time" value="{{result['office_bld inspection_time']}}"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Remark:
+											</td>
+											<td colspan="2">
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="office_bld fiber optic remark">{{result['office_bld fiber optic remark']}}</textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Cooling & UPS</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Air Condition 1',
+											'UPS Power Ware 9155-10KVA'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['office_bld '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['office_bld '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Day" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'office_bld '+item}} remark">{{result['office_bld '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Rack (1)</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Cisco Switch 2960-X (1)',
+											'Cisco Switch 2960-X (2)',
+											'Media Converter Planet Internet',
+											'Media Converter Planet Government Network',
+											'Media Converter Planet Hesabgar',
+											'Power Injector Hesabgar'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['office_bld '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['office_bld '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Day" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'office_bld '+item}} remark">{{result['office_bld '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Arrival Terminal FIDS System</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'First Check',
+											'End Check'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'office_bld '+item}} remark">{{result['office_bld '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="margin:12px 0 0 15px;">
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>

@@ -1,0 +1,151 @@
+<div id="logdata-form">
+	<section>
+		<form class="it-forms" method="POST" action="">
+			<table id="freeze-fieldset">
+				<thead>
+					<tr style="border: none; font-weight: bold;">
+						<td><span>International Terminal Equipment Room Check List:</span></td>
+					</tr>
+				</thead>
+				<tbody style="height: 67vh;">
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Inspection Information</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Inspector:
+											</td>
+											<td>
+												<input id="int_term inspector" type="text" name="int_term inspector" value="{{result['int_term inspector']}}" size="15"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Time:
+											</td>
+											<td>
+												<input type="time" name="int_term inspection_time" value="{{result['int_term inspection_time']}}"/>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												Remark:
+											</td>
+											<td colspan="2">
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="int_term fiber optic remark">{{result['int_term fiber optic remark']}}</textarea>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Cooling & UPS</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										<tr>
+											<td>
+												Room Temperature:
+											</td>
+											<td>
+												<input id="int_term room_temp" type="text" name="int_term room_temp" value="{{result['int_term room_temp']}}" size="7"/>
+											</td>
+										</tr>
+										{% for item in [
+											'Air Condition 1',
+											'UPS Power Ware 9155-10KVA'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['int_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['int_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Day" {% if result['int_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>Rack (1)</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'Cisco Switch 2960-s',
+											'Switch D-Link 1008D',
+											'Switch D-Link 1008D Iran IR',
+											'SHDSL Patton Iran IR'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+												<td>
+						              				{% if result['int_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+										        	{% if result['int_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Day" {% if result['int_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Night" {{off_ck}}/>Off</label>
+										        </td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<fieldset class="other-forms">
+								<legend>FIDS System</legend>
+								<table>
+									<thead></thead>
+									<tbody>
+										{% for item in [
+											'First Check',
+											'End Check'
+											] %}
+											<tr>
+												<td>
+													{{item}}:
+												</td>
+										        <td>
+													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div style="margin:12px 0 0 15px;">
+				<input style="text-transform: none;" type="submit" value="Save" /> 
+			</div>
+		</form>
+	</section>
+</div>

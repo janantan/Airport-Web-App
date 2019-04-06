@@ -1,0 +1,126 @@
+<div id="flight-form">
+	<section>
+		<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
+			<a href="/it forms/i101" class="button"">Data Center</a>
+			<a href="/it forms/i102" class="button">Departure Terminal</a>
+			<a href="/it forms/i103" class="button">International Terminal</a>
+			<a href="/it forms/i104" class="button">Office Building</a>
+			<a href="/it forms/i105" class="button">Technical Block</a>
+		</div>
+		{% if nav == "i101" %}
+			{% include 'includes/it forms/_i101.html' %}
+		{% elif nav == "i102" %}
+			{% include 'includes/it forms/_i102.html' %}
+		{% elif nav == "i103" %}
+			{% include 'includes/it forms/_i103.html' %}
+		{% elif nav == "i104" %}
+			{% include 'includes/it forms/_i104.html' %}
+		{% elif nav == "i105" %}
+			{% include 'includes/it forms/_i105.html' %}
+		{% else %}
+			<form method="POST" action="">
+				<table>
+					<thead></thead>
+					<tbody>
+						<tr>
+							<td style="padding-bottom: 7px;">
+								<fieldset>
+					        		<legend style="text-align: left;">On-Duty Info</legend>
+					        		<table>
+					        			<thead></thead>
+					        			<tbody style="margin-top: 15px; min-height: 28vh;">
+						            		<tr style="background: yellow;">
+						            			<th style="width: 210px;">
+										            <span>Date</span>
+										        </th>
+										        <th style="width: 210px;">			            			         
+									             	<span>Week Day</span>
+										        </th>
+						            			<th style="width: 210px;">
+									             	<span>Team No.</span>
+										        </th>
+						            			<th style="width: 210px;">			            			         
+									            	<span>Day-Night</span>
+										        </th>
+										    </tr>
+										    <tr>
+						            			<td>
+									            	<p class="alert-datetime">{{session['datetime']}}</p>
+													<p class="alert-datetime">{{session['jdatetime']}}</p>
+										        </td>
+										        <td>
+										        	<select name="day" id="day">
+														<option>{{wd}}</option>
+														<option value="Monday">Monday</option>
+														<option value="Tuesday">Tuesday</option>
+														<option value="Wednesday">Wednesday</option>
+														<option value="Thursday">Thursday</option>
+														<option value="Friday">Friday</option>
+														<option value="Saturday">Saturday</option>
+														<option value="Sunday">Sunday</option>
+													</select>
+										        </td>
+						            			<td>
+						              				<select name="team" id="team">
+														<option>{{result['team']}}</option>
+														<option value="1">1</option>
+														<option value="2">2</option>
+														<option value="3">3</option>
+														<option value="4">4</option>
+														<option value="5">5</option>
+													</select>
+										        </td>
+										        <td>
+						              				{% if today_shift == "Day" %}{% set day_ck = 'checked' %}{% else %}{% set day_ck = '' %}{% endif %}
+										        	{% if today_shift == "Night" %}{% set night_ck = 'checked' %}{% else %}{% set night_ck = '' %}{% endif %}
+					              					<label style="display:inline-block;"><input type="radio" name="shift" value="Day" {{day_ck}}/>Day</label>
+													<label style="display:inline-block;"><input type="radio" name="shift" value="Night" {{night_ck}}/>Night</label>
+										        </td>
+										    </tr>
+
+										    <tr style="background: yellow;">					    	
+										    	<th style="width: 210px;">
+										            <span>On-Duty</span>
+										        </th>
+										        <th style="width: 210px;">
+										            <span>Shift Switch</span>
+										        </th>
+										        <th style="width: 210px;">
+										            <span>Overtime</span>
+										        </th>
+										        <th style="width: 210px; font-size: 14px;">
+										            <span>Daily Leave</span>
+										        </th>
+										    </tr>
+										    <tr>					    	
+										    	<td style="width: 210px; padding-bottom:7px;">
+										    		{% if result %}
+							              				<input id="on_duty" type="text" name="on_duty" value="{{(', '.join(result['on_duty']))}}" size="7" style="text-transform:uppercase;" required />
+											    	{% else %}
+											    		<input id="on_duty" type="text" name="on_duty" value="{{session['initial']}}" size="7" style="text-transform:uppercase;" required />
+											    	{% endif %}
+										        </td>
+										        <td style="width: 210px; padding-bottom:7px;">
+						              				<input id="shift_switch" type="text" name="shift_switch" value="{{(', '.join(result['shift_switch']))}}" size="7" style="text-transform:uppercase;" />
+										        </td>
+										        <td style="width: 210px; padding-bottom:7px;">
+										        	<input id="overtime" type="text" name="overtime" value="{{(', '.join(result['overtime']))}}" size="7" style="text-transform:uppercase; text-align:center;" />
+										        </td>
+										    	<td style="width: 210px; padding-bottom:7px;">
+										    		<input id="daily_leave" type="text" name="daily_leave" value="{{(', '.join(result['daily_leave']))}}" size="7" style="text-transform:uppercase;" />
+										    	</td>
+										    </tr>
+										</tbody>
+								    </table>
+								</fieldset>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div style="margin:12px 0 0 15px;">
+					<input style="text-transform: none;" type="submit" value="Save" /> 
+				</div>
+			</form>
+		{% endif %}
+	</section>
+</div>

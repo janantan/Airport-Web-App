@@ -912,6 +912,10 @@ a.navigator-links:hover {
     display: inline-block;
 }
 
+.it-forms table td {
+    padding-bottom: 0 !important;
+}
+
 body > footer {
     padding: 19px 0;
 }
