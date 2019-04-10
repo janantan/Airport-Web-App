@@ -29,9 +29,24 @@
 			<th>
 				<span>On-Duty:</span>
 			</th>
+		</tr>
+		<tr>
+			<th>
+				<span style="margin-left: 7px;">AMHS:</span>
+			</th>
 			<td>
 				<span>{{(', '.join(log_records_list[2]))}}</span>
 			</td>	
+		</tr>
+		<tr>
+			<th>
+				<span style="margin-left: 7px;">IT:</span>
+			</th>
+			{% if log_records_list[6] %}
+				<td>
+					<span>{{(', '.join(log_records_list[6]))}}</span>
+				</td>
+			{% endif %}
 		</tr>
 		<tr>
 			<th>

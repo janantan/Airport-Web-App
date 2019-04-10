@@ -4,7 +4,7 @@
 			<table id="freeze-wholelog">
 				<thead>
 				</thead>
-				<tbody id="edit-amhs-log">
+				<tbody id="edit-amhs-log" style="height: 80vh;">
 					<tr>
 						<td>
 							<fieldset style="background: #fefefe; height:23vh; margin-top:-1vh;">
@@ -104,14 +104,64 @@
 									</tbody>
 								</table>
 							</fieldset>
-							<fieldset id="second-fieldset" style="background: #fefefe; min-height: 200px; height:38vh; margin-top:-1vh;">
+							<fieldset id="second-fieldset" style="background: #fefefe; min-height: 200px; height:43vh; margin-top:-1vh; margin-bottom: 0;">
 			            		<legend style="font-weight: bold;">Log Data</legend>
 			            		<table>
 			            			<thead></thead>
-			            			<tbody style="height:36vh;">
+			            			<tbody style="height:41vh;">
+			            				<tr class="it-forms">
+											<td style="padding-bottom: 7px;">
+												<fieldset style="height: 34vh; margin-bottom:0;">
+													<legend>Server Room</legend>
+													<table class="edit-eqp">
+														<thead>
+															<tr style="background: yellow;">
+																<th style="padding: 5px;">
+																	Equipments
+																</th>
+																<th style="padding: 5px;">
+																	Status
+																</th>
+																<th style="padding: 5px;">
+																	Remark
+																</th>
+															</tr>
+														</thead>
+														<tbody style="height: 27vh;">
+															{% for item in server_room_eqp %}
+																<tr class="ch-rows">
+																	<td style="font-size: 15px;">
+																		{{item}}
+																	</td>
+																	{% if result['server_room_equipment'] %}
+																		<td>
+												              				{% if result['server_room_equipment'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+																        	{% if result['server_room_equipment'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+											              					<label style="display:inline-block;"><input type="radio" name="{{item}}" value="On" {% if result['server_room_equipment'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+																			<label style="display:inline-block;"><input type="radio" name="{{item}}" value="Off" {{off_ck}}/>Off</label>
+																        </td>
+																        <td>
+																			<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark">{{result['server_room_equipment'][item]['remark']}}</textarea>
+																		</td>
+																	{% else %}
+																		<td>
+											              					<label style="display:inline-block;"><input type="radio" name="{{item}}" value="On" checked/>On</label>
+																			<label style="display:inline-block;"><input type="radio" name="{{item}}" value="Off"/>Off</label>
+																        </td>
+																        <td>
+																			<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark"></textarea>
+																		</td>
+																	{% endif %}
+																</tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												</fieldset>
+											</td>
+										</tr>
 			            				<tr>
 											<td style="padding-bottom: 7px;">
-												<fieldset style="height:10vh;">
+												<fieldset style="height:9vh; margin-bottom:0;">
 									        		<legend>Network Status</legend>
 									        		<table id="network-form">
 														<tr bgcolor="#f1f1f1">
@@ -136,11 +186,11 @@
 										</tr>
 										<tr>
 											<td style="padding-bottom: 7px;">
-												<fieldset style="height: 45vh;">
+												<fieldset style="height: 49vh; margin-bottom:0;">
 									        		<legend>Channel Status</legend>
 									        		<table>
 									        			<thead></thead>
-									        			<tbody style="height: 45vh;">
+									        			<tbody style="height: 47vh;">
 									        				<tr style="background: yellow;">
 										            			<td style="padding:0;width: 5vw;">
 														            <span>CCT</span>
@@ -201,7 +251,7 @@
 										</tr>
 										<tr>
 											<td style="padding-bottom: 7px;">
-												<fieldset>
+												<fieldset style="margin-bottom:0;">
 									        		<legend>Messages</legend>
 									        		<table bgcolor="#f2f2f2" style="width:100%;">
 									        			<thead></thead>
@@ -252,7 +302,7 @@
 										</tr>
 										<tr>
 											<td style="padding-bottom: 7px;">
-												<fieldset>
+												<fieldset style="margin-bottom:0;">
 									        		<legend>Remarks of Duty</legend>
 									        		<div id="remarks">
 														<textarea name="remarks">{{result['remarks']}}</textarea>
@@ -262,7 +312,7 @@
 										</tr>
 										<tr>
 											<td style="padding-bottom: 7px;">
-												<fieldset class="signature">
+												<fieldset class="signature" style="margin-bottom:0;">
 													<legend>Signature</legend>
 													<figure id="signature">
 														{% for sign in result['signature_path'] %}

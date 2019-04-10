@@ -320,8 +320,13 @@ a.navigator-links:hover {
     background: #e1e1e1;
 }
 
+.ch-rows tr {
+    width: 100%;
+    border-radius: none;
+}
+
 .ch-rows td {
-    text-align: center;
+    text-align: center;    
 }
 
 .rightpane {
@@ -331,7 +336,7 @@ a.navigator-links:hover {
 }
 
 .card {
-    margin-left: 7px;
+    margin-left: .45vw;
     min-height: 87vh;
     max-height: 87vh;
     background: #fff;
@@ -914,6 +919,15 @@ a.navigator-links:hover {
 
 .it-forms table td {
     padding-bottom: 0 !important;
+}
+
+.edit-eqp th {
+    padding: 5px;
+    width: 17vw;
+}
+
+.edit-eqp td {
+    width: 17vw;
 }
 
 body > footer {

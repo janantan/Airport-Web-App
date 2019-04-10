@@ -10,6 +10,7 @@ MONGO_HOST = "localhost"
 MONGO_PORT = 27017
 DB_NAME = 'atc_web_app'
 AMHS_DB_NAME = 'amhs_log'
+USERS_DB_NAME = 'users'
 #Config MongoDB
 
 def config_mongodb(mongo_host, mongo_port, db_name):

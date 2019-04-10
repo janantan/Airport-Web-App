@@ -21,6 +21,7 @@ import utils, config
 
 cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.DB_NAME)
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
+users_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.USERS_DB_NAME)
 UPLOAD_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/uploded_files/save_folder'
 SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -46,7 +47,8 @@ def allowed_file(filename):
 def home():
     session['log_no'] = cursor.log_records.estimated_document_count()
     session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
-    session['initial'] = cursor.users.find_one({'username': session['username']})['initial']
+    session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
+    session['initial'] = users_cursor.users.find_one({'username': session['username']})['initial']
     session['adsb_db'] = []
     session['statistics_flag'] = 0
     session['sorted_events'] = []
@@ -127,7 +129,7 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         
-        result = cursor.users.find_one({"username": username})
+        result = users_cursor.users.find_one({"username": username})
 
         if result:
             if sha256_crypt.verify(password, result['password']):
@@ -179,7 +181,7 @@ def register():
         new_password = request.form.get('password')
         confirm = request.form.get('confirm')
 
-        result = cursor.users.find_one({"username": users['username']})
+        result = users_cursor.users.find_one({"username": users['username']})
 
         if result:
             flash('Repeated Username! Please Try Another Username.', 'danger')
@@ -214,7 +216,7 @@ def register():
                 else:
                     users['signature'] = ''
 
-                cursor.users.insert_one(users)
+                users_cursor.users.insert_one(users)
                 message = Markup("Successful Sine up! Please <a style='color:#3c763d; font-weight: bold;' href='/login'>Sign in</a>.")
                 flash(message, 'success')
                 return redirect(url_for('login'))
@@ -231,12 +233,12 @@ def change_password():
         new_pass = request.form.get('password')
         confirm = request.form.get('confirm')
         
-        result = cursor.users.find_one({"username": session['username']})
+        result = users_cursor.users.find_one({"username": session['username']})
 
         if sha256_crypt.verify(current_pass, result['password']):
             if new_pass == confirm:
                 new_pass = sha256_crypt.hash(str(new_pass))
-                cursor.users.update_many(
+                users_cursor.users.update_many(
                         {"username": session['username']},
                         {'$set': {'password': new_pass}}
                         )
@@ -280,8 +282,16 @@ def atc_pdf(log_no):
 def amhs_pdf(log_no):
 
     result = amhs_cursor.records.find_one({"id": int(log_no)})
-    channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
+    channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
     msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
+    server_room_eqp = [
+        'Air Condition',
+        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
+        'Server(main) HP ProLiant DL380P G8',
+        'Server(backup) HP ProLiant DL380P G8',
+        'Cisco Switch WS-C2960-24TC-L',
+        'Cisco Router 2921'
+        ]
     network = ['server', 'supervisor', 'workstation', 'printer']
     msg_flag = 0
     for msg in msg_list:
@@ -300,6 +310,7 @@ def amhs_pdf(log_no):
         log_no=int(log_no),
         channel_list=channel_list,
         msg_list=msg_list,
+        server_room_eqp=server_room_eqp,
         network=network,
         msg_flag=msg_flag,
         notam_data=notam_data,
@@ -330,7 +341,8 @@ def logout():
     session.pop('metar', None)
     session.pop('department', None)
     session.pop('administration', None)
-
+    session.pop('amhs_log_no', None)
+    session.pop('it_log_no', None)
 
     return redirect(url_for('login'))
 
@@ -710,6 +722,7 @@ def team():
 @app.route('/amhs log form', methods=['GET', 'POST'])
 def amhs_log_form():
     if 'username' in session:
+        print('****', session['amhs_log_no'])
         result = amhs_cursor.records.find_one({"id": amhs_cursor.records.estimated_document_count()})
         wd = datetime.datetime.utcnow().weekday()
         session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
@@ -733,7 +746,15 @@ def amhs_log_form():
         else:
             today_shift = 'Night'
             today_wd = utils.fetch_day(str(wd+1))
-        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
+        server_room_eqp = [
+        'Air Condition',
+        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
+        'Server(main) HP ProLiant DL380P G8',
+        'Server(backup) HP ProLiant DL380P G8',
+        'Cisco Switch WS-C2960-24TC-L',
+        'Cisco Router 2921'
+        ]
+        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
 
         if result:
@@ -756,6 +777,10 @@ def amhs_log_form():
                 record['day'] = today_wd
                 record['shift'] = today_shift
                 record['team'] = ''
+                server_room_equipment = {}
+                for eqp in server_room_eqp:
+                    server_room_equipment[eqp] = {'status':'On', 'remark':''}
+                record['server_room_equipment'] = server_room_equipment
                 record['network'] = ["server", "supervisor", "workstation", "printer"]
                 for ch in channel_list:
                     record[ch+'_during'] = 'OK'
@@ -766,12 +791,17 @@ def amhs_log_form():
                 record['signature_path'].append(session['signature_path'])
                 amhs_cursor.records.insert_one(record)
                 session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
+                print('####', session['amhs_log_no'])
         else:
             logdata = None
             notam_data = None
             perm_data = None
+            server_room_equipment = {}
 
         if request.method == 'POST':
+            server_room_equipment = {}
+            for eqp in server_room_eqp: 
+                server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
             amhs_cursor.records.update_many(
                 {"id": session['amhs_log_no']},
                 {'$set': {
@@ -783,6 +813,7 @@ def amhs_log_form():
                 'team': request.form.get('team'),
                 'day': request.form.get('day'),
                 'shift': request.form.get('shift'),
+                'server_room_equipment': server_room_equipment,
                 'network': request.form.getlist('network'),
                 'tsa_during': request.form.get('tsa_during'),
                 'tsa_from': request.form.get('tsa_from'),
@@ -809,6 +840,11 @@ def amhs_log_form():
                 'mca_to': request.form.get('mca_to'),
                 'mca_reason': request.form.get('mca_reason'),
                 'mca_end': request.form.get('mca_end'),
+                'tis_during': request.form.get('tis_during'),
+                'tis_from': request.form.get('tis_from'),
+                'tis_to': request.form.get('tis_to'),
+                'tis_reason': request.form.get('tis_reason'),
+                'tis_end': request.form.get('tis_end'),
                 'fpl': request.form.get('fpl'),
                 'dla': request.form.get('dla'),
                 'chg': request.form.get('chg'),
@@ -821,7 +857,7 @@ def amhs_log_form():
             od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
             ov = update_signature['overtime'] if update_signature['overtime'][0] else []
             for initial in od+ov:
-                signature_result = cursor.users.find_one({'initial': initial})
+                signature_result = users_cursor.users.find_one({'initial': initial})
                 if signature_result['signature']:
                     file_like = io.BytesIO(signature_result['signature'])
                     signature = PIL.Image.open(file_like)
@@ -853,6 +889,7 @@ def amhs_log_form():
         result = logdata,
         today_shift=today_shift,
         channel_list=channel_list,
+        server_room_eqp=server_room_eqp,
         msg_list=msg_list,
         log_records_list=session['log_records_list'],
         notam_data=notam_data,
@@ -863,8 +900,16 @@ def amhs_log_form():
 def amhs_log(id_no):
     if 'username' in session:
         result = amhs_cursor.records.find_one({"id": int(id_no)})
-        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
+        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
+        server_room_eqp = [
+        'Air Condition',
+        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
+        'Server(main) HP ProLiant DL380P G8',
+        'Server(backup) HP ProLiant DL380P G8',
+        'Cisco Switch WS-C2960-24TC-L',
+        'Cisco Router 2921'
+        ]
         network = ['server', 'supervisor', 'workstation', 'printer']
         msg_flag = 0
         for msg in msg_list:
@@ -880,6 +925,7 @@ def amhs_log(id_no):
         result = result,
         channel_list=channel_list,
         msg_list=msg_list,
+        server_room_eqp=server_room_eqp,
         msg_flag=msg_flag,
         network=network,
         log_records_list=session['log_records_list'],
@@ -891,11 +937,22 @@ def amhs_log(id_no):
 def edit_amhs_log(id_no):
     if 'username' in session:
         result = amhs_cursor.records.find_one({"id": int(id_no)})
-        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca']
+        channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
+        server_room_eqp = [
+        'Air Condition',
+        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
+        'Server(main) HP ProLiant DL380P G8',
+        'Server(backup) HP ProLiant DL380P G8',
+        'Cisco Switch WS-C2960-24TC-L',
+        'Cisco Router 2921'
+        ]
         network = ['server', 'supervisor', 'workstation', 'printer']
         (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         if request.method == 'POST':
+            server_room_equipment = {}
+            for eqp in server_room_eqp: 
+                server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
             amhs_cursor.records.update_many(
                 {"id": int(id_no)},
                 {'$set': {
@@ -907,6 +964,7 @@ def edit_amhs_log(id_no):
                 'team': request.form.get('team'),
                 'day': request.form.get('day'),
                 'shift': request.form.get('shift'),
+                'server_room_equipment': server_room_equipment,
                 'network': request.form.getlist('network'),
                 'tsa_during': request.form.get('tsa_during'),
                 'tsa_from': request.form.get('tsa_from'),
@@ -933,6 +991,11 @@ def edit_amhs_log(id_no):
                 'mca_to': request.form.get('mca_to'),
                 'mca_reason': request.form.get('mca_reason'),
                 'mca_end': request.form.get('mca_end'),
+                'tis_during': request.form.get('tis_during'),
+                'tis_from': request.form.get('tis_from'),
+                'tis_to': request.form.get('tis_to'),
+                'tis_reason': request.form.get('tis_reason'),
+                'tis_end': request.form.get('tis_end'),
                 'fpl': request.form.get('fpl'),
                 'dla': request.form.get('dla'),
                 'chg': request.form.get('chg'),
@@ -948,6 +1011,7 @@ def edit_amhs_log(id_no):
         log_no=int(id_no),
         result = result,
         channel_list=channel_list,
+        server_room_eqp=server_room_eqp,
         msg_list=msg_list,
         network=network,
         log_records_list=session['log_records_list'],
@@ -958,34 +1022,20 @@ def edit_amhs_log(id_no):
 @app.route('/it log form', methods=['GET', 'POST'])
 def it_log_form():
     if 'username' in session:
+        users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology'})
+        AICT_personel = []
+        for r in users_result:
+            AICT_personel.append(r['first_name']+' '+r['last_name'])
         result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
         wd = datetime.datetime.utcnow().weekday()
         session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
         session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
         today = session['datetime']
-        if jdatetime.datetime.now().month > 6:
-            A = datetime.time(3, 30)
-            B = datetime.time(15, 30)
-        else:
-            A = datetime.time(2, 30)
-            B = datetime.time(14, 30)
-        if A <  datetime.datetime.utcnow().time() <= B:
-            today_shift = 'Day'
-            today_wd = utils.fetch_day(str(wd+1))
-        elif datetime.datetime.utcnow().time() <= A:
-            session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
-            session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
-            today = session['datetime']
-            today_shift = 'Night'
-            today_wd = utils.fetch_day(str(wd))
-        else:
-            today_shift = 'Night'
-            today_wd = utils.fetch_day(str(wd+1))
+        today_wd = utils.fetch_day(str(wd+1))
 
         if result:
-            if (today==result['shift_date'] and today_shift==result['shift']):
+            if (today==result['shift_date']):
                 logdata = result
-                session['log_records_list'] = utils.shift_brief(result, session['department'])
             else:
                 logdata = None
                 record = {'event_date': datetime.datetime.utcnow()}
@@ -995,62 +1045,45 @@ def it_log_form():
                     record['id'] = 1
                 record['shift_date'] = session['datetime']
                 record['shift_jdate'] = session['jdatetime']
-                record['on_duty'] = utils.regex(session['initial'])
+                record['present_members'] = request.form.getlist('present_members')
                 record['day'] = today_wd
-                record['shift'] = today_shift
                 record['team'] = ''
-                record['signature_path']=[]
-                record['signature_path'].append(session['signature_path'])
+                record['remarks'] = ''
                 amhs_cursor.it_records.insert_one(record)
-                session['amhs_log_no'] = amhs_cursor.it_records.estimated_document_count()
+                session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
+                session['log_records_list'].insert(6, record['present_members'])
         else:
             logdata = None
-        print(logdata)
-        print(amhs_cursor.it_records.estimated_document_count())
+            record = {'event_date': datetime.datetime.utcnow()}
+            if amhs_cursor.it_records.estimated_document_count():
+                record['id'] = amhs_cursor.it_records.estimated_document_count()+1
+            else:
+                record['id'] = 1
+            record['shift_date'] = session['datetime']
+            record['shift_jdate'] = session['jdatetime']
+            record['present_members'] = request.form.getlist('present_members')
+            record['day'] = today_wd
+            record['team'] = ''
+            record['remarks'] = ''
+            amhs_cursor.it_records.insert_one(record)
+            session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
+            session['log_records_list'].insert(6, record['present_members'])
 
         if request.method == 'POST':
             amhs_cursor.it_records.update_many(
-                {"id": session['amhs_log_no']},
+                {"id": session['it_log_no']},
                 {'$set': {
-                'id': session['amhs_log_no'],
-                'on_duty': utils.regex(request.form.get('on_duty').upper()),
-                'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
-                'overtime': utils.regex(request.form.get('overtime').upper()),
-                'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
+                'id': session['it_log_no'],
+                'present_members': request.form.getlist('present_members'),
                 'team': request.form.get('team'),
                 'day': request.form.get('day'),
-                'shift': request.form.get('shift')
+                'remarks': request.form.get('remarks')
                 }
                 }
                 )
-            update_signature = amhs_cursor.it_records.find_one({"id": session['amhs_log_no']})
-            update_signature_path=[]
-            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
-            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
-            for initial in od+ov:
-                signature_result = cursor.users.find_one({'initial': initial})
-                if signature_result['signature']:
-                    file_like = io.BytesIO(signature_result['signature'])
-                    signature = PIL.Image.open(file_like)
-                    if signature_result['signature_file_type'] == 'jpg':
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-                    else:
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-                else:
-                    initial_signature = url_for('static', filename='img/no_signature.jpg')
-                update_signature_path.append(initial_signature)
-
-            amhs_cursor.it_records.update_many(
-                    {"id": session['amhs_log_no']},
-                    {'$set': {'signature_path': update_signature_path}}
-                    )
             flash('Saved Successfuly!', 'success')
-            if not session['log_records_list']:
-                result = amhs_cursor.it_records.find_one({"id": session['amhs_log_no']})
-                session['log_records_list'] = utils.shift_brief(result, session['department'])
-            return redirect(url_for('amhs_log_form'))
+            session['log_records_list'].insert(6, request.form.getlist('present_members'))
+            return redirect(url_for('it_log_form'))
 
     return render_template('index.html',
         navigator="it log form",
@@ -1058,8 +1091,8 @@ def it_log_form():
         log_no=session['amhs_log_no'],
         wd=today_wd,
         result = logdata,
-        today_shift=today_shift,
-        log_records_list=session['log_records_list']
+        log_records_list=session['log_records_list'],
+        AICT_personel=AICT_personel
         )
 
 @app.route('/it forms/<form_number>', methods=['GET', 'POST'])
@@ -1915,7 +1948,7 @@ def present_members(log_no):
         present_members = []
         result = cursor.log_records.find_one({"id": int(log_no)})
         for name in result['team_members']:
-            users_result = cursor.users.find_one({"initial": name[1]})
+            users_result = users_cursor.users.find_one({"initial": name[1]})
             if users_result:
                 if users_result['photo']:
                     file_like = io.BytesIO(users_result['photo'])

@@ -1,4 +1,4 @@
-<div id="flight-form">
+<div id="flight-form" onclick="hideCheckboxes()">
 	<section>
 		<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
 			<a href="/it forms/i101" class="button"">Data Center</a>
@@ -40,7 +40,7 @@
 									             	<span>Team No.</span>
 										        </th>
 						            			<th style="width: 210px;">			            			         
-									            	<span>Day-Night</span>
+									            	<span>Present Members</span>
 										        </th>
 										    </tr>
 										    <tr>
@@ -71,45 +71,34 @@
 													</select>
 										        </td>
 										        <td>
-						              				{% if today_shift == "Day" %}{% set day_ck = 'checked' %}{% else %}{% set day_ck = '' %}{% endif %}
-										        	{% if today_shift == "Night" %}{% set night_ck = 'checked' %}{% else %}{% set night_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="shift" value="Day" {{day_ck}}/>Day</label>
-													<label style="display:inline-block;"><input type="radio" name="shift" value="Night" {{night_ck}}/>Night</label>
-										        </td>
-										    </tr>
-
-										    <tr style="background: yellow;">					    	
-										    	<th style="width: 210px;">
-										            <span>On-Duty</span>
-										        </th>
-										        <th style="width: 210px;">
-										            <span>Shift Switch</span>
-										        </th>
-										        <th style="width: 210px;">
-										            <span>Overtime</span>
-										        </th>
-										        <th style="width: 210px; font-size: 14px;">
-										            <span>Daily Leave</span>
-										        </th>
-										    </tr>
-										    <tr>					    	
-										    	<td style="width: 210px; padding-bottom:7px;">
-										    		{% if result %}
-							              				<input id="on_duty" type="text" name="on_duty" value="{{(', '.join(result['on_duty']))}}" size="7" style="text-transform:uppercase;" required />
-											    	{% else %}
-											    		<input id="on_duty" type="text" name="on_duty" value="{{session['initial']}}" size="7" style="text-transform:uppercase;" required />
-											    	{% endif %}
-										        </td>
-										        <td style="width: 210px; padding-bottom:7px;">
-						              				<input id="shift_switch" type="text" name="shift_switch" value="{{(', '.join(result['shift_switch']))}}" size="7" style="text-transform:uppercase;" />
-										        </td>
-										        <td style="width: 210px; padding-bottom:7px;">
-										        	<input id="overtime" type="text" name="overtime" value="{{(', '.join(result['overtime']))}}" size="7" style="text-transform:uppercase; text-align:center;" />
-										        </td>
-										    	<td style="width: 210px; padding-bottom:7px;">
-										    		<input id="daily_leave" type="text" name="daily_leave" value="{{(', '.join(result['daily_leave']))}}" size="7" style="text-transform:uppercase;" />
+										    		<div class="multiselect" style="margin-bottom: 0;">
+													    <div class="selectBox" onclick="showCheckboxes()" style="margin-bottom: 0; width: 100%;">
+															<select style="font-size:10px;">
+																<option id="present_members">{{(', '.join(result['present_members']))}}</option>
+															</select>
+															<div class="overSelect" style="margin-bottom: 0;"></div>
+														</div>
+														<div style="overflow: visible; position: absolute; margin-bottom:0; display: block; background:#fff;">
+															<div id="checkboxes" style="margin-bottom:0; width:200px;">
+																{% for i in range(AICT_personel|length) %}
+																	<label style="text-align: left; font-size: 13px; margin:0;">
+																	<input type="checkbox" name="present_members" onclick="ckboxFunction('ckbox{{AICT_personel[i]}}{{i+1}}')" id="ckbox{{AICT_personel[i]}}{{i+1}}" value="{{AICT_personel[i]}}" {% if AICT_personel[i] in result['present_members'] %}checked{% endif %}/>{{AICT_personel[i]}}</label>
+																{% endfor %}
+														    </div>
+														</div>
+													</div>
 										    	</td>
 										    </tr>
+										    <tr>
+												<td colspan="4" style="padding-bottom: 7px;">
+													<fieldset>
+										        		<legend style="text-align: left;">Remarks of Duty</legend>
+										        		<div id="remarks">
+															<textarea name="remarks">{{result['remarks']}}</textarea>
+														</div>
+													</fieldset>
+												</td>
+											</tr>
 										</tbody>
 								    </table>
 								</fieldset>
@@ -124,3 +113,39 @@
 		{% endif %}
 	</section>
 </div>
+
+<script type="text/javascript">
+	var expanded = true;
+	if (document.getElementById("present_members").value) {
+		var select_values = (document.getElementById("present_members").value).split(', ')
+	} else {
+		var select_values = []
+	}
+
+	function showCheckboxes() {
+		expanded = false;
+	}
+
+	function hideCheckboxes() {
+		var checkboxes = document.getElementById("checkboxes");
+		if (!expanded) {
+			checkboxes.style.display = "block";
+			expanded = true;
+		}
+		else {
+			checkboxes.style.display = "none";
+		}
+	}
+
+	function ckboxFunction(id_name) {
+		expanded = false;
+		if (document.getElementById(id_name).checked == true) {
+			select_values.push(document.getElementById(id_name).value);
+			document.getElementById("present_members").innerHTML = select_values;
+		} else {
+			var index = select_values.indexOf(document.getElementById(id_name).value);
+			select_values.splice(index, 1);
+			document.getElementById("present_members").innerHTML = select_values;
+		}
+	}
+</script>

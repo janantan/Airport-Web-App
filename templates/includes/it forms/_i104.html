@@ -55,15 +55,15 @@
 											'Air Condition 1',
 											'UPS Power Ware 9155-10KVA'
 											] %}
-											<tr>
+											<tr class="ch-rows">
 												<td>
 													{{item}}:
 												</td>
 												<td>
 						              				{% if result['office_bld '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
 										        	{% if result['office_bld '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Day" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Night" {{off_ck}}/>Off</label>
+					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="On" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Off" {{off_ck}}/>Off</label>
 										        </td>
 										        <td>
 													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'office_bld '+item}} remark">{{result['office_bld '+item+' remark']}}</textarea>
@@ -90,15 +90,15 @@
 											'Media Converter Planet Hesabgar',
 											'Power Injector Hesabgar'
 											] %}
-											<tr>
+											<tr class="ch-rows">
 												<td>
 													{{item}}:
 												</td>
 												<td>
 						              				{% if result['office_bld '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
 										        	{% if result['office_bld '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Day" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Night" {{off_ck}}/>Off</label>
+					              					<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="On" {% if result['office_bld '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
+													<label style="display:inline-block;"><input type="radio" name="{{'office_bld '+item}}" value="Off" {{off_ck}}/>Off</label>
 										        </td>
 										        <td>
 													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'office_bld '+item}} remark">{{result['office_bld '+item+' remark']}}</textarea>

@@ -10,7 +10,7 @@
 				        		<legend>On-Duty Info</legend>
 				        		<table>
 				        			<thead></thead>
-				        			<tbody style="margin-top: 15px; min-height: 28vh;">
+				        			<tbody style="margin-top: 15px; min-height: 29vh;">
 					            		<tr style="background: yellow;">
 					            			<th style="width: 210px;">
 									            <span>Date</span>
@@ -97,6 +97,62 @@
 							</fieldset>
 						</td>
 					</tr>
+					<tr class="it-forms">
+						<td style="padding-bottom: 7px;">
+							<fieldset class="other-forms">
+								<legend>Server Room</legend>
+								<table>
+									<thead>
+										<tr style="background: yellow;">
+											<th>
+												Equipments
+											</th>
+											<th>
+												Status
+											</th>
+											<th>
+												Remark
+											</th>
+										</tr>
+									</thead>
+									<tbody style="margin-top: 15px;">
+										{% for item in server_room_eqp %}
+											<tr class="ch-rows" style="display: block;">
+												<td style="font-size: 15px;">
+													{{item}}
+												</td>
+												{% if result['server_room_equipment'] %}
+													<td>
+							              				{% if result['server_room_equipment'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+											        	{% if result['server_room_equipment'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+						              					<label style="display:inline-block;"><input type="radio" name="{{item}}" value="On" {% if result['server_room_equipment'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{item}}" value="Off" {{off_ck}}/>Off</label>
+											        </td>
+											        {% if 'UPS' in item %}
+											        	<td>
+															<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark" placeholder="load %">{{result['server_room_equipment'][item]['remark']}}</textarea>
+														</td>
+											        {% else %}
+												        <td>
+															<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark">{{result['server_room_equipment'][item]['remark']}}</textarea>
+														</td>
+													{% endif %}
+												{% else %}
+													<td>
+						              					<label style="display:inline-block;"><input type="radio" name="{{item}}" value="On" checked/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{item}}" value="Off"/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark"></textarea>
+													</td>
+												{% endif %}
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
 					<tr>
 						<td style="padding-bottom: 7px;">
 							<fieldset style="height:10vh;">
@@ -165,7 +221,7 @@
 									        </th>
 									    </tr>
 				        			</thead>
-				        			<tbody style="margin-top: 15px; min-height: 35vh;">
+				        			<tbody style="margin-top: 15px; min-height: 45vh;">
 				        				{% for i in range(channel_list|length) %}
 						            		<tr class="ch-rows">
 						            			<td style="width: 50px; padding-bottom:7px;">

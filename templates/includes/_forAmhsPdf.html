@@ -82,6 +82,36 @@
 							<span>{{result['shift']}}</span>
 						</td>
 					</tr>
+					{% if result['server_room_equipment'] %}
+						<tr>
+							<th>
+	            				<span style="color: red;">Server Room</span>
+	            			</th>
+							<th colspan="2">
+								Equipments
+							</th>
+							<th>
+								Status
+							</th>
+							<th colspan="2">
+								Remark
+							</th>
+						</tr>
+						{% for item in server_room_eqp %}
+							<tr>
+								<td></td>
+								<td colspan="2" style="font-size: 15px;">
+									{{item}}
+								</td>
+								<td>
+									{{result['server_room_equipment'][item]['status']}}
+						        </td>
+						        <td colspan="2">
+									{{result['server_room_equipment'][item]['remark']}}
+								</td>
+							</tr>
+						{% endfor %}
+					{% endif %}
     				<tr>
             			<th style="padding-top: 40px;">
             				<span style="color: red;">Network Status</span>
