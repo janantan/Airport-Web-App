@@ -20,7 +20,7 @@
 												Inspector:
 											</td>
 											<td>
-												<input id="int_term inspector" type="text" name="int_term inspector" value="{{result['int_term inspector']}}" size="15"/>
+												<input style="text-transform: none;" id="int_term inspector" type="text" name="int_term inspector" value="{{result['int_term_inspector']}}" size="15"/>
 											</td>
 										</tr>
 										<tr>
@@ -28,7 +28,7 @@
 												Time:
 											</td>
 											<td>
-												<input type="time" name="int_term inspection_time" value="{{result['int_term inspection_time']}}"/>
+												<input type="time" name="int_term inspection_time" value="{{result['int_term_inspection_time']}}"/>
 											</td>
 										</tr>
 										<tr>
@@ -36,7 +36,7 @@
 												Remark:
 											</td>
 											<td colspan="2">
-												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="int_term fiber optic remark">{{result['int_term fiber optic remark']}}</textarea>
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="int_term remark">{{result['int_term_remark']}}</textarea>
 											</td>
 										</tr>
 									</tbody>
@@ -56,26 +56,33 @@
 												Room Temperature:
 											</td>
 											<td>
-												<input id="int_term room_temp" type="text" name="int_term room_temp" value="{{result['int_term room_temp']}}" size="7"/>
+												<input id="int_term room_temp" type="text" name="int_term room_temp" value="{{result['int_term_room_temp']}}" size="7"/>
 											</td>
 										</tr>
-										{% for item in [
-											'Air Condition 1',
-											'UPS Power Ware 9155-10KVA'
-											] %}
+										{% for item in int_term_cooling %}
 											<tr class="ch-rows">
 												<td>
 													{{item}}:
 												</td>
-												<td>
-						              				{% if result['int_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
-										        	{% if result['int_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" {% if result['int_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off" {{off_ck}}/>Off</label>
-										        </td>
-										        <td>
-													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
-												</td>
+												{% if result['int_term_cooling'] %}
+													<td>
+							              				{% if result['int_term_cooling'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+											        	{% if result['int_term_cooling'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+						              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" {% if result['int_term_cooling'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off" {{off_ck}}/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term_cooling'][item]['remark']}}</textarea>
+													</td>
+												{% else %}
+													<td>
+						              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" checked/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off"/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark"></textarea>
+													</td>
+												{% endif %}
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -90,25 +97,30 @@
 								<table>
 									<thead></thead>
 									<tbody>
-										{% for item in [
-											'Cisco Switch 2960-s',
-											'Switch D-Link 1008D',
-											'Switch D-Link 1008D Iran IR',
-											'SHDSL Patton Iran IR'
-											] %}
+										{% for item in int_term_rack_1 %}
 											<tr class="ch-rows">
 												<td>
 													{{item}}:
 												</td>
-												<td>
-						              				{% if result['int_term '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
-										        	{% if result['int_term '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" {% if result['int_term '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off" {{off_ck}}/>Off</label>
-										        </td>
-										        <td>
-													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
-												</td>
+												{% if result['int_term_rack_1'] %}
+													<td>
+							              				{% if result['int_term_rack_1'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+											        	{% if result['int_term_rack_1'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+						              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" {% if result['int_term_rack_1'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off" {{off_ck}}/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term_rack_1'][item]['remark']}}</textarea>
+													</td>
+												{% else %}
+													<td>
+						              					<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="On" checked/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'int_term '+item}}" value="Off"/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark"></textarea>
+													</td>
+												{% endif %}
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -123,17 +135,20 @@
 								<table>
 									<thead></thead>
 									<tbody>
-										{% for item in [
-											'First Check',
-											'End Check'
-											] %}
+										{% for item in fids_system %}
 											<tr>
 												<td>
 													{{item}}:
 												</td>
-										        <td>
-													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term '+item+' remark']}}</textarea>
-												</td>
+												{% if result['int_term_fids_system'] %}
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark">{{result['int_term_fids_system'][item]['remark']}}</textarea>
+													</td>
+												{% else %}
+													<td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'int_term '+item}} remark"></textarea>
+													</td>
+												{% endif %}
 											</tr>
 										{% endfor %}
 									</tbody>

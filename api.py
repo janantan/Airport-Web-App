@@ -17,7 +17,7 @@ import datetime
 import jdatetime
 import pdfkit
 import pathlib
-import utils, config
+import utils, config, equipments
 
 cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.DB_NAME)
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
@@ -58,11 +58,11 @@ def home():
         atc_result = cursor.log_records.find_one({"id": session['log_no']})
         if utils.if_today_shift(atc_result):
             session['log_records_list'] = utils.shift_brief(atc_result, session['department'])
-
     if session['amhs_log_no'] and (session['department'] == 'Aeronautical Information and Communication Technology'):
         amhs_result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
         if utils.if_today_shift(amhs_result):
             session['log_records_list'] = utils.shift_brief(amhs_result, session['department'])
+            session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": amhs_result['shift_date']})['present_members'])
 
 
     team_result = cursor.team.find()
@@ -761,6 +761,7 @@ def amhs_log_form():
             if (today==result['shift_date'] and today_shift==result['shift']):
                 logdata = result
                 session['log_records_list'] = utils.shift_brief(result, session['department'])
+                session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": today})['present_members'])
                 (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
             else:
                 logdata = None
@@ -902,14 +903,7 @@ def amhs_log(id_no):
         result = amhs_cursor.records.find_one({"id": int(id_no)})
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
-        server_room_eqp = [
-        'Air Condition',
-        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
-        'Server(main) HP ProLiant DL380P G8',
-        'Server(backup) HP ProLiant DL380P G8',
-        'Cisco Switch WS-C2960-24TC-L',
-        'Cisco Router 2921'
-        ]
+        server_room_eqp = equipments.amhs_server_room_eqp
         network = ['server', 'supervisor', 'workstation', 'printer']
         msg_flag = 0
         for msg in msg_list:
@@ -939,14 +933,7 @@ def edit_amhs_log(id_no):
         result = amhs_cursor.records.find_one({"id": int(id_no)})
         channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
         msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
-        server_room_eqp = [
-        'Air Condition',
-        'UPS PORSOO 6KVA PEC-IN 1106-LCD',
-        'Server(main) HP ProLiant DL380P G8',
-        'Server(backup) HP ProLiant DL380P G8',
-        'Cisco Switch WS-C2960-24TC-L',
-        'Cisco Router 2921'
-        ]
+        server_room_eqp = equipments.amhs_server_room_eqp
         network = ['server', 'supervisor', 'workstation', 'printer']
         (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         if request.method == 'POST':
@@ -1099,6 +1086,26 @@ def it_log_form():
 def it_forms(form_number):
     result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
     logdata = result if result else None
+    
+    data_center_cooling = equipments.data_center_cooling
+    data_center_server_rack = equipments.data_center_server_rack
+    data_center_switching_rack = equipments.data_center_switching_rack
+    data_center_fiber_optic_rack = equipments.data_center_fiber_optic_rack
+    data_center_transmission_rack = equipments.data_center_transmission_rack
+    data_center_communication_rack = equipments.data_center_communication_rack
+    data_center_power_room = equipments.data_center_power_room
+    dep_term_cooling = equipments.dep_term_cooling
+    dep_term_server_rack = equipments.dep_term_server_rack
+    dep_term_switching_rack = equipments.dep_term_switching_rack
+    int_term_cooling = equipments.int_term_cooling
+    int_term_rack_1 = equipments.int_term_rack_1
+    office_bld_cooling = equipments.office_bld_cooling
+    office_bld_rack_1 = equipments.office_bld_rack_1
+    tech_block_ups = equipments.tech_block_ups
+    tech_block_rack_1 = equipments.tech_block_rack_1
+    fids_system = equipments.fids_system
+    dc_antivirus = {'com_name':[], 'username':[], 'remark':[]}
+
     if form_number == 'i101':
         nav = "i101"
     elif form_number == 'i102':
@@ -1110,10 +1117,202 @@ def it_forms(form_number):
     elif form_number == 'i105':
         nav = "i105"
 
+    if request.method == 'POST':
+        if form_number == 'i101':
+            dc_inspector = request.form.get('dc inspector')
+            dc_inspection_time = request.form.get('dc inspection_time')
+            dc_remark = request.form.get('dc remark')
+            dc_room_temp = request.form.get('dc room_temp')
+            dc_cooling = {}
+            for eqp in data_center_cooling: 
+                dc_cooling[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_server_rack = {}
+            for eqp in data_center_server_rack: 
+                dc_server_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_switching_rack = {}
+            for eqp in data_center_switching_rack: 
+                dc_switching_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_fiber_optic_rack = {}
+            for eqp in data_center_fiber_optic_rack: 
+                dc_fiber_optic_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_no_active_equipment = request.form.get('dc No Active Equipment')
+            dc_fiber_optic_remark = request.form.get('dc fiber optic remark')
+            dc_transmission_rack = {}
+            for eqp in data_center_transmission_rack: 
+                dc_transmission_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_communication_rack = {}
+            for eqp in data_center_communication_rack: 
+                dc_communication_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_power_room_temp = request.form.get('dc power_room_temp')
+            dc_power_room = {}
+            for eqp in data_center_power_room: 
+                dc_power_room[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            for i in range (100):
+                if request.form.get('dc com_name_'+str(i)):
+                    dc_antivirus['com_name'].append(request.form.get('dc com_name_'+str(i)))
+                    dc_antivirus['username'].append(request.form.get('dc username_'+str(i)))
+                    dc_antivirus['remark'].append(request.form.get('dc antevirus_remark_'+str(i)))
+            print(dc_antivirus)
+            amhs_cursor.it_records.update_many(
+                {"id": session['it_log_no']},
+                {'$set': {
+                'id': session['it_log_no'],
+                'data_center_inspector': dc_inspector,
+                'data_center_inspection_time': dc_inspection_time,
+                'data_center_remark': dc_remark,
+                'data_center_room_temp': dc_room_temp,
+                'data_center_cooling': dc_cooling,
+                'data_center_server_rack': dc_server_rack,
+                'data_center_switching_rack': dc_switching_rack,
+                'data_center_fiber_optic_rack': dc_fiber_optic_rack,
+                'data_center_no_active_equipment': dc_no_active_equipment,
+                'data_center_fiber_optic_remark': dc_fiber_optic_remark,
+                'data_center_transmission_rack': dc_transmission_rack,
+                'data_center_communication_rack': dc_communication_rack,
+                'data_center_power_room_temp': dc_power_room_temp,
+                'data_center_power_room': dc_power_room,
+                'data_center_antivirus': dc_antivirus
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('it_log_form'))
+        elif form_number == 'i102':
+            dt_inspector = request.form.get('dep_term inspector')
+            dt_inspection_time = request.form.get('dep_term inspection_time')
+            dt_remark = request.form.get('dep_term remark')
+            dt_cooling = {}
+            for eqp in dep_term_cooling: 
+                dt_cooling[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_server_rack = {}
+            for eqp in dep_term_server_rack: 
+                dt_server_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_switching_rack = {}
+            for eqp in dep_term_switching_rack: 
+                dt_switching_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_fids_system = {}
+            for eqp in fids_system: 
+                dt_fids_system[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": session['it_log_no']},
+                {'$set': {
+                'id': session['it_log_no'],
+                'dep_term_inspector': dt_inspector,
+                'dep_term_inspection_time': dt_inspection_time,
+                'dep_term_remark': dt_remark,
+                'dep_term_cooling': dt_cooling,
+                'dep_term_server_rack': dt_server_rack,
+                'dep_term_switching_rack': dt_switching_rack,
+                'dep_term_fids_system': dt_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('it_log_form'))
+        elif form_number == 'i103':
+            it_inspector = request.form.get('int_term inspector')
+            it_inspection_time = request.form.get('int_term inspection_time')
+            it_remark = request.form.get('int_term remark')
+            it_room_temp = request.form.get('int_term room_temp')
+            it_cooling = {}
+            for eqp in int_term_cooling: 
+                it_cooling[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            it_rack_1 = {}
+            for eqp in int_term_rack_1: 
+                it_rack_1[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            it_fids_system = {}
+            for eqp in fids_system: 
+                it_fids_system[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": session['it_log_no']},
+                {'$set': {
+                'id': session['it_log_no'],
+                'int_term_inspector': it_inspector,
+                'int_term_inspection_time': it_inspection_time,
+                'int_term_remark': it_remark,
+                'int_term_room_temp': it_room_temp,
+                'int_term_cooling': it_cooling,
+                'int_term_rack_1': it_rack_1,
+                'int_term_fids_system': it_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('it_log_form'))
+        elif form_number == 'i104':
+            ob_inspector = request.form.get('office_bld inspector')
+            ob_inspection_time = request.form.get('office_bld inspection_time')
+            ob_remark = request.form.get('office_bld remark')
+            ob_cooling = {}
+            for eqp in office_bld_cooling: 
+                ob_cooling[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            ob_rack_1 = {}
+            for eqp in office_bld_rack_1: 
+                ob_rack_1[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            ob_fids_system = {}
+            for eqp in fids_system: 
+                ob_fids_system[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": session['it_log_no']},
+                {'$set': {
+                'id': session['it_log_no'],
+                'office_bld_inspector': ob_inspector,
+                'office_bld_inspection_time': ob_inspection_time,
+                'office_bld_remark': ob_remark,
+                'office_bld_cooling': ob_cooling,
+                'office_bld_rack_1': ob_rack_1,
+                'office_bld_fids_system': ob_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('it_log_form'))
+        elif form_number == 'i105':
+            tb_inspector = request.form.get('tech_block inspector')
+            tb_inspection_time = request.form.get('tech_block inspection_time')
+            tb_remark = request.form.get('tech_block remark')
+            tb_ups = {}
+            for eqp in tech_block_ups: 
+                tb_ups[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
+            tb_rack_1 = {}
+            for eqp in tech_block_rack_1:
+                tb_rack_1[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": session['it_log_no']},
+                {'$set': {
+                'id': session['it_log_no'],
+                'tech_block_inspector': tb_inspector,
+                'tech_block_inspection_time': tb_inspection_time,
+                'tech_block_remark': tb_remark,
+                'tech_block_ups': tb_ups,
+                'tech_block_rack_1': tb_rack_1
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('it_log_form'))
+
     return render_template('index.html',
         navigator="it log form",
         nav=nav,
         result=logdata,
+        data_center_cooling = equipments.data_center_cooling,
+        data_center_server_rack = equipments.data_center_server_rack,
+        data_center_switching_rack = equipments.data_center_switching_rack,
+        data_center_fiber_optic_rack = equipments.data_center_fiber_optic_rack,
+        data_center_transmission_rack = equipments.data_center_transmission_rack,
+        data_center_communication_rack = equipments.data_center_communication_rack,
+        data_center_power_room = equipments.data_center_power_room,
+        dep_term_cooling = equipments.dep_term_cooling,
+        dep_term_server_rack = equipments.dep_term_server_rack,
+        dep_term_switching_rack = equipments.dep_term_switching_rack,
+        int_term_cooling = equipments.int_term_cooling,
+        int_term_rack_1 = equipments.int_term_rack_1,
+        office_bld_cooling = equipments.office_bld_cooling,
+        office_bld_rack_1 = equipments.office_bld_rack_1,
+        tech_block_ups = equipments.tech_block_ups,
+        tech_block_rack_1 = equipments.tech_block_rack_1,
+        fids_system = equipments.fids_system,
         log_records_list=session['log_records_list']
         )
 

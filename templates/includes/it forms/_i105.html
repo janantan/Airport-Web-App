@@ -20,7 +20,7 @@
 												Inspector:
 											</td>
 											<td>
-												<input id="tech_block inspector" type="text" name="tech_block inspector" value="{{result['tech_block inspector']}}" size="15"/>
+												<input style="text-transform: none;" id="tech_block inspector" type="text" name="tech_block inspector" value="{{result['tech_block_inspector']}}" size="15"/>
 											</td>
 										</tr>
 										<tr>
@@ -28,7 +28,7 @@
 												Time:
 											</td>
 											<td>
-												<input type="time" name="tech_block inspection_time" value="{{result['tech_block inspection_time']}}"/>
+												<input type="time" name="tech_block inspection_time" value="{{result['tech_block_inspection_time']}}"/>
 											</td>
 										</tr>
 										<tr>
@@ -36,7 +36,7 @@
 												Remark:
 											</td>
 											<td colspan="2">
-												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="tech_block fiber optic remark">{{result['tech_block fiber optic remark']}}</textarea>
+												<textarea style="width:500px; height:40px; font-size:15px; direction: ltr;" name="tech_block remark">{{result['tech_block_remark']}}</textarea>
 											</td>
 										</tr>
 									</tbody>
@@ -51,22 +51,30 @@
 								<table>
 									<thead></thead>
 									<tbody>
-										{% for item in [
-											'UPS Power Ware 9130-3KVA'
-											] %}
+										{% for item in tech_block_ups %}
 											<tr>
 												<td>
 													{{item}}:
 												</td>
-												<td>
-						              				{% if result['tech_block '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
-										        	{% if result['tech_block '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" {% if result['tech_block '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off" {{off_ck}}/>Off</label>
-										        </td>
-										        <td>
-													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark">{{result['tech_block '+item+' remark']}}</textarea>
-												</td>
+												{% if result['tech_block_ups'] %}
+													<td>
+							              				{% if result['tech_block_ups'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+											        	{% if result['tech_block_ups'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+						              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" {% if result['tech_block_ups'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off" {{off_ck}}/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark">{{result['tech_block_ups'][item]['remark']}}</textarea>
+													</td>
+												{% else %}
+													<td>
+						              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" checked/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off"/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark"></textarea>
+													</td>
+												{% endif %}
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -81,22 +89,30 @@
 								<table>
 									<thead></thead>
 									<tbody>
-										{% for item in [
-											'Cisco Switch 2960-24TC-L'
-											] %}
+										{% for item in tech_block_rack_1 %}
 											<tr>
 												<td>
 													{{item}}:
 												</td>
-												<td>
-						              				{% if result['tech_block '+item] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
-										        	{% if result['tech_block '+item] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
-					              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" {% if result['tech_block '+item] %}on_ck{%else%}checked{% endif %}/>On</label>
-													<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off" {{off_ck}}/>Off</label>
-										        </td>
-										        <td>
-													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark">{{result['tech_block '+item+' remark']}}</textarea>
-												</td>
+												{% if result['tech_block_rack_1'] %}
+													<td>
+							              				{% if result['tech_block_rack_1'][item]['status'] == "On" %}{% set on_ck = 'checked' %}{% else %}{% set on_ck = '' %}{% endif %}
+											        	{% if result['tech_block_rack_1'][item]['status'] == "Off" %}{% set off_ck = 'checked' %}{% else %}{% set off_ck = '' %}{% endif %}
+						              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" {% if result['tech_block_rack_1'][item]['status'] %}{{on_ck}}{%else%}checked{% endif %}/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off" {{off_ck}}/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark">{{result['tech_block_rack_1'][item]['remark']}}</textarea>
+													</td>
+												{% else %}
+													<td>
+						              					<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="On" checked/>On</label>
+														<label style="display:inline-block;"><input type="radio" name="{{'tech_block '+item}}" value="Off"/>Off</label>
+											        </td>
+											        <td>
+														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{'tech_block '+item}} remark"></textarea>
+													</td>
+												{% endif %}
 											</tr>
 										{% endfor %}
 									</tbody>
