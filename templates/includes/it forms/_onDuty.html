@@ -1,12 +1,23 @@
 <div id="flight-form" onclick="hideCheckboxes()">
 	<section>
-		<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
-			<a href="/it forms/i101" class="button"">Data Center</a>
-			<a href="/it forms/i102" class="button">Departure Terminal</a>
-			<a href="/it forms/i103" class="button">International Terminal</a>
-			<a href="/it forms/i104" class="button">Office Building</a>
-			<a href="/it forms/i105" class="button">Technical Block</a>
-		</div>
+		{% if 'edit' in request.base_url %}
+			<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
+				<a href="/it logs/{{log_no}}/i101/edit" class="button"">Data Center</a>
+				<a href="/it logs/{{log_no}}/i102/edit" class="button">Departure Terminal</a>
+				<a href="/it logs/{{log_no}}/i103/edit" class="button">International Terminal</a>
+				<a href="/it logs/{{log_no}}/i104/edit" class="button">Office Building</a>
+				<a href="/it logs/{{log_no}}/i105/edit" class="button">Technical Block</a>
+				<span style="padding:10px; float:right; font-size:14px; color:red;">Edit Log Number {{log_no}}</span>
+			</div>
+		{% else %}
+			<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
+				<a href="/it forms/i101" class="button"">Data Center</a>
+				<a href="/it forms/i102" class="button">Departure Terminal</a>
+				<a href="/it forms/i103" class="button">International Terminal</a>
+				<a href="/it forms/i104" class="button">Office Building</a>
+				<a href="/it forms/i105" class="button">Technical Block</a>
+			</div>
+		{% endif %}
 		{% if nav == "i101" %}
 			{% include 'includes/it forms/_i101.html' %}
 		{% elif nav == "i102" %}
@@ -44,10 +55,17 @@
 										        </th>
 										    </tr>
 										    <tr>
-						            			<td>
-									            	<p class="alert-datetime">{{session['datetime']}}</p>
-													<p class="alert-datetime">{{session['jdatetime']}}</p>
-										        </td>
+										    	{% if 'edit' in request.base_url %}
+										    		<td>
+										            	<p>{{result['shift_date']}}</p>
+														<p>{{result['shift_jdate']}}</p>
+											        </td>
+										    	{% else %}
+							            			<td>
+										            	<p class="alert-datetime">{{session['datetime']}}</p>
+														<p class="alert-datetime">{{session['jdatetime']}}</p>
+											        </td>
+										        {% endif %}
 										        <td>
 										        	<select name="day" id="day">
 														<option>{{wd}}</option>
@@ -107,7 +125,10 @@
 					</tbody>
 				</table>
 				<div style="margin:12px 0 0 15px;">
-					<input style="text-transform: none;" type="submit" value="Save" /> 
+					<input style="text-transform: none;" type="submit" value="Save" />
+					{% if 'edit' in request.base_url %}
+						<a href="/it logs/{{log_no}}/all" class="button" style="background-color: #f3f3f3;">Back</a>
+					{% endif %}
 				</div>
 			</form>
 		{% endif %}

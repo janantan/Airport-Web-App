@@ -771,11 +771,22 @@ a.navigator-links:hover {
     padding: 5px;
 }
 
+#it-shift-brief tr td {
+    font-family: 'Bradley Hand ITC';
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+}
+
 #second-fieldset th {
     padding-top: 40px;
     width: 180px;
     color: #aaa;
     text-align: center;
+}
+
+.padding-top tr th {
+    padding-top:15px !important;
 }
 
 #second-fieldset td {

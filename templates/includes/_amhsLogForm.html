@@ -142,54 +142,25 @@
 						              					<label style="display:inline-block;"><input type="radio" name="{{item}}" value="On" checked/>On</label>
 														<label style="display:inline-block;"><input type="radio" name="{{item}}" value="Off"/>Off</label>
 											        </td>
-											        <td>
-														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark"></textarea>
-													</td>
+											        {% if 'UPS' in item %}
+												        <td>
+															<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark" placeholder="load %"></textarea>
+														</td>
+													{% else %}
+														<td>
+															<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="{{item}} remark"></textarea>
+														</td>
+													{% endif %}
 												{% endif %}
 											</tr>
 										{% endfor %}
-									</tbody>
-								</table>
-							</fieldset>
-						</td>
-					</tr>
-					<tr>
-						<td style="padding-bottom: 7px;">
-							<fieldset style="height:10vh;">
-				        		<legend>Network Status</legend>
-				        		<table id="network-form">
-				        			<thead></thead>
-				        			<tbody>
-										<tr bgcolor="#f1f1f1">
-											<label>
-												{% if result['network'] %}
-													<td style="padding-bottom: 7px;">
-														Server <input type="checkbox" name="network" value="server" {% if 'server' in result['network'] %}checked{% endif %} /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Supervisor <input type="checkbox" name="network" value="supervisor" {% if 'supervisor' in result['network'] %}checked{% endif %} /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Workstation <input type="checkbox" name="network" value="workstation" {% if 'workstation' in result['network'] %}checked{% endif %} /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Printer <input type="checkbox" name="network" value="printer" {% if 'printer' in result['network'] %}checked{% endif %} /></label>
-													</td>
-												{% else %}
-													<td style="padding-bottom: 7px;">
-														Server <input type="checkbox" name="network" value="server" checked /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Supervisor <input type="checkbox" name="network" value="supervisor" checked /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Workstation <input type="checkbox" name="network" value="workstation" checked /></label>
-													</td>
-													<td style="padding-bottom: 7px;">
-														Printer <input type="checkbox" name="network" value="printer" checked /></label>
-													</td>
-												{% endif %}
-											</label>			
+										<tr>
+											<td>
+												Room Temperature:
+											</td>
+											<td>
+												<input style="text-transform: none;" type="text" name="room_temp" value="{{result['room_temp']}}" size="7"/>
+											</td>
 										</tr>
 									</tbody>
 								</table>

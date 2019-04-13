@@ -151,7 +151,10 @@
 				</tbody>
 			</table>
 			<div style="margin:12px 0 0 15px;">
-				<input style="text-transform: none;" type="submit" value="Save" /> 
+				<input style="text-transform: none;" type="submit" value="Save" />
+				{% if 'edit' in request.base_url %}
+					<a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Back</a>
+				{% endif %}
 			</div>
 		</form>
 	</section>

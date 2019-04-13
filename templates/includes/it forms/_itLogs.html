@@ -1,0 +1,986 @@
+<div>
+	<section>
+		<div id="tab" style="margin:0 10px; font-size:.85vw; font-weight:bold;">
+			<a href="/it logs/{{log_no}}/i101" class="button"">Data Center</a>
+			<a href="/it logs/{{log_no}}/i102" class="button">Departure Terminal</a>
+			<a href="/it logs/{{log_no}}/i103" class="button">International Terminal</a>
+			<a href="/it logs/{{log_no}}/i104" class="button">Office Building</a>
+			<a href="/it logs/{{log_no}}/i105" class="button">Technical Block</a>
+		</div>
+		{% if nav == "i101" %}
+			<table id="freeze-wholelog">
+				<thead></thead>
+				<tbody style="height: 70vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height: 60vh;">
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}} (Data Center)</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="min-height: 28vh; height: 57vh;">
+				        				<tr>
+											<th style="width: 15vw;">
+					            				<span style="color: red;">Inspection Information</span>
+					            			</th>
+											<th colspan="2" style="width: 20vw;">
+												Inspector
+											</th>
+											<th style="width: 5vw;">
+												Time
+											</th>
+											<th colspan="2" style="width: 15vw;">
+												Remark
+											</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td colspan="2">
+												{{result['data_center_inspector']}}
+											</td>
+											<td>
+												{{result['data_center_inspection_time']}}
+									        </td>
+									        <td colspan="2">
+												{{result['data_center_remark']}}
+											</td>
+										</tr>
+										<tr><td colspan="5"><hr></td></tr>
+				        				{% if result['data_center_cooling'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Cooling</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_cooling %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_cooling'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_cooling'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td></td><td colspan="3"><hr></td></tr>
+											<tr>
+												<td></td>
+												<td>
+													Room Tempreture:
+												</td>
+												<td>
+													{{result['data_center_room_temp']}}
+												</td>
+											</tr>
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_server_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Server Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_server_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_server_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_server_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_switching_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Switching Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_switching_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_switching_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_switching_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_fiber_optic_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Fiber Optic Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_fiber_optic_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_fiber_optic_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_fiber_optic_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											{% if 'No Active Equipment' in result['data_center_transmission_rack'] %}
+												<tr><td></td><td colspan="3"><hr></td></tr>
+												<tr>
+													<td></td>
+													<td>
+														<span>No Active Equipment: </span><span style="color: red;"> ✓</span>
+													</td>
+													<td colspan="2">
+														{{result['data_center_fiber_optic_remark']}}
+													</td>
+												</tr>
+											{% endif %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_transmission_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Transmission Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_transmission_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_transmission_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_transmission_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_communication_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Communication Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_communication_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_communication_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_communication_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_power_room'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Power Room</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in data_center_power_room %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['data_center_power_room'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_power_room'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td></td><td colspan="3"><hr></td></tr>
+											<tr>
+												<td></td>
+												<td>
+													Room Tempreture:
+												</td>
+												<td>
+													{{result['data_center_power_room_temp']}}
+												</td>
+											</tr>
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['data_center_antivirus'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Antivirus Check List</span>
+						            			</th>
+												<th colspan="2">
+													Computer Name
+												</th>
+												<th>
+													Username
+												</th>
+												<th colspan="2">
+													Found Viruses & Remark
+												</th>
+											</tr>
+											{% for i in range(result['data_center_antivirus']['com_name']|length) %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{result['data_center_antivirus']['com_name'][i]}}
+													</td>
+													<td>
+														{{result['data_center_antivirus']['username'][i]}}
+											        </td>
+											        <td colspan="2">
+														{{result['data_center_antivirus']['remark'][i]}}
+													</td>
+												</tr>
+											{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{% elif nav == "i102" %}
+			<table id="freeze-wholelog">
+				<thead></thead>
+				<tbody style="height: 70vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height: 60vh;">
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}} (Departure Terminal)</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="min-height: 28vh; height: 57vh;">
+				        				<tr>
+											<th style="width: 15vw;">
+					            				<span style="color: red;">Inspection Information</span>
+					            			</th>
+											<th colspan="2" style="width: 20vw;">
+												Inspector
+											</th>
+											<th style="width: 5vw;">
+												Time
+											</th>
+											<th colspan="2" style="width: 15vw;">
+												Remark
+											</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td colspan="2">
+												{{result['dep_term_inspector']}}
+											</td>
+											<td>
+												{{result['dep_term_inspection_time']}}
+									        </td>
+									        <td colspan="2">
+												{{result['dep_term_remark']}}
+											</td>
+										</tr>
+										<tr><td colspan="5"><hr></td></tr>
+				        				{% if result['dep_term_cooling'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Cooling & UPS</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in dep_term_cooling %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['dep_term_cooling'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['dep_term_cooling'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['dep_term_server_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Server Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in dep_term_server_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['dep_term_server_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['dep_term_server_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['dep_term_switching_rack'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Switching Rack</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in dep_term_switching_rack %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['dep_term_switching_rack'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['dep_term_switching_rack'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['dep_term_fids_system'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">FIDS System</span>
+						            			</th>
+												<th colspan="2">
+													Check
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in fids_system %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+											        <td colspan="2">
+														{{result['dep_term_fids_system'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{% elif nav == "i103" %}
+			<table id="freeze-wholelog">
+				<thead></thead>
+				<tbody style="height: 70vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height: 60vh;">
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}} (International Terminal)</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="min-height: 28vh; height: 57vh;">
+				        				<tr>
+											<th style="width: 15vw;">
+					            				<span style="color: red;">Inspection Information</span>
+					            			</th>
+											<th colspan="2" style="width: 20vw;">
+												Inspector
+											</th>
+											<th style="width: 5vw;">
+												Time
+											</th>
+											<th colspan="2" style="width: 15vw;">
+												Remark
+											</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td colspan="2">
+												{{result['int_term_inspector']}}
+											</td>
+											<td>
+												{{result['int_term_inspection_time']}}
+									        </td>
+									        <td colspan="2">
+												{{result['int_term_remark']}}
+											</td>
+										</tr>
+										<tr><td colspan="5"><hr></td></tr>
+				        				{% if result['int_term_cooling'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Cooling & UPS</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in int_term_cooling %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['int_term_cooling'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['int_term_cooling'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td></td><td colspan="3"><hr></td></tr>
+											<tr>
+												<td></td>
+												<td>
+													Room Tempreture:
+												</td>
+												<td>
+													{{result['int_term_room_temp']}}
+												</td>
+											</tr>
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['int_term_rack_1'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Rack (1)</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in int_term_rack_1 %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['int_term_rack_1'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['int_term_rack_1'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['int_term_fids_system'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">FIDS System</span>
+						            			</th>
+												<th colspan="2">
+													Check
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in fids_system %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+											        <td colspan="2">
+														{{result['int_term_fids_system'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{% elif nav == "i104" %}
+			<table id="freeze-wholelog">
+				<thead></thead>
+				<tbody style="height: 70vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height: 60vh;">
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}} (Office Building)</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="min-height: 28vh; height: 57vh;">
+				        				<tr>
+											<th style="width: 15vw;">
+					            				<span style="color: red;">Inspection Information</span>
+					            			</th>
+											<th colspan="2" style="width: 20vw;">
+												Inspector
+											</th>
+											<th style="width: 5vw;">
+												Time
+											</th>
+											<th colspan="2" style="width: 15vw;">
+												Remark
+											</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td colspan="2">
+												{{result['office_bld_inspector']}}
+											</td>
+											<td>
+												{{result['office_bld_inspection_time']}}
+									        </td>
+									        <td colspan="2">
+												{{result['office_bld_remark']}}
+											</td>
+										</tr>
+										<tr><td colspan="5"><hr></td></tr>
+				        				{% if result['office_bld_cooling'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Cooling & UPS</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in office_bld_cooling %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['office_bld_cooling'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['office_bld_cooling'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['office_bld_rack_1'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Rack (1)</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in office_bld_rack_1 %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['office_bld_rack_1'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['office_bld_rack_1'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['office_bld_fids_system'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Arrival Terminal FIDS System</span>
+						            			</th>
+												<th colspan="2">
+													Check
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in fids_system %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+											        <td colspan="2">
+														{{result['office_bld_fids_system'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{% elif nav == "i105" %}
+			<table id="freeze-wholelog">
+				<thead></thead>
+				<tbody style="height: 70vh;">
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset style="height: 60vh;">
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}} (Technical Block)</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="min-height: 28vh; height: 57vh;">
+				        				<tr>
+											<th style="width: 15vw;">
+					            				<span style="color: red;">Inspection Information</span>
+					            			</th>
+											<th colspan="2" style="width: 20vw;">
+												Inspector
+											</th>
+											<th style="width: 5vw;">
+												Time
+											</th>
+											<th colspan="2" style="width: 15vw;">
+												Remark
+											</th>
+										</tr>
+										<tr>
+											<td></td>
+											<td colspan="2">
+												{{result['tech_block_inspector']}}
+											</td>
+											<td>
+												{{result['tech_block_inspection_time']}}
+									        </td>
+									        <td colspan="2">
+												{{result['tech_block_remark']}}
+											</td>
+										</tr>
+										<tr><td colspan="5"><hr></td></tr>
+				        				{% if result['tech_block_ups'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">UPS</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in tech_block_ups %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['tech_block_ups'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['tech_block_ups'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+											<tr><td colspan="5"><hr></td></tr>
+										{% endif %}
+										{% if result['tech_block_rack_1'] %}
+											<tr>
+												<th>
+						            				<span style="color: red;">Rack (1)</span>
+						            			</th>
+												<th colspan="2">
+													Equipments
+												</th>
+												<th>
+													Status
+												</th>
+												<th colspan="2">
+													Remark
+												</th>
+											</tr>
+											{% for item in tech_block_rack_1 %}
+												<tr>
+													<td></td>
+													<td colspan="2" style="font-size: 15px;">
+														{{item}}
+													</td>
+													<td>
+														{{result['tech_block_rack_1'][item]['status']}}
+											        </td>
+											        <td colspan="2">
+														{{result['tech_block_rack_1'][item]['remark']}}
+													</td>
+												</tr>
+											{% endfor %}
+										{% endif %}
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		{% else %}
+			<table>
+				<thead></thead>
+				<tbody>
+					<tr>
+						<td style="padding-bottom: 7px;">
+							<fieldset>
+				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}}</legend>
+				        		<table id="it-shift-brief">
+				        			<thead></thead>
+				        			<tbody style="margin-top: 15px; min-height: 28vh;">
+					            		<tr>
+					            			<td>
+								             	<span class="font-style">Team No.</span>
+									        </td>
+									        <td class="right-border" style="color: red;">
+					              				<span>{{result['team']}}</span>
+									        </td>
+									        <td>
+												<span class="font-style">UTC Date:</span>
+											</td>
+											<td>
+												<span>{{result['shift_date']}}</span>
+											</td>
+									    </tr>
+									    <tr>
+					            			<td>			            			         
+								            	<span class="font-style">Present Members</span>
+									        </td>
+									        <td class="right-border" style="color: red;">
+												<span>{{(', '.join(result['present_members']))}}</span>
+											</td>
+											<td>
+												<span class="font-style">LCL Date:</span>
+											</td>
+											<td>
+												<span>{{result['shift_jdate']}}</span>
+											</td>
+									    </tr>
+									    <tr>
+					            			<td></td>
+									        <td class="right-border"></td>
+											<td>
+												<span class="font-style">Week Day:</span>
+											</td>
+											<td>
+												<span>{{result['day']}}</span>
+											</td>
+									    </tr>
+									    {% if result['remarks'] %}
+										    <tr>
+						            			<th>
+						            				<span style="color: red;">Remarks</span>
+						            			</th>
+						            			<th colspan="3">
+						            				<span></span><hr>
+						            			</th>
+										    </tr>
+										    <tr>
+						            			<td></td>
+						            			<td colspan="3" style="text-align: right; direction: rtl;">
+						            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
+						            			</td>
+										    </tr>
+					    				{% endif %}
+									</tbody>
+							    </table>
+							</fieldset>
+						</td>
+					</tr>					
+				</tbody>
+			</table>
+		{% endif %}
+		<table>
+			<tr id="wholelog-links">
+				<td>
+					<ul style="margin-top: -3vh;">
+						{% if 'all' in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							<li><a href="/it-pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
+						{% elif 'i101' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% elif 'i102' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/i102/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% elif 'i103' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% elif 'i104' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% elif 'i105' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% endif %}
+						{% if 'all' not in request.base_url %}
+							<li><a href="/it logs/{{log_no}}/all" class="button" style="background-color: #f3f3f3;">Back</a></li>
+						{% endif %}
+						{% if 'all' in request.base_url %}
+							{% if log_no >= session['it_log_no'] %}
+								<li style="float: right;"><a class="next" title="Next Shift"></a></li>
+							{% else %}
+								<li style="float: right;"><a href="/it logs/{{log_no+1}}/all" class="next" title="Next Shift"></a></li>
+							{% endif %}
+							<li style="float: right; font-size: 16px;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
+							{% if log_no > 1 %}
+								<li style="float: right;"><a href="/it logs/{{log_no-1}}/all" class="previous" title="Previous Shift"></a></li>
+							{% else %}
+								<li style="float: right;"><a class="previous" title="Previous Shift"></a></li>
+							{% endif %}
+						{% endif %}
+					</ul>
+				</td>
+			</tr>
+		</table>
+	</section>
+</div>

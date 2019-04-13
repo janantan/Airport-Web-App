@@ -4,11 +4,11 @@
 	<tbody>
 		<tr>
 			<td>
-				<fieldset id="second-fieldset" style="background: #fefefe; height:70vh;">
+				<fieldset id="second-fieldset" style="background: #fefefe; height:65vh;">
 					<legend style="font-weight: bold;">Log Number: {{log_no}}</legend>
-					<table id="shift-brief">
+					<table id="shift-brief" class="padding-top">
 						<thead></thead>
-						<tbody style="height: 68vh;">
+						<tbody style="height: 63vh;">
 							<tr>
 								<td>
 									<span class="font-style">Team NO:</span>
@@ -19,7 +19,7 @@
 								<td colspan="2">
 									<span class="font-style">Airport:</span>
 								</td>
-								<td>										
+								<td>
 									<span>OICC</span>
 								</td>
 							</tr>
@@ -79,6 +79,7 @@
 									<span>{{result['shift']}}</span>
 								</td>
 							</tr>
+							<tr><td colspan="6"><hr></td></tr>
 							{% if result['server_room_equipment'] %}
 								<tr>
 									<th>
@@ -108,57 +109,36 @@
 										</td>
 									</tr>
 								{% endfor %}
+								<tr><td></td></tr><tr><td></td></tr>
+								<tr>
+									<td></td>
+									<td colspan="2">
+										Room Tempreture:
+									</td>
+									<td>
+										{{result['room_temp']}}
+									</td>
+								</tr>
+								<tr><td colspan="6"><hr></td></tr>
 							{% endif %}
-            				<tr>
-		            			<th style="padding-top: 40px;">
-		            				<span style="color: red;">Network Status</span>
-		            			</th>
-		            			<th style="padding-top: 40px;">
-					             	<span>Server</span><hr>
-						        </th>
-						        <th style="padding-top: 40px;">
-					             	<span>Supervisor</span><hr>
-						        </th>
-		            			<th style="padding-top: 40px;">
-					            	<span>Workstation</span><hr>
-						        </th>
-						        <th style="padding-top: 40px;">
-					             	<span>Printer</span><hr>
-						        </th>
-						    </tr>
-						    
-						    <tr>
-		            			<td></td>
-		            			{% for item in network %}
-			            			{% if item in result['network'] %}
-				            			<td>
-							             	<span>OK</span>
-								        </td>
-								    {% else %}
-								    	<td>
-							             	<span>US</span>
-								        </td>
-								    {% endif %}
-						        {% endfor %}
-						    </tr>						    
 		            		<tr>
 		            			<th>
 		            				<span style="color: red;">Channels</span>
 		            			</th>
 		            			<th>
-					             	<span>CCT</span><hr>
+					             	<span>CCT</span>
 						        </th>
 						        <th>
-					             	<span>During Duty</span><hr>
+					             	<span>During Duty</span>
 						        </th>
 		            			<th>
-					            	<span style="font-size: 14px;">Interruption Time</span><hr>
+					            	<span style="font-size: 14px;">Interruption Time</span>
 						        </th>
 						        <th>
-					             	<span>Reason</span><hr>
+					             	<span>Reason</span>
 						        </th>
 		            			<th>
-					            	<span>End of Duty</span><hr>
+					            	<span>End of Duty</span>
 						        </th>
 						    </tr>
 						    {% for ch in channel_list %}
@@ -182,16 +162,17 @@
 							    	</td>
 							    </tr>
 							{% endfor %}
+							<tr><td colspan="6"><hr></td></tr>
 							{% if msg_flag %}
 								<tr>
 			            			<th>
 			            				<span style="color: red;">Messages</span>
 			            			</th>
 			            			<th>
-						             	<span>Message Type</span><hr>
+						             	<span>Message Type</span>
 							        </th>
 							        <th colspan="4">
-						             	<span>Description</span><hr>
+						             	<span>Description</span>
 							        </th>
 							    </tr>
 							    {% for msg in msg_list %}
@@ -225,6 +206,7 @@
 									    </tr>
 									{% endif %}
 							    {% endfor %}
+							    <tr><td colspan="6"><hr></td></tr>
 						    {% endif %}
 						    {% if result['remarks'] %}
 							    <tr>
@@ -232,7 +214,7 @@
 			            				<span style="color: red;">Remarks</span>
 			            			</th>
 			            			<th colspan="5">
-			            				<span></span><hr>
+			            				<span></span>
 			            			</th>
 							    </tr>
 							    <tr>
@@ -241,13 +223,14 @@
 			            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
 			            			</td>
 							    </tr>
+							    <tr><td colspan="6"><hr></td></tr>
 						    {% endif %}
 						    <tr>
 		            			<th>
 		            				<span style="color: red;">Signature</span>
 		            			</th>
 		            			<th colspan="5">
-		            				<span></span><hr>
+		            				<span></span>
 		            			</th>
 						    </tr>
 						    <tr>
@@ -265,8 +248,6 @@
 				</fieldset>
 			</td>			
 		</tr>
-		
-		<table>
 		<tr id="wholelog-links">
 			<td>
 				<ul style="margin-top: -3vh;">

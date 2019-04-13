@@ -368,14 +368,14 @@
 									    </tr>
 								    </thead>
 								    <tbody style="height: 18vh;">
-								    	{% if result['data_center_antivirus'] %}
+								    	{% if result['data_center_antivirus']['com_name'] %}
 								    		{% for i in range(result['data_center_antivirus']['com_name']|length) %}
 										    	<tr id="antivirus_ck_list{{i+1}}">
 											    	<td>
-														<input type="text" name="dc com_name_{{i+1}}" value="{{result['data_center_antivirus']['com_name'][i]}}" size="15"/>
+														<input style="text-transform: none;" type="text" name="dc com_name_{{i+1}}" value="{{result['data_center_antivirus']['com_name'][i]}}" size="15"/>
 													</td>
 													<td>
-														<input type="text" name="dc username_{{i+1}}" value="{{result['data_center_antivirus']['username'][i]}}" size="15"/>
+														<input style="text-transform: none;" type="text" name="dc username_{{i+1}}" value="{{result['data_center_antivirus']['username'][i]}}" size="15"/>
 													</td>
 													<td>
 														<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="dc antevirus_remark_{{i+1}}">{{result['data_center_antivirus']['remark'][i]}}</textarea>
@@ -391,10 +391,10 @@
 					              		{% else %}
 					              			<tr id="antivirus_ck_list1">
 										    	<td>
-													<input type="text" name="dc com_name_1" size="15"/>
+													<input style="text-transform: none;" type="text" name="dc com_name_1" size="15"/>
 												</td>
 												<td>
-													<input type="text" name="dc username_1" size="15"/>
+													<input style="text-transform: none;" type="text" name="dc username_1" size="15"/>
 												</td>
 												<td>
 													<textarea style="width:200px; height:20px; font-size:15px; direction: ltr;" name="dc antevirus_remark_1"></textarea>
@@ -415,15 +415,27 @@
 				</tbody>
 			</table>
 			<div style="margin:12px 0 0 15px;">
-				<input style="text-transform: none;" type="submit" value="Save" /> 
+				<input style="text-transform: none;" type="submit" value="Save" />
+				{% if 'edit' in request.base_url %}
+					<a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Back</a>
+				{% endif %}
 			</div>
 		</form>
 	</section>
 </div>
 
 <script type="text/javascript">
-	var i=1;
-	var i_list = ["antivirus_ck_list1"]
+	{% if result['data_center_antivirus']['com_name'] %}
+		var l = [];
+		var i = "{{ result['data_center_antivirus']['com_name']|length }}";
+		{% for j in range(result['data_center_antivirus']['com_name']|length) %}
+			l.push("antivirus_ck_list" + "{{j+1}}");
+		{% endfor %}
+		var i_list = l;
+	{% else %}
+		var i=1;
+		var i_list = ["antivirus_ck_list1"];
+	{% endif %}
 	function addAntivirusCkListRow(id_name, action) {
 	    var original = document.getElementById(id_name);
 		var clone = original.cloneNode(true); // "deep" clone
