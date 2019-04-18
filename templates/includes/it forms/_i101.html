@@ -368,7 +368,7 @@
 									    </tr>
 								    </thead>
 								    <tbody style="height: 18vh;">
-								    	{% if result['data_center_antivirus']['com_name'] %}
+								    	{% if result['data_center_antivirus'] and result['data_center_antivirus']['com_name'] %}
 								    		{% for i in range(result['data_center_antivirus']['com_name']|length) %}
 										    	<tr id="antivirus_ck_list{{i+1}}">
 											    	<td>
@@ -425,7 +425,7 @@
 </div>
 
 <script type="text/javascript">
-	{% if result['data_center_antivirus']['com_name'] %}
+	{% if result['data_center_antivirus'] and result['data_center_antivirus']['com_name'] %}
 		var l = [];
 		var i = "{{ result['data_center_antivirus']['com_name']|length }}";
 		{% for j in range(result['data_center_antivirus']['com_name']|length) %}

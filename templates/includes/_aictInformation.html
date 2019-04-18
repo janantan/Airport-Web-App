@@ -44,7 +44,10 @@
 			</th>
 			{% if log_records_list[6] %}
 				<td>
-					<span>{{(', '.join(log_records_list[6]))}}</span>
+					{% for name in log_records_list[6] %}
+					<!--<span>{{(', '.join(log_records_list[6]))}}</span>-->
+						<p style="margin: 2px 0; font-size: 11px;">{{name}}</p>
+					{% endfor %}
 				</td>
 			{% endif %}
 		</tr>

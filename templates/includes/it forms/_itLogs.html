@@ -948,19 +948,23 @@
 			<tr id="wholelog-links">
 				<td>
 					<ul style="margin-top: -3vh;">
-						{% if 'all' in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-							<li><a href="/it-pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
-						{% elif 'i101' not in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-						{% elif 'i102' not in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/i102/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-						{% elif 'i103' not in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-						{% elif 'i104' not in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
-						{% elif 'i105' not in request.base_url %}
-							<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+						{% if name in result['present_members'] %}
+							{% if 'all' in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+								<!--<li><a class="button" style="background-color: #f3f3f3;">pdf</a></li>-->
+							{% elif 'i101' not in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							{% elif 'i102' not in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/i102/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							{% elif 'i103' not in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							{% elif 'i104' not in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							{% elif 'i105' not in request.base_url %}
+								<li><a href="/it logs/{{log_no}}/i101/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
+							{% endif %}
+						{% else %}
+							<!--<li><a class="button" style="background-color: #f3f3f3;">pdf</a></li>-->
 						{% endif %}
 						{% if 'all' not in request.base_url %}
 							<li><a href="/it logs/{{log_no}}/all" class="button" style="background-color: #f3f3f3;">Back</a></li>

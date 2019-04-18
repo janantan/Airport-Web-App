@@ -1,5 +1,7 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, Markup
+from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, Markup, abort, after_this_request
 from flask_googlemaps import GoogleMaps, Map, icons
+from flask_headers import headers
+from functools import wraps
 from passlib.hash import sha256_crypt
 from pymongo import MongoClient
 from werkzeug.utils import secure_filename
@@ -10,6 +12,7 @@ from io import StringIO
 import PIL.Image
 import requests
 import re
+import jwt
 import codecs
 import os
 import json
@@ -42,13 +45,35 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-#@app.route('/', methods=['GET', 'POST'])
+@app.before_request
+def before_request():
+    header = request.headers.get('token')
+    print('********')
+    print('header:', header)
+    print(request.endpoint)
+    if (request.endpoint != 'login') and (request.endpoint != 'static') and (request.endpoint != 'register'):
+        if "encoded_token" in session:
+            decoded_token = jwt.decode(session['encoded_token'], app.secret_key, algorithm='HS256')
+            print('decoded_token:', decoded_token)
+            if decoded_token['token'] != session['username']:
+                return redirect(url_for('bad_request'))
+        else:
+            flash('Please Sign in First!', 'error')
+            return redirect(url_for('login'))
+
+@app.route('/badrequest400')
+def bad_request():
+    return abort(403)
+
 @app.route('/home', methods=['GET', 'POST'])
 def home():
     session['log_no'] = cursor.log_records.estimated_document_count()
     session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
     session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
-    session['initial'] = users_cursor.users.find_one({'username': session['username']})['initial']
+    if users_cursor.users.find_one({'username': session['username']})['initial']:
+        session['initial'] = users_cursor.users.find_one({'username': session['username']})['initial']
+    else:
+        session['initial'] = None
     session['adsb_db'] = []
     session['statistics_flag'] = 0
     session['sorted_events'] = []
@@ -62,7 +87,8 @@ def home():
         amhs_result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
         if utils.if_today_shift(amhs_result):
             session['log_records_list'] = utils.shift_brief(amhs_result, session['department'])
-            session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": amhs_result['shift_date']})['present_members'])
+            if amhs_cursor.it_records.find_one({"shift_date": amhs_result['shift_date']}):
+                session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": amhs_result['shift_date']})['present_members'])
 
 
     team_result = cursor.team.find()
@@ -122,7 +148,7 @@ def home():
         )
 
 @app.route('/', methods=['GET', 'POST'])
-def login():
+def login():    
     session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
     session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
     if request.method == 'POST':
@@ -135,6 +161,13 @@ def login():
             if sha256_crypt.verify(password, result['password']):
                 flash('Welcome '+result['first_name']+" "+result['last_name']+'!', 'success-login')
                 session['username'] = username
+                session['encoded_token'] = jwt.encode({'token':username}, app.secret_key, algorithm='HS256')
+                header = {'token': app.secret_key}
+                @after_this_request
+                def add_header(response):
+                    response.headers['token'] = app.secret_key
+                    print(response.headers)
+                    return response
 
                 if result['photo']:
                     file_like = io.BytesIO(result['photo'])
@@ -332,6 +365,7 @@ def logout():
     session.pop('administration', None)
     session.pop('amhs_log_no', None)
     session.pop('it_log_no', None)
+    session.pop('encoded_token', None)
 
     return redirect(url_for('login'))
 
@@ -755,6 +789,9 @@ def amhs_log_form():
                 record['shift_date'] = session['datetime']
                 record['shift_jdate'] = session['jdatetime']
                 record['on_duty'] = utils.regex(session['initial'])
+                record['shift_switch'] = [""]
+                record['overtime'] = [""]
+                record['daily_leave'] = [""]
                 record['day'] = today_wd
                 record['shift'] = today_shift
                 record['team'] = ''
@@ -881,6 +918,14 @@ def amhs_log_form():
 def amhs_log(id_no):
     if 'username' in session:
         result = amhs_cursor.records.find_one({"id": int(id_no)})
+        users_result = users_cursor.users.find_one({'username': session['username']})
+        if users_result:
+            if users_result['initial']:
+                initial = users_result['initial']
+            else:
+                initial = None
+        else:
+            initial = None
         msg_flag = 0
         for msg in equipments.amhs_msg_list:
             if result[msg]:
@@ -893,6 +938,7 @@ def amhs_log(id_no):
         navigator="amhs logs",
         log_no=int(id_no),
         result = result,
+        initial=initial,
         channel_list=equipments.amhs_channel_list,
         msg_list=equipments.amhs_msg_list,
         server_room_eqp=equipments.amhs_server_room_eqp,
@@ -961,6 +1007,29 @@ def edit_amhs_log(id_no):
                 }
                 }
                 )
+            update_signature = amhs_cursor.records.find_one({"id": int(id_no)})
+            update_signature_path=[]
+            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+            for initial in od+ov:
+                signature_result = users_cursor.users.find_one({'initial': initial})
+                if signature_result['signature']:
+                    file_like = io.BytesIO(signature_result['signature'])
+                    signature = PIL.Image.open(file_like)
+                    if signature_result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                else:
+                    initial_signature = url_for('static', filename='img/no_signature.jpg')
+                update_signature_path.append(initial_signature)
+
+            amhs_cursor.records.update_many(
+                    {"id": int(id_no)},
+                    {'$set': {'signature_path': update_signature_path}}
+                    )
             flash('Saved Successfuly!', 'success')
             return redirect(url_for('amhs_log', id_no=int(id_no)))
 
@@ -1291,6 +1360,12 @@ def it_forms(form_number):
 def it_logs(id_no, form_number):
     if 'username' in session:
         result = amhs_cursor.it_records.find_one({"id": int(id_no)})
+        users_result = users_cursor.users.find_one({'username': session['username']})
+        if users_result:
+            name = users_result['first_name']+' '+users_result['last_name']
+        else:
+            name = None
+
         if form_number == 'i101':
             nav = "i101"
         elif form_number == 'i102':
@@ -1309,6 +1384,7 @@ def it_logs(id_no, form_number):
         log_no=int(id_no),
         nav=nav,
         result = result,
+        name=name,
         data_center_cooling = equipments.data_center_cooling,
         data_center_server_rack = equipments.data_center_server_rack,
         data_center_switching_rack = equipments.data_center_switching_rack,

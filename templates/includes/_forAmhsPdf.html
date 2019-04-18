@@ -111,39 +111,7 @@
 								</td>
 							</tr>
 						{% endfor %}
-					{% endif %}
-    				<tr>
-            			<th style="padding-top: 40px;">
-            				<span style="color: red;">Network Status</span>
-            			</th>
-            			<th style="padding-top: 40px;">
-			             	<span>Server</span><hr>
-				        </th>
-				        <th style="padding-top: 40px;">
-			             	<span>Supervisor</span><hr>
-				        </th>
-            			<th style="padding-top: 40px;">
-			            	<span>Workstation</span><hr>
-				        </th>
-				        <th style="padding-top: 40px;">
-			             	<span>Printer</span><hr>
-				        </th>
-				    </tr>
-				    
-				    <tr>
-            			<td></td>
-            			{% for item in network %}
-	            			{% if item in result['network'] %}
-		            			<td>
-					             	<span>OK</span>
-						        </td>
-						    {% else %}
-						    	<td>
-					             	<span>US</span>
-						        </td>
-						    {% endif %}
-				        {% endfor %}
-				    </tr>						    
+					{% endif %}			    
             		<tr>
             			<th>
             				<span style="color: red;">Channels</span>
