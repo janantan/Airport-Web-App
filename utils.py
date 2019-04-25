@@ -5,6 +5,7 @@ import jdatetime
 import string
 import requests
 import re
+import jwt
 
 MONGO_HOST = "localhost"
 MONGO_PORT = 27017

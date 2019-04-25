@@ -251,7 +251,7 @@
 		<tr id="wholelog-links">
 			<td>
 				<ul style="margin-top: -3vh;">
-					{% if initial in result['on_duty']+result['overtime'] %}
+					{% if session['AMHS form'] and (initial in result['on_duty']+result['overtime']) %}
 						<li><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
 					{% endif %}
 					<li><a href="/amhs-pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>

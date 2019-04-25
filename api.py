@@ -1,6 +1,7 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging, Markup, abort, after_this_request
+from flask import Flask, render_template, flash, redirect, url_for, session, request, jsonify
+from flask import Response, logging, Markup, abort, after_this_request, make_response
 from flask_googlemaps import GoogleMaps, Map, icons
-from flask_headers import headers
+from werkzeug.http import parse_authorization_header
 from functools import wraps
 from passlib.hash import sha256_crypt
 from pymongo import MongoClient
@@ -9,6 +10,7 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import io
 from io import StringIO
+import urllib3
 import PIL.Image
 import requests
 import re
@@ -18,6 +20,7 @@ import os
 import json
 import datetime
 import jdatetime
+import uuid
 import pdfkit
 import pathlib
 import utils, config, equipments
@@ -30,8 +33,8 @@ SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
-
-app.secret_key = 'secret@atc_web_app@password_hash@840'
+ 
+app.secret_key = 'secret@airport_web_app@password_hash@840'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SAVE_FOLDER'] = SAVE_FOLDER
@@ -45,27 +48,85 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.before_request
-def before_request():
-    header = request.headers.get('token')
-    print('********')
-    print('header:', header)
-    print(request.endpoint)
-    if (request.endpoint != 'login') and (request.endpoint != 'static') and (request.endpoint != 'register'):
-        if "encoded_token" in session:
-            decoded_token = jwt.decode(session['encoded_token'], app.secret_key, algorithm='HS256')
-            print('decoded_token:', decoded_token)
-            if decoded_token['token'] != session['username']:
-                return redirect(url_for('bad_request'))
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'loged_in' not in session:
+            flash('Please Sign in First!', 'danger')
+            return redirect(url_for('logout'))
+
+        print(request.headers)
+
+        if 'access-token' in request.headers['Cookie']:
+            Token = request.headers['Cookie'].split(' ')
+            token = Token[0][13:-1]
+
+        if not token:
+            flash('Token is missing!', 'danger')
+            return redirect(request.referrer)
+
+        try:
+            data = jwt.decode(token, app.secret_key)
+        except:
+            flash('Token is Invalid or Expired! Please Sign in Again.', 'danger')
+            return redirect(url_for('logout'))            
+
+        result = users_cursor.users.find_one({"user_id": data['user_id']})
+        if result:
+            if 'username' not in session:
+                username = result['username']
+                session['username'] = username
+                flash('Welcome '+result['first_name']+" "+result['last_name']+'!', 'success-login')
+                if result['photo']:
+                    file_like = io.BytesIO(result['photo'])
+                    photo = PIL.Image.open(file_like)
+                    if result['photo_file_type'] == 'jpg':
+                        photo.save(os.path.join(app.config['SAVE_FOLDER'], username+'_photo.'+result['photo_file_type']), "JPEG")
+                        session['photo_path'] = url_for('static', filename='img/' + username +'_photo.'+result['photo_file_type'])
+                    else:
+                        photo.save(os.path.join(app.config['SAVE_FOLDER'], username+'_photo.'+result['photo_file_type']), result['photo_file_type'].upper())
+                        session['photo_path'] = url_for('static', filename='img/' + username +'_photo.'+result['photo_file_type'])
+                else:
+                    session['photo_path'] = url_for('static', filename='img/person.png')
+                if result['signature']:
+                    file_like2 = io.BytesIO(result['signature'])
+                    signature = PIL.Image.open(file_like2)
+                    if result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], username+'_signature.'+result['signature_file_type']), "JPEG")
+                        session['signature_path'] = url_for('static', filename='img/' + username +'_signature.'+result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], username+'_signature.'+result['signature_file_type']), result['signature_file_type'].upper())
+                        session['signature_path'] = url_for('static', filename='img/' + username +'_signature.'+result['signature_file_type'])
+                else:
+                    session['signature_path'] = url_for('static', filename='img/no_signature.jpg')
+                
+                session['department'] = result['department']
+                session['airport'] = result['airport']
+                session['admin'] = result['admin']
+                if result['AMHS form']:
+                    session['AMHS form'] = result['AMHS form']
+                    session['IT form'] = result['IT form']
+                session['message'] = result['first_name']+" "+result['last_name']
+        
         else:
-            flash('Please Sign in First!', 'error')
-            return redirect(url_for('login'))
+            flash('Token is invalid!', 'danger')
+            return redirect(request.referrer)
+
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route('/badrequest400')
 def bad_request():
     return abort(403)
 
+@app.errorhandler(401)
+def custom_401(error):
+    return Response('Could not Verify!', 401, {'WWW-Authenticate' : 'Basic realm="Login Required"'})
+
 @app.route('/home', methods=['GET', 'POST'])
+@token_required
 def home():
     session['log_no'] = cursor.log_records.estimated_document_count()
     session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
@@ -77,7 +138,7 @@ def home():
     session['adsb_db'] = []
     session['statistics_flag'] = 0
     session['sorted_events'] = []
-    session['metar'] = utils.metar("OICC")
+    session['metar'] = utils.metar(session['airport'])
 
     if session['log_no'] and (session['department'] == 'Air Traffic Management'):
         atc_result = cursor.log_records.find_one({"id": session['log_no']})
@@ -137,7 +198,7 @@ def home():
             flt_scheldule_list.append(r["id"])
             flt_scheldule_big_list.append(flt_scheldule_list)
         flt_scheldule_dict[today] = flt_scheldule_big_list
-    #return redirect(url_for('fids', airport='OICC', arr_dep="all"))
+    return redirect(url_for('fids', airport=session['airport'], arr_dep="all"))
 
     return render_template('index.html',
         navigator="flight-schedule",
@@ -148,7 +209,20 @@ def home():
         )
 
 @app.route('/', methods=['GET', 'POST'])
-def login():    
+def login():
+    if 'username' in session:
+        return redirect(url_for('home'))
+
+    @after_this_request
+    def add_header(response):
+        #response = make_response(jsonify({'message' : 'New Response'}))
+        response.headers['Set-Cookie'] = '%s=%s'%('access-token',token)
+        response.headers.add('X-Access-Token', token)
+        #response.headers['X-Access-Token'] = token
+        print(response.headers)
+        return response
+    
+    token = None
     session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
     session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
     if request.method == 'POST':
@@ -159,40 +233,11 @@ def login():
 
         if result:
             if sha256_crypt.verify(password, result['password']):
-                flash('Welcome '+result['first_name']+" "+result['last_name']+'!', 'success-login')
-                session['username'] = username
-                session['encoded_token'] = jwt.encode({'token':username}, app.secret_key, algorithm='HS256')
-                header = {'token': app.secret_key}
-                @after_this_request
-                def add_header(response):
-                    response.headers['token'] = app.secret_key
-                    print(response.headers)
-                    return response
-
-                if result['photo']:
-                    file_like = io.BytesIO(result['photo'])
-                    photo = PIL.Image.open(file_like)
-                    if result['photo_file_type'] == 'jpg':
-                        photo.save(os.path.join(app.config['SAVE_FOLDER'], username+'_photo.'+result['photo_file_type']), "JPEG")
-                        session['photo_path'] = url_for('static', filename='img/' + username +'_photo.'+result['photo_file_type'])
-                    else:
-                        photo.save(os.path.join(app.config['SAVE_FOLDER'], username+'_photo.'+result['photo_file_type']), result['photo_file_type'].upper())
-                        session['photo_path'] = url_for('static', filename='img/' + username +'_photo.'+result['photo_file_type'])
-                else:
-                    session['photo_path'] = url_for('static', filename='img/person.png')
-                if result['signature']:
-                    file_like2 = io.BytesIO(result['signature'])
-                    signature = PIL.Image.open(file_like2)
-                    if result['signature_file_type'] == 'jpg':
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], username+'_signature.'+result['signature_file_type']), "JPEG")
-                        session['signature_path'] = url_for('static', filename='img/' + username +'_signature.'+result['signature_file_type'])
-                    else:
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], username+'_signature.'+result['signature_file_type']), result['signature_file_type'].upper())
-                        session['signature_path'] = url_for('static', filename='img/' + username +'_signature.'+result['signature_file_type'])
-                else:
-                    session['signature_path'] = url_for('static', filename='img/no_signature.jpg')
-                session['department'] = result['department']
-                session['message'] = result['first_name']+" "+result['last_name']
+                session['loged_in'] = True
+                TOKEN = jwt.encode({'user_id':result['user_id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                    app.secret_key)
+                token = TOKEN.decode('UTF-8')
+                print('generated token is: ', token)
                 return redirect(url_for('home'))
             else:
                 flash('The Password Does Not Match!', 'danger')
@@ -206,11 +251,19 @@ def register():
         users = {'created_date': datetime.datetime.now()}
         users['first_name'] = request.form.get('first_name')
         users['last_name'] = request.form.get('last_name')
+        users['airport'] = request.form.get('airport')
         users['department'] = request.form.get('department')
         users['initial'] = request.form.get('initial').upper()
         users['email'] = request.form.get('email')
         users['phone'] = request.form.get('phone')
         users['username'] = request.form.get('username')
+        users['admin'] = False
+        if request.form.get('department') == 'Aeronautical Information and Communication Technology':
+            if request.form.get('initial'):
+                users['AMHS form'] = True
+            else:
+                users['AMHS form'] = False
+            users['IT form'] = True
         new_password = request.form.get('password')
         confirm = request.form.get('confirm')
 
@@ -222,6 +275,7 @@ def register():
         else:
             if new_password == confirm:                    
                 users['password'] = sha256_crypt.hash(str(request.form.get('password')))
+                users['user_id'] = str(uuid.uuid4())
                 if 'photo' in request.files:
                     photo = request.files['photo']
                     filename1 = secure_filename(photo.filename)
@@ -260,6 +314,7 @@ def register():
     return render_template('register.html')
 
 @app.route('/change password', methods=['GET', 'POST'])
+@token_required
 def change_password():
     if request.method == 'POST':
         current_pass = request.form.get('current_pass')
@@ -345,12 +400,13 @@ def amhs_pdf(log_no):
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
+    print(request.referrer)
     session.pop('datetime', None)
     session.pop('jdatetime', None)
     session.pop('current_id', None)
     session.pop('log_records_list', None)
     session.pop('username', None)
+    session.pop('loged_in', None)
     session.pop('message', None)
     session.pop('photo_path', None)
     session.pop('signature_path', None)
@@ -362,14 +418,17 @@ def logout():
     session.pop('statistics_flag', None)
     session.pop('metar', None)
     session.pop('department', None)
+    session.pop('admin', None)
+    session.pop('AMHS form', None)
+    session.pop('IT form', None)
     session.pop('administration', None)
     session.pop('amhs_log_no', None)
     session.pop('it_log_no', None)
-    session.pop('encoded_token', None)
 
     return redirect(url_for('login'))
 
 @app.route('/<navigator>', methods=['GET', 'POST'])
+@token_required
 def index(navigator):
     session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
     flt_form_list = []
@@ -386,6 +445,7 @@ def index(navigator):
         result_count_list=result_count_list,
         flt_form_list=flt_form_list,
         result_count=0,
+        flash=redirect(url_for('bad_request')),
         log_records_list=session['log_records_list']
         )
 
@@ -618,6 +678,7 @@ def statistics(airline):
         )
 
 @app.route('/search', methods=['GET', 'POST'])
+@token_required
 def search():
     if 'username' in session:
         i = 1
@@ -725,6 +786,7 @@ def search():
         )
 
 @app.route('/team', methods=['GET', 'POST'])
+@token_required
 def team():
     members = []
     if request.method == 'POST':
@@ -743,161 +805,169 @@ def team():
         )
 
 @app.route('/amhs log form', methods=['GET', 'POST'])
+@token_required
 def amhs_log_form():
-    if 'username' in session:
-        print('****', session['amhs_log_no'])
-        result = amhs_cursor.records.find_one({"id": amhs_cursor.records.estimated_document_count()})
-        wd = datetime.datetime.utcnow().weekday()
-        session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
-        session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
-        today = session['datetime']
-        if jdatetime.datetime.now().month > 6:
-            A = datetime.time(3, 30)
-            B = datetime.time(15, 30)
-        else:
-            A = datetime.time(2, 30)
-            B = datetime.time(14, 30)
-        if A <  datetime.datetime.utcnow().time() <= B:
-            today_shift = 'Day'
-            today_wd = utils.fetch_day(str(wd+1))
-        elif datetime.datetime.utcnow().time() <= A:
-            session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
-            session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
-            today = session['datetime']
-            today_shift = 'Night'
-            today_wd = utils.fetch_day(str(wd))
-        else:
-            today_shift = 'Night'
-            today_wd = utils.fetch_day(str(wd+1))
 
-        if result:
-            if (today==result['shift_date'] and today_shift==result['shift']):
-                logdata = result
-                session['log_records_list'] = utils.shift_brief(result, session['department'])
-                if amhs_cursor.it_records.find_one({"shift_date": today}):
-                    session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": today})['present_members'])
-                (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
-            else:
-                logdata = None
-                notam_data = None
-                perm_data = None
-                record = {'event_date': datetime.datetime.utcnow()}
-                if amhs_cursor.records.estimated_document_count():
-                    record['id'] = amhs_cursor.records.estimated_document_count()+1
-                else:
-                    record['id'] = 1
-                record['shift_date'] = session['datetime']
-                record['shift_jdate'] = session['jdatetime']
-                record['on_duty'] = utils.regex(session['initial'])
-                record['shift_switch'] = [""]
-                record['overtime'] = [""]
-                record['daily_leave'] = [""]
-                record['day'] = today_wd
-                record['shift'] = today_shift
-                record['team'] = ''
-                server_room_equipment = {}
-                for eqp in equipments.amhs_server_room_eqp:
-                    server_room_equipment[eqp] = {'status':'On', 'remark':''}
-                record['server_room_equipment'] = server_room_equipment
-                record['room_temp'] = ''
-                for ch in equipments.amhs_channel_list:
-                    record[ch+'_during'] = 'OK'
-                    record[ch+'_end'] = 'OK'
-                record['fpl'] = record['dla'] = record['chg'] = ""
-                record['notam'] = record['perm'] = []
-                record['signature_path']=[]
-                record['signature_path'].append(session['signature_path'])
-                amhs_cursor.records.insert_one(record)
-                session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
-                print('####', session['amhs_log_no'])
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+
+    result = amhs_cursor.records.find_one({"id": amhs_cursor.records.estimated_document_count()})
+    wd = datetime.datetime.utcnow().weekday()
+    session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
+    session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
+    today = session['datetime']
+    if jdatetime.datetime.now().month > 6:
+        A = datetime.time(3, 30)
+        B = datetime.time(15, 30)
+    else:
+        A = datetime.time(2, 30)
+        B = datetime.time(14, 30)
+    if A <  datetime.datetime.utcnow().time() <= B:
+        today_shift = 'Day'
+        today_wd = utils.fetch_day(str(wd+1))
+    elif datetime.datetime.utcnow().time() <= A:
+        session['datetime'] = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
+        session['jdatetime'] = (jdatetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y - %m - %d')
+        today = session['datetime']
+        today_shift = 'Night'
+        today_wd = utils.fetch_day(str(wd))
+    else:
+        today_shift = 'Night'
+        today_wd = utils.fetch_day(str(wd+1))
+
+    if result:
+        if (today==result['shift_date'] and today_shift==result['shift']):
+            logdata = result
+            session['log_records_list'] = utils.shift_brief(result, session['department'])
+            if amhs_cursor.it_records.find_one({"shift_date": today}):
+                session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": today})['present_members'])
+            (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         else:
             logdata = None
             notam_data = None
             perm_data = None
+            record = {'event_date': datetime.datetime.utcnow()}
+            if amhs_cursor.records.estimated_document_count():
+                record['id'] = amhs_cursor.records.estimated_document_count()+1
+            else:
+                record['id'] = 1
+            record['shift_date'] = session['datetime']
+            record['shift_jdate'] = session['jdatetime']
+            record['on_duty'] = utils.regex(session['initial'])
+            record['shift_switch'] = [""]
+            record['overtime'] = [""]
+            record['daily_leave'] = [""]
+            record['day'] = today_wd
+            record['shift'] = today_shift
+            record['team'] = ''
             server_room_equipment = {}
+            for eqp in equipments.amhs_server_room_eqp:
+                server_room_equipment[eqp] = {'status':'On', 'remark':''}
+            record['server_room_equipment'] = server_room_equipment
+            record['room_temp'] = ''
+            for ch in equipments.amhs_channel_list:
+                record[ch+'_during'] = 'OK'
+                record[ch+'_end'] = 'OK'
+            record['fpl'] = record['dla'] = record['chg'] = ""
+            record['notam'] = record['perm'] = []
+            record['signature_path']=[]
+            record['signature_path'].append(session['signature_path'])
+            amhs_cursor.records.insert_one(record)
+            session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
+            print('####', session['amhs_log_no'])
+    else:
+        logdata = None
+        notam_data = None
+        perm_data = None
+        server_room_equipment = {}
 
-        if request.method == 'POST':
-            server_room_equipment = {}
-            for eqp in equipments.amhs_server_room_eqp: 
-                server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
-            amhs_cursor.records.update_many(
-                {"id": session['amhs_log_no']},
-                {'$set': {
-                'id': session['amhs_log_no'],
-                'on_duty': utils.regex(request.form.get('on_duty').upper()),
-                'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
-                'overtime': utils.regex(request.form.get('overtime').upper()),
-                'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
-                'team': request.form.get('team'),
-                'day': request.form.get('day'),
-                'shift': request.form.get('shift'),
-                'room_temp': request.form.get('room_temp'),
-                'server_room_equipment': server_room_equipment,
-                'tsa_during': request.form.get('tsa_during'),
-                'tsa_from': request.form.get('tsa_from'),
-                'tsa_to': request.form.get('tsa_to'),
-                'tsa_reason': request.form.get('tsa_reason'),
-                'tsa_end': request.form.get('tsa_end'),
-                'sta_during': request.form.get('sta_during'),
-                'sta_from': request.form.get('sta_from'),
-                'sta_to': request.form.get('sta_to'),
-                'sta_reason': request.form.get('sta_reason'),
-                'sta_end': request.form.get('sta_end'),
-                'cfa_during': request.form.get('cfa_during'),
-                'cfa_from': request.form.get('cfa_from'),
-                'cfa_to': request.form.get('cfa_to'),
-                'cfa_reason': request.form.get('cfa_reason'),
-                'cfa_end': request.form.get('cfa_end'),
-                'tia_during': request.form.get('tia_during'),
-                'tia_from': request.form.get('tia_from'),
-                'tia_to': request.form.get('tia_to'),
-                'tia_reason': request.form.get('tia_reason'),
-                'tia_end': request.form.get('tia_end'),
-                'mca_during': request.form.get('mca_during'),
-                'mca_from': request.form.get('mca_from'),
-                'mca_to': request.form.get('mca_to'),
-                'mca_reason': request.form.get('mca_reason'),
-                'mca_end': request.form.get('mca_end'),
-                'tis_during': request.form.get('tis_during'),
-                'tis_from': request.form.get('tis_from'),
-                'tis_to': request.form.get('tis_to'),
-                'tis_reason': request.form.get('tis_reason'),
-                'tis_end': request.form.get('tis_end'),
-                'fpl': request.form.get('fpl'),
-                'dla': request.form.get('dla'),
-                'chg': request.form.get('chg'),
-                'remarks': request.form.get('remarks')
-                }
-                }
-                )
-            update_signature = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
-            update_signature_path=[]
-            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
-            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
-            for initial in od+ov:
-                signature_result = users_cursor.users.find_one({'initial': initial})
-                if signature_result['signature']:
-                    file_like = io.BytesIO(signature_result['signature'])
-                    signature = PIL.Image.open(file_like)
-                    if signature_result['signature_file_type'] == 'jpg':
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-                    else:
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+    if request.method == 'POST':
+        server_room_equipment = {}
+        for eqp in equipments.amhs_server_room_eqp: 
+            server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
+        amhs_cursor.records.update_many(
+            {"id": session['amhs_log_no']},
+            {'$set': {
+            'id': session['amhs_log_no'],
+            'on_duty': utils.regex(request.form.get('on_duty').upper()),
+            'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
+            'overtime': utils.regex(request.form.get('overtime').upper()),
+            'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
+            'team': request.form.get('team'),
+            'day': request.form.get('day'),
+            'shift': request.form.get('shift'),
+            'room_temp': request.form.get('room_temp'),
+            'server_room_equipment': server_room_equipment,
+            'tsa_during': request.form.get('tsa_during'),
+            'tsa_from': request.form.get('tsa_from'),
+            'tsa_to': request.form.get('tsa_to'),
+            'tsa_reason': request.form.get('tsa_reason'),
+            'tsa_end': request.form.get('tsa_end'),
+            'sta_during': request.form.get('sta_during'),
+            'sta_from': request.form.get('sta_from'),
+            'sta_to': request.form.get('sta_to'),
+            'sta_reason': request.form.get('sta_reason'),
+            'sta_end': request.form.get('sta_end'),
+            'cfa_during': request.form.get('cfa_during'),
+            'cfa_from': request.form.get('cfa_from'),
+            'cfa_to': request.form.get('cfa_to'),
+            'cfa_reason': request.form.get('cfa_reason'),
+            'cfa_end': request.form.get('cfa_end'),
+            'tia_during': request.form.get('tia_during'),
+            'tia_from': request.form.get('tia_from'),
+            'tia_to': request.form.get('tia_to'),
+            'tia_reason': request.form.get('tia_reason'),
+            'tia_end': request.form.get('tia_end'),
+            'mca_during': request.form.get('mca_during'),
+            'mca_from': request.form.get('mca_from'),
+            'mca_to': request.form.get('mca_to'),
+            'mca_reason': request.form.get('mca_reason'),
+            'mca_end': request.form.get('mca_end'),
+            'tis_during': request.form.get('tis_during'),
+            'tis_from': request.form.get('tis_from'),
+            'tis_to': request.form.get('tis_to'),
+            'tis_reason': request.form.get('tis_reason'),
+            'tis_end': request.form.get('tis_end'),
+            'fpl': request.form.get('fpl'),
+            'dla': request.form.get('dla'),
+            'chg': request.form.get('chg'),
+            'remarks': request.form.get('remarks')
+            }
+            }
+            )
+        update_signature = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
+        update_signature_path=[]
+        od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+        ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+        for initial in od+ov:
+            signature_result = users_cursor.users.find_one({'initial': initial})
+            if signature_result['signature']:
+                file_like = io.BytesIO(signature_result['signature'])
+                signature = PIL.Image.open(file_like)
+                if signature_result['signature_file_type'] == 'jpg':
+                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
                 else:
-                    initial_signature = url_for('static', filename='img/no_signature.jpg')
-                update_signature_path.append(initial_signature)
+                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+            else:
+                initial_signature = url_for('static', filename='img/no_signature.jpg')
+            update_signature_path.append(initial_signature)
 
-            amhs_cursor.records.update_many(
-                    {"id": session['amhs_log_no']},
-                    {'$set': {'signature_path': update_signature_path}}
-                    )
-            flash('Saved Successfuly!', 'success')
-            if not session['log_records_list']:
-                result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
-                session['log_records_list'] = utils.shift_brief(result, session['department'])
-            return redirect(url_for('amhs_log_form'))
+        amhs_cursor.records.update_many(
+                {"id": session['amhs_log_no']},
+                {'$set': {'signature_path': update_signature_path}}
+                )
+        flash('Saved Successfuly!', 'success')
+        if not session['log_records_list']:
+            result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
+            session['log_records_list'] = utils.shift_brief(result, session['department'])
+        return redirect(url_for('amhs_log_form'))
 
 
     return render_template('index.html',
@@ -915,23 +985,31 @@ def amhs_log_form():
         )
 
 @app.route('/amhs logs/<id_no>', methods=['GET', 'POST'])
+@token_required
 def amhs_log(id_no):
-    if 'username' in session:
-        result = amhs_cursor.records.find_one({"id": int(id_no)})
-        users_result = users_cursor.users.find_one({'username': session['username']})
-        if users_result:
-            if users_result['initial']:
-                initial = users_result['initial']
-            else:
-                initial = None
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+
+    result = amhs_cursor.records.find_one({"id": int(id_no)})
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)
+
+    users_result = users_cursor.users.find_one({'username': session['username']})
+    if users_result:
+        if users_result['initial']:
+            initial = users_result['initial']
         else:
             initial = None
-        msg_flag = 0
-        for msg in equipments.amhs_msg_list:
-            if result[msg]:
-                msg_flag = 1
-                break
-        (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+    else:
+        initial = None
+    msg_flag = 0
+    for msg in equipments.amhs_msg_list:
+        if result[msg]:
+            msg_flag = 1
+            break
+    (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
 
 
     return render_template('index.html',
@@ -949,89 +1027,101 @@ def amhs_log(id_no):
         )
 
 @app.route('/amhs logs/<id_no>/edit', methods=['GET', 'POST'])
+@token_required
 def edit_amhs_log(id_no):
-    if 'username' in session:
-        result = amhs_cursor.records.find_one({"id": int(id_no)})
-        (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
-        if request.method == 'POST':
-            server_room_equipment = {}
-            for eqp in equipments.amhs_server_room_eqp: 
-                server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
-            amhs_cursor.records.update_many(
-                {"id": int(id_no)},
-                {'$set': {
-                'id': int(id_no),
-                'on_duty': utils.regex(request.form.get('on_duty').upper()),
-                'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
-                'overtime': utils.regex(request.form.get('overtime').upper()),
-                'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
-                'team': request.form.get('team'),
-                'day': request.form.get('day'),
-                'shift': request.form.get('shift'),
-                'room_temp': request.form.get('room_temp'),
-                'server_room_equipment': server_room_equipment,
-                'tsa_during': request.form.get('tsa_during'),
-                'tsa_from': request.form.get('tsa_from'),
-                'tsa_to': request.form.get('tsa_to'),
-                'tsa_reason': request.form.get('tsa_reason'),
-                'tsa_end': request.form.get('tsa_end'),
-                'sta_during': request.form.get('sta_during'),
-                'sta_from': request.form.get('sta_from'),
-                'sta_to': request.form.get('sta_to'),
-                'sta_reason': request.form.get('sta_reason'),
-                'sta_end': request.form.get('sta_end'),
-                'cfa_during': request.form.get('cfa_during'),
-                'cfa_from': request.form.get('cfa_from'),
-                'cfa_to': request.form.get('cfa_to'),
-                'cfa_reason': request.form.get('cfa_reason'),
-                'cfa_end': request.form.get('cfa_end'),
-                'tia_during': request.form.get('tia_during'),
-                'tia_from': request.form.get('tia_from'),
-                'tia_to': request.form.get('tia_to'),
-                'tia_reason': request.form.get('tia_reason'),
-                'tia_end': request.form.get('tia_end'),
-                'mca_during': request.form.get('mca_during'),
-                'mca_from': request.form.get('mca_from'),
-                'mca_to': request.form.get('mca_to'),
-                'mca_reason': request.form.get('mca_reason'),
-                'mca_end': request.form.get('mca_end'),
-                'tis_during': request.form.get('tis_during'),
-                'tis_from': request.form.get('tis_from'),
-                'tis_to': request.form.get('tis_to'),
-                'tis_reason': request.form.get('tis_reason'),
-                'tis_end': request.form.get('tis_end'),
-                'fpl': request.form.get('fpl'),
-                'dla': request.form.get('dla'),
-                'chg': request.form.get('chg'),
-                'remarks': request.form.get('remarks')
-                }
-                }
-                )
-            update_signature = amhs_cursor.records.find_one({"id": int(id_no)})
-            update_signature_path=[]
-            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
-            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
-            for initial in od+ov:
-                signature_result = users_cursor.users.find_one({'initial': initial})
-                if signature_result['signature']:
-                    file_like = io.BytesIO(signature_result['signature'])
-                    signature = PIL.Image.open(file_like)
-                    if signature_result['signature_file_type'] == 'jpg':
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-                    else:
-                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
-                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-                else:
-                    initial_signature = url_for('static', filename='img/no_signature.jpg')
-                update_signature_path.append(initial_signature)
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
 
-            amhs_cursor.records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {'signature_path': update_signature_path}}
-                    )
-            flash('Saved Successfuly!', 'success')
-            return redirect(url_for('amhs_log', id_no=int(id_no)))
+    result = amhs_cursor.records.find_one({"id": int(id_no)})
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)
+        
+    if (not session['AMHS form']) or (session['initial'] not in result['on_duty']+result['overtime']):
+        flash('You Have not Permission to Edit the Log!', 'error')
+        return redirect(request.referrer)
+
+    (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+    if request.method == 'POST':
+        server_room_equipment = {}
+        for eqp in equipments.amhs_server_room_eqp: 
+            server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
+        amhs_cursor.records.update_many(
+            {"id": int(id_no)},
+            {'$set': {
+            'id': int(id_no),
+            'on_duty': utils.regex(request.form.get('on_duty').upper()),
+            'shift_switch': utils.regex(request.form.get('shift_switch').upper()),
+            'overtime': utils.regex(request.form.get('overtime').upper()),
+            'daily_leave': utils.regex(request.form.get('daily_leave').upper()),
+            'team': request.form.get('team'),
+            'day': request.form.get('day'),
+            'shift': request.form.get('shift'),
+            'room_temp': request.form.get('room_temp'),
+            'server_room_equipment': server_room_equipment,
+            'tsa_during': request.form.get('tsa_during'),
+            'tsa_from': request.form.get('tsa_from'),
+            'tsa_to': request.form.get('tsa_to'),
+            'tsa_reason': request.form.get('tsa_reason'),
+            'tsa_end': request.form.get('tsa_end'),
+            'sta_during': request.form.get('sta_during'),
+            'sta_from': request.form.get('sta_from'),
+            'sta_to': request.form.get('sta_to'),
+            'sta_reason': request.form.get('sta_reason'),
+            'sta_end': request.form.get('sta_end'),
+            'cfa_during': request.form.get('cfa_during'),
+            'cfa_from': request.form.get('cfa_from'),
+            'cfa_to': request.form.get('cfa_to'),
+            'cfa_reason': request.form.get('cfa_reason'),
+            'cfa_end': request.form.get('cfa_end'),
+            'tia_during': request.form.get('tia_during'),
+            'tia_from': request.form.get('tia_from'),
+            'tia_to': request.form.get('tia_to'),
+            'tia_reason': request.form.get('tia_reason'),
+            'tia_end': request.form.get('tia_end'),
+            'mca_during': request.form.get('mca_during'),
+            'mca_from': request.form.get('mca_from'),
+            'mca_to': request.form.get('mca_to'),
+            'mca_reason': request.form.get('mca_reason'),
+            'mca_end': request.form.get('mca_end'),
+            'tis_during': request.form.get('tis_during'),
+            'tis_from': request.form.get('tis_from'),
+            'tis_to': request.form.get('tis_to'),
+            'tis_reason': request.form.get('tis_reason'),
+            'tis_end': request.form.get('tis_end'),
+            'fpl': request.form.get('fpl'),
+            'dla': request.form.get('dla'),
+            'chg': request.form.get('chg'),
+            'remarks': request.form.get('remarks')
+            }
+            }
+            )
+        update_signature = amhs_cursor.records.find_one({"id": int(id_no)})
+        update_signature_path=[]
+        od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+        ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+        for initial in od+ov:
+            signature_result = users_cursor.users.find_one({'initial': initial})
+            if signature_result['signature']:
+                file_like = io.BytesIO(signature_result['signature'])
+                signature = PIL.Image.open(file_like)
+                if signature_result['signature_file_type'] == 'jpg':
+                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                else:
+                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+            else:
+                initial_signature = url_for('static', filename='img/no_signature.jpg')
+            update_signature_path.append(initial_signature)
+
+        amhs_cursor.records.update_many(
+                {"id": int(id_no)},
+                {'$set': {'signature_path': update_signature_path}}
+                )
+        flash('Saved Successfuly!', 'success')
+        return redirect(url_for('amhs_log', id_no=int(id_no)))
 
     return render_template('index.html',
         navigator="edit amhs logs",
@@ -1046,38 +1136,30 @@ def edit_amhs_log(id_no):
         )
 
 @app.route('/it log form', methods=['GET', 'POST'])
+@token_required
 def it_log_form():
-    if 'username' in session:
-        users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology'})
-        AICT_personel = []
-        for r in users_result:
-            AICT_personel.append(r['first_name']+' '+r['last_name'])
-        result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
-        wd = datetime.datetime.utcnow().weekday()
-        session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
-        session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
-        today = session['datetime']
-        today_wd = utils.fetch_day(str(wd+1))
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+        
+    if not session['IT form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
 
-        if result:
-            if (today==result['shift_date']):
-                logdata = result
-            else:
-                logdata = None
-                record = {'event_date': datetime.datetime.utcnow()}
-                if amhs_cursor.it_records.estimated_document_count():
-                    record['id'] = amhs_cursor.it_records.estimated_document_count()+1
-                else:
-                    record['id'] = 1
-                record['shift_date'] = session['datetime']
-                record['shift_jdate'] = session['jdatetime']
-                record['present_members'] = request.form.getlist('present_members')
-                record['day'] = today_wd
-                record['team'] = ''
-                record['remarks'] = ''
-                amhs_cursor.it_records.insert_one(record)
-                session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
-                session['log_records_list'].insert(6, record['present_members'])
+    users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology'})
+    AICT_personel = []
+    for r in users_result:
+        AICT_personel.append(r['first_name']+' '+r['last_name'])
+    result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
+    wd = datetime.datetime.utcnow().weekday()
+    session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
+    session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
+    today = session['datetime']
+    today_wd = utils.fetch_day(str(wd+1))
+
+    if result:
+        if (today==result['shift_date']):
+            logdata = result
         else:
             logdata = None
             record = {'event_date': datetime.datetime.utcnow()}
@@ -1094,22 +1176,38 @@ def it_log_form():
             amhs_cursor.it_records.insert_one(record)
             session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
             session['log_records_list'].insert(6, record['present_members'])
+    else:
+        logdata = None
+        record = {'event_date': datetime.datetime.utcnow()}
+        if amhs_cursor.it_records.estimated_document_count():
+            record['id'] = amhs_cursor.it_records.estimated_document_count()+1
+        else:
+            record['id'] = 1
+        record['shift_date'] = session['datetime']
+        record['shift_jdate'] = session['jdatetime']
+        record['present_members'] = request.form.getlist('present_members')
+        record['day'] = today_wd
+        record['team'] = ''
+        record['remarks'] = ''
+        amhs_cursor.it_records.insert_one(record)
+        session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
+        session['log_records_list'].insert(6, record['present_members'])
 
-        if request.method == 'POST':
-            amhs_cursor.it_records.update_many(
-                {"id": session['it_log_no']},
-                {'$set': {
-                'id': session['it_log_no'],
-                'present_members': request.form.getlist('present_members'),
-                'team': request.form.get('team'),
-                'day': request.form.get('day'),
-                'remarks': request.form.get('remarks')
-                }
-                }
-                )
-            flash('Saved Successfuly!', 'success')
-            session['log_records_list'].insert(6, request.form.getlist('present_members'))
-            return redirect(url_for('it_log_form'))
+    if request.method == 'POST':
+        amhs_cursor.it_records.update_many(
+            {"id": session['it_log_no']},
+            {'$set': {
+            'id': session['it_log_no'],
+            'present_members': request.form.getlist('present_members'),
+            'team': request.form.get('team'),
+            'day': request.form.get('day'),
+            'remarks': request.form.get('remarks')
+            }
+            }
+            )
+        flash('Saved Successfuly!', 'success')
+        session['log_records_list'].insert(6, request.form.getlist('present_members'))
+        return redirect(url_for('it_log_form'))
 
     return render_template('index.html',
         navigator="it log form",
@@ -1122,8 +1220,16 @@ def it_log_form():
         )
 
 @app.route('/it forms/<form_number>', methods=['GET', 'POST'])
+@token_required
 def it_forms(form_number):
-    print(request.referrer)
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+        
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+
     result = amhs_cursor.it_records.find_one({"id": amhs_cursor.it_records.estimated_document_count()})
     logdata = result if result else None
     
@@ -1156,6 +1262,9 @@ def it_forms(form_number):
         nav = "i104"
     elif form_number == 'i105':
         nav = "i105"
+    else:
+        flash('No Such Form!', 'error')
+        return redirect(request.referrer)
 
     if request.method == 'POST':
         if form_number == 'i101':
@@ -1357,27 +1466,35 @@ def it_forms(form_number):
         )
 
 @app.route('/it logs/<id_no>/<form_number>', methods=['GET', 'POST'])
+@token_required
 def it_logs(id_no, form_number):
-    if 'username' in session:
-        result = amhs_cursor.it_records.find_one({"id": int(id_no)})
-        users_result = users_cursor.users.find_one({'username': session['username']})
-        if users_result:
-            name = users_result['first_name']+' '+users_result['last_name']
-        else:
-            name = None
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+        
+    result = amhs_cursor.it_records.find_one({"id": int(id_no)})
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)
 
-        if form_number == 'i101':
-            nav = "i101"
-        elif form_number == 'i102':
-            nav = "i102"
-        elif form_number == 'i103':
-            nav = "i103"
-        elif form_number == 'i104':
-            nav = "i104"
-        elif form_number == 'i105':
-            nav = "i105"
-        else:
-            nav = ""
+    users_result = users_cursor.users.find_one({'username': session['username']})
+    if users_result:
+        name = users_result['first_name']+' '+users_result['last_name']
+    else:
+        name = None
+
+    if form_number == 'i101':
+        nav = "i101"
+    elif form_number == 'i102':
+        nav = "i102"
+    elif form_number == 'i103':
+        nav = "i103"
+    elif form_number == 'i104':
+        nav = "i104"
+    elif form_number == 'i105':
+        nav = "i105"
+    else:
+        nav = ""
 
     return render_template('index.html',
         navigator="it logs",
@@ -1406,234 +1523,251 @@ def it_logs(id_no, form_number):
         )
 
 @app.route('/it logs/<id_no>/<form_number>/edit', methods=['GET', 'POST'])
+@token_required
 def edit_it_log(id_no, form_number):
-    if 'username' in session:
-        users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology'})
-        AICT_personel = []
-        for r in users_result:
-            AICT_personel.append(r['first_name']+' '+r['last_name'])
-        result = amhs_cursor.it_records.find_one({"id": int(id_no)})
-        if form_number == 'i101': 
-            nav = "i101"
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+
+    result = amhs_cursor.it_records.find_one({"id": int(id_no)})
+
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)
+
+    this_user = users_cursor.users.find_one({'username': session['username']})
+    name = this_user['first_name']+' '+this_user['last_name']
+        
+    if (not session['IT form']) or (name not in result['present_members']):
+        flash('You Have not Permission to Edit the Log!', 'error')
+        return redirect(request.referrer)
+
+    users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology'})
+    AICT_personel = []
+    for r in users_result:
+        AICT_personel.append(r['first_name']+' '+r['last_name'])
+
+    if form_number == 'i101': 
+        nav = "i101"
+    elif form_number == 'i102':
+        nav = "i102"
+    elif form_number == 'i103':
+        nav = "i103"
+    elif form_number == 'i104':
+        nav = "i104"
+    elif form_number == 'i105':
+        nav = "i105"
+    elif form_number == 'info':
+        nav = "info"
+
+    data_center_cooling = equipments.data_center_cooling
+    data_center_server_rack = equipments.data_center_server_rack
+    data_center_switching_rack = equipments.data_center_switching_rack
+    data_center_fiber_optic_rack = equipments.data_center_fiber_optic_rack
+    data_center_transmission_rack = equipments.data_center_transmission_rack
+    data_center_communication_rack = equipments.data_center_communication_rack
+    data_center_power_room = equipments.data_center_power_room
+    dep_term_cooling = equipments.dep_term_cooling
+    dep_term_server_rack = equipments.dep_term_server_rack
+    dep_term_switching_rack = equipments.dep_term_switching_rack
+    int_term_cooling = equipments.int_term_cooling
+    int_term_rack_1 = equipments.int_term_rack_1
+    office_bld_cooling = equipments.office_bld_cooling
+    office_bld_rack_1 = equipments.office_bld_rack_1
+    tech_block_ups = equipments.tech_block_ups
+    tech_block_rack_1 = equipments.tech_block_rack_1
+    fids_system = equipments.fids_system
+    dc_antivirus = {'com_name':[], 'username':[], 'remark':[]}
+
+    if request.method == 'POST':
+        if form_number == 'info':
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'present_members': request.form.getlist('present_members'),
+                'team': request.form.get('team'),
+                'day': request.form.get('day'),
+                'remarks': request.form.get('remarks')
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            if int(id_no) == session['it_log_no']:
+                session['log_records_list'].insert(6, request.form.getlist('present_members'))
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
+        if form_number == 'i101':
+            dc_inspector = request.form.get('dc inspector')
+            dc_inspection_time = request.form.get('dc inspection_time')
+            dc_remark = request.form.get('dc remark')
+            dc_room_temp = request.form.get('dc room_temp')
+            dc_cooling = {}
+            for eqp in data_center_cooling: 
+                dc_cooling[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_server_rack = {}
+            for eqp in data_center_server_rack: 
+                dc_server_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_switching_rack = {}
+            for eqp in data_center_switching_rack: 
+                dc_switching_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_fiber_optic_rack = {}
+            for eqp in data_center_fiber_optic_rack: 
+                dc_fiber_optic_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_no_active_equipment = request.form.get('dc No Active Equipment')
+            dc_fiber_optic_remark = request.form.get('dc fiber optic remark')
+            dc_transmission_rack = {}
+            for eqp in data_center_transmission_rack: 
+                dc_transmission_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_communication_rack = {}
+            for eqp in data_center_communication_rack: 
+                dc_communication_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            dc_power_room_temp = request.form.get('dc power_room_temp')
+            dc_power_room = {}
+            for eqp in data_center_power_room: 
+                dc_power_room[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
+            for i in range (100):
+                if request.form.get('dc com_name_'+str(i)):
+                    dc_antivirus['com_name'].append(request.form.get('dc com_name_'+str(i)))
+                    dc_antivirus['username'].append(request.form.get('dc username_'+str(i)))
+                    dc_antivirus['remark'].append(request.form.get('dc antevirus_remark_'+str(i)))
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'data_center_inspector': dc_inspector,
+                'data_center_inspection_time': dc_inspection_time,
+                'data_center_remark': dc_remark,
+                'data_center_room_temp': dc_room_temp,
+                'data_center_cooling': dc_cooling,
+                'data_center_server_rack': dc_server_rack,
+                'data_center_switching_rack': dc_switching_rack,
+                'data_center_fiber_optic_rack': dc_fiber_optic_rack,
+                'data_center_no_active_equipment': dc_no_active_equipment,
+                'data_center_fiber_optic_remark': dc_fiber_optic_remark,
+                'data_center_transmission_rack': dc_transmission_rack,
+                'data_center_communication_rack': dc_communication_rack,
+                'data_center_power_room_temp': dc_power_room_temp,
+                'data_center_power_room': dc_power_room,
+                'data_center_antivirus': dc_antivirus
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
         elif form_number == 'i102':
-            nav = "i102"
+            dt_inspector = request.form.get('dep_term inspector')
+            dt_inspection_time = request.form.get('dep_term inspection_time')
+            dt_remark = request.form.get('dep_term remark')
+            dt_cooling = {}
+            for eqp in dep_term_cooling: 
+                dt_cooling[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_server_rack = {}
+            for eqp in dep_term_server_rack: 
+                dt_server_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_switching_rack = {}
+            for eqp in dep_term_switching_rack: 
+                dt_switching_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            dt_fids_system = {}
+            for eqp in fids_system: 
+                dt_fids_system[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'dep_term_inspector': dt_inspector,
+                'dep_term_inspection_time': dt_inspection_time,
+                'dep_term_remark': dt_remark,
+                'dep_term_cooling': dt_cooling,
+                'dep_term_server_rack': dt_server_rack,
+                'dep_term_switching_rack': dt_switching_rack,
+                'dep_term_fids_system': dt_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
         elif form_number == 'i103':
-            nav = "i103"
+            it_inspector = request.form.get('int_term inspector')
+            it_inspection_time = request.form.get('int_term inspection_time')
+            it_remark = request.form.get('int_term remark')
+            it_room_temp = request.form.get('int_term room_temp')
+            it_cooling = {}
+            for eqp in int_term_cooling: 
+                it_cooling[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            it_rack_1 = {}
+            for eqp in int_term_rack_1: 
+                it_rack_1[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            it_fids_system = {}
+            for eqp in fids_system: 
+                it_fids_system[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'int_term_inspector': it_inspector,
+                'int_term_inspection_time': it_inspection_time,
+                'int_term_remark': it_remark,
+                'int_term_room_temp': it_room_temp,
+                'int_term_cooling': it_cooling,
+                'int_term_rack_1': it_rack_1,
+                'int_term_fids_system': it_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
         elif form_number == 'i104':
-            nav = "i104"
+            ob_inspector = request.form.get('office_bld inspector')
+            ob_inspection_time = request.form.get('office_bld inspection_time')
+            ob_remark = request.form.get('office_bld remark')
+            ob_cooling = {}
+            for eqp in office_bld_cooling: 
+                ob_cooling[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            ob_rack_1 = {}
+            for eqp in office_bld_rack_1: 
+                ob_rack_1[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            ob_fids_system = {}
+            for eqp in fids_system: 
+                ob_fids_system[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'office_bld_inspector': ob_inspector,
+                'office_bld_inspection_time': ob_inspection_time,
+                'office_bld_remark': ob_remark,
+                'office_bld_cooling': ob_cooling,
+                'office_bld_rack_1': ob_rack_1,
+                'office_bld_fids_system': ob_fids_system
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
         elif form_number == 'i105':
-            nav = "i105"
-        elif form_number == 'info':
-            nav = "info"
-
-        data_center_cooling = equipments.data_center_cooling
-        data_center_server_rack = equipments.data_center_server_rack
-        data_center_switching_rack = equipments.data_center_switching_rack
-        data_center_fiber_optic_rack = equipments.data_center_fiber_optic_rack
-        data_center_transmission_rack = equipments.data_center_transmission_rack
-        data_center_communication_rack = equipments.data_center_communication_rack
-        data_center_power_room = equipments.data_center_power_room
-        dep_term_cooling = equipments.dep_term_cooling
-        dep_term_server_rack = equipments.dep_term_server_rack
-        dep_term_switching_rack = equipments.dep_term_switching_rack
-        int_term_cooling = equipments.int_term_cooling
-        int_term_rack_1 = equipments.int_term_rack_1
-        office_bld_cooling = equipments.office_bld_cooling
-        office_bld_rack_1 = equipments.office_bld_rack_1
-        tech_block_ups = equipments.tech_block_ups
-        tech_block_rack_1 = equipments.tech_block_rack_1
-        fids_system = equipments.fids_system
-        dc_antivirus = {'com_name':[], 'username':[], 'remark':[]}
-
-        if request.method == 'POST':
-            if form_number == 'info':
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'present_members': request.form.getlist('present_members'),
-                    'team': request.form.get('team'),
-                    'day': request.form.get('day'),
-                    'remarks': request.form.get('remarks')
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                if int(id_no) == session['it_log_no']:
-                    session['log_records_list'].insert(6, request.form.getlist('present_members'))
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
-            if form_number == 'i101':
-                dc_inspector = request.form.get('dc inspector')
-                dc_inspection_time = request.form.get('dc inspection_time')
-                dc_remark = request.form.get('dc remark')
-                dc_room_temp = request.form.get('dc room_temp')
-                dc_cooling = {}
-                for eqp in data_center_cooling: 
-                    dc_cooling[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_server_rack = {}
-                for eqp in data_center_server_rack: 
-                    dc_server_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_switching_rack = {}
-                for eqp in data_center_switching_rack: 
-                    dc_switching_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_fiber_optic_rack = {}
-                for eqp in data_center_fiber_optic_rack: 
-                    dc_fiber_optic_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_no_active_equipment = request.form.get('dc No Active Equipment')
-                dc_fiber_optic_remark = request.form.get('dc fiber optic remark')
-                dc_transmission_rack = {}
-                for eqp in data_center_transmission_rack: 
-                    dc_transmission_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_communication_rack = {}
-                for eqp in data_center_communication_rack: 
-                    dc_communication_rack[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                dc_power_room_temp = request.form.get('dc power_room_temp')
-                dc_power_room = {}
-                for eqp in data_center_power_room: 
-                    dc_power_room[eqp] = {'status':request.form.get('dc '+eqp), 'remark':request.form.get('dc '+eqp+' remark')}
-                for i in range (100):
-                    if request.form.get('dc com_name_'+str(i)):
-                        dc_antivirus['com_name'].append(request.form.get('dc com_name_'+str(i)))
-                        dc_antivirus['username'].append(request.form.get('dc username_'+str(i)))
-                        dc_antivirus['remark'].append(request.form.get('dc antevirus_remark_'+str(i)))
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'data_center_inspector': dc_inspector,
-                    'data_center_inspection_time': dc_inspection_time,
-                    'data_center_remark': dc_remark,
-                    'data_center_room_temp': dc_room_temp,
-                    'data_center_cooling': dc_cooling,
-                    'data_center_server_rack': dc_server_rack,
-                    'data_center_switching_rack': dc_switching_rack,
-                    'data_center_fiber_optic_rack': dc_fiber_optic_rack,
-                    'data_center_no_active_equipment': dc_no_active_equipment,
-                    'data_center_fiber_optic_remark': dc_fiber_optic_remark,
-                    'data_center_transmission_rack': dc_transmission_rack,
-                    'data_center_communication_rack': dc_communication_rack,
-                    'data_center_power_room_temp': dc_power_room_temp,
-                    'data_center_power_room': dc_power_room,
-                    'data_center_antivirus': dc_antivirus
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
-            elif form_number == 'i102':
-                dt_inspector = request.form.get('dep_term inspector')
-                dt_inspection_time = request.form.get('dep_term inspection_time')
-                dt_remark = request.form.get('dep_term remark')
-                dt_cooling = {}
-                for eqp in dep_term_cooling: 
-                    dt_cooling[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
-                dt_server_rack = {}
-                for eqp in dep_term_server_rack: 
-                    dt_server_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
-                dt_switching_rack = {}
-                for eqp in dep_term_switching_rack: 
-                    dt_switching_rack[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
-                dt_fids_system = {}
-                for eqp in fids_system: 
-                    dt_fids_system[eqp] = {'status':request.form.get('dep_term '+eqp), 'remark':request.form.get('dep_term '+eqp+' remark')}
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'dep_term_inspector': dt_inspector,
-                    'dep_term_inspection_time': dt_inspection_time,
-                    'dep_term_remark': dt_remark,
-                    'dep_term_cooling': dt_cooling,
-                    'dep_term_server_rack': dt_server_rack,
-                    'dep_term_switching_rack': dt_switching_rack,
-                    'dep_term_fids_system': dt_fids_system
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
-            elif form_number == 'i103':
-                it_inspector = request.form.get('int_term inspector')
-                it_inspection_time = request.form.get('int_term inspection_time')
-                it_remark = request.form.get('int_term remark')
-                it_room_temp = request.form.get('int_term room_temp')
-                it_cooling = {}
-                for eqp in int_term_cooling: 
-                    it_cooling[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
-                it_rack_1 = {}
-                for eqp in int_term_rack_1: 
-                    it_rack_1[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
-                it_fids_system = {}
-                for eqp in fids_system: 
-                    it_fids_system[eqp] = {'status':request.form.get('int_term '+eqp), 'remark':request.form.get('int_term '+eqp+' remark')}
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'int_term_inspector': it_inspector,
-                    'int_term_inspection_time': it_inspection_time,
-                    'int_term_remark': it_remark,
-                    'int_term_room_temp': it_room_temp,
-                    'int_term_cooling': it_cooling,
-                    'int_term_rack_1': it_rack_1,
-                    'int_term_fids_system': it_fids_system
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
-            elif form_number == 'i104':
-                ob_inspector = request.form.get('office_bld inspector')
-                ob_inspection_time = request.form.get('office_bld inspection_time')
-                ob_remark = request.form.get('office_bld remark')
-                ob_cooling = {}
-                for eqp in office_bld_cooling: 
-                    ob_cooling[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
-                ob_rack_1 = {}
-                for eqp in office_bld_rack_1: 
-                    ob_rack_1[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
-                ob_fids_system = {}
-                for eqp in fids_system: 
-                    ob_fids_system[eqp] = {'status':request.form.get('office_bld '+eqp), 'remark':request.form.get('office_bld '+eqp+' remark')}
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'office_bld_inspector': ob_inspector,
-                    'office_bld_inspection_time': ob_inspection_time,
-                    'office_bld_remark': ob_remark,
-                    'office_bld_cooling': ob_cooling,
-                    'office_bld_rack_1': ob_rack_1,
-                    'office_bld_fids_system': ob_fids_system
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
-            elif form_number == 'i105':
-                tb_inspector = request.form.get('tech_block inspector')
-                tb_inspection_time = request.form.get('tech_block inspection_time')
-                tb_remark = request.form.get('tech_block remark')
-                tb_ups = {}
-                for eqp in tech_block_ups: 
-                    tb_ups[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
-                tb_rack_1 = {}
-                for eqp in tech_block_rack_1:
-                    tb_rack_1[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
-                amhs_cursor.it_records.update_many(
-                    {"id": int(id_no)},
-                    {'$set': {
-                    'id': int(id_no),
-                    'tech_block_inspector': tb_inspector,
-                    'tech_block_inspection_time': tb_inspection_time,
-                    'tech_block_remark': tb_remark,
-                    'tech_block_ups': tb_ups,
-                    'tech_block_rack_1': tb_rack_1
-                    }
-                    }
-                    )
-                flash('Saved Successfuly!', 'success')
-                return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
+            tb_inspector = request.form.get('tech_block inspector')
+            tb_inspection_time = request.form.get('tech_block inspection_time')
+            tb_remark = request.form.get('tech_block remark')
+            tb_ups = {}
+            for eqp in tech_block_ups: 
+                tb_ups[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
+            tb_rack_1 = {}
+            for eqp in tech_block_rack_1:
+                tb_rack_1[eqp] = {'status':request.form.get('tech_block '+eqp), 'remark':request.form.get('tech_block '+eqp+' remark')}
+            amhs_cursor.it_records.update_many(
+                {"id": int(id_no)},
+                {'$set': {
+                'id': int(id_no),
+                'tech_block_inspector': tb_inspector,
+                'tech_block_inspection_time': tb_inspection_time,
+                'tech_block_remark': tb_remark,
+                'tech_block_ups': tb_ups,
+                'tech_block_rack_1': tb_rack_1
+                }
+                }
+                )
+            flash('Saved Successfuly!', 'success')
+            return redirect(url_for('edit_it_log', id_no=id_no, form_number=form_number))
     
     return render_template('index.html',
         navigator = "it log form",
@@ -1664,6 +1798,7 @@ def edit_it_log(id_no, form_number):
 
 
 @app.route('/duty', methods=['GET', 'POST'])
+@token_required
 def duty():
     if 'username' in session:
         each_team_members = {}
@@ -1779,6 +1914,7 @@ def duty():
         )
 
 @app.route('/duty/<id_no>', methods=['GET', 'POST'])
+@token_required
 def logs_duty(id_no):
     if 'username' in session:
         session['log_no'] = cursor.log_records.estimated_document_count()
@@ -1860,6 +1996,7 @@ def logs_duty(id_no):
         )
 
 @app.route('/log data', methods=['GET', 'POST'])
+@token_required
 def logs_data():
     if 'username' in session:
         if session['log_data_flag']:
@@ -2088,6 +2225,7 @@ def logs_data():
         )
 
 @app.route('/logs/<log_no>', methods=['GET', 'POST'])
+@token_required
 def logs(log_no):
     if 'username' in session:
         print(session['filled_log_data_flag'])
@@ -2134,6 +2272,7 @@ def logs(log_no):
         )
 
 @app.route('/logs/<log_no>/edit', methods=['GET', 'POST'])
+@token_required
 def edit_log(log_no):
     if 'username' in session:
         largest_len = 0
@@ -2396,6 +2535,7 @@ def edit_log(log_no):
         )
 
 @app.route('/other forms/<form_number>', methods=['GET', 'POST'])
+@token_required
 def other_forms(form_number):
     if form_number == 'E101':
         nav = "e101"
@@ -2422,6 +2562,7 @@ def other_forms(form_number):
         )
 
 @app.route('/fids/<airport>/<arr_dep>', methods=['GET', 'POST'])
+@token_required
 def fids(airport, arr_dep):
     l = []
     en_name = []
@@ -2484,6 +2625,7 @@ def fids(airport, arr_dep):
         )
 
 @app.route('/present members/<log_no>')
+@token_required
 def present_members(log_no):
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
@@ -2532,6 +2674,7 @@ def present_members(log_no):
     )
 
 @app.route('/adsb/<airport>')
+@token_required
 def adsb(airport):
     #adsb_cursor = utils.config_mongodb("172.27.13.68", 27017, 'ADSB-BL')
     rule = request.url_rule
@@ -2569,6 +2712,7 @@ def adsb(airport):
     )
 
 @app.route('/adsb/<airport>/get data')
+@token_required
 def adsb_get_data(airport):
     adsb_cursor = utils.config_mongodb("172.27.13.68", 27017, 'ADSB-BL')
     rule = request.url_rule
@@ -2614,127 +2758,145 @@ def adsb_get_data(airport):
     )
 
 @app.route('/New Message/<msg_type>/<log_no>', methods=['GET', 'POST'])
+@token_required
 def new_message(msg_type, log_no):
+
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
-    else:
-        new_msg = {}
-        if request.method == 'POST':
-            new_msg['datetime'] = datetime.datetime.utcnow()
-            new_msg['full_message'] = request.form.get('new-message')
-            new_msg['id'] = int(log_no)
+        
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+    
+    new_msg = {}
+    if request.method == 'POST':
+        new_msg['datetime'] = datetime.datetime.utcnow()
+        new_msg['full_message'] = request.form.get('new-message')
+        new_msg['id'] = int(log_no)
 
-            if msg_type == 'Notam':
-                processed_notam = utils.notam_processing(new_msg['full_message'])
-                new_msg['tsa'] = processed_notam[0]
-                new_msg['notam_no'] = processed_notam[1]
-                new_msg['aero'] = processed_notam[2]
-                new_msg['E'] = processed_notam[3]
+        if msg_type == 'Notam':
+            processed_notam = utils.notam_processing(new_msg['full_message'])
+            new_msg['tsa'] = processed_notam[0]
+            new_msg['notam_no'] = processed_notam[1]
+            new_msg['aero'] = processed_notam[2]
+            new_msg['E'] = processed_notam[3]
 
-                amhs_cursor.notam.insert_one(new_msg)
-                result_records = amhs_cursor.records.find_one({"id": int(log_no)})
-                if result_records['notam']:
-                    notam_item = result_records['notam']
+            amhs_cursor.notam.insert_one(new_msg)
+            result_records = amhs_cursor.records.find_one({"id": int(log_no)})
+            if result_records['notam']:
+                notam_item = result_records['notam']
+            else:
+                notam_item = []
+            notam_item.append(new_msg['notam_no'])
+            amhs_cursor.records.update_many(
+                        {"id": new_msg['id']},
+                        {'$set': {
+                        'notam': notam_item
+                        }
+                        }
+                        )
+        elif msg_type == 'Permission':
+            processed_perm = utils.permission_processing(new_msg['full_message'])
+            new_msg['tsa'] = processed_perm[0]
+            new_msg['perm_ref'] = processed_perm[1]
+            new_msg['from'] = processed_perm[2]
+            new_msg['operatore'] = processed_perm[3]
+            new_msg['ir fpn'] = processed_perm[4]
+            new_msg['granted'] = processed_perm[5]
+            new_msg['origin_ref'] = processed_perm[6]
+            new_msg['granted_ref'] = processed_perm[7]
+            if new_msg['granted_ref']:
+                perm_res = amhs_cursor.permission.find_one({"origin_ref": new_msg['granted_ref']})
+                if perm_res:
+                    new_msg['perm_ref'] = perm_res['perm_ref']
+                    new_msg['from'] = perm_res['from']
+                    new_msg['operatore'] = perm_res['operatore']
+                    new_msg['origin_ref'] = perm_res['origin_ref']
                 else:
-                    notam_item = []
-                notam_item.append(new_msg['notam_no'])
-                amhs_cursor.records.update_many(
-                            {"id": new_msg['id']},
-                            {'$set': {
-                            'notam': notam_item
-                            }
-                            }
-                            )
-            elif msg_type == 'Permission':
-                processed_perm = utils.permission_processing(new_msg['full_message'])
-                new_msg['tsa'] = processed_perm[0]
-                new_msg['perm_ref'] = processed_perm[1]
-                new_msg['from'] = processed_perm[2]
-                new_msg['operatore'] = processed_perm[3]
-                new_msg['ir fpn'] = processed_perm[4]
-                new_msg['granted'] = processed_perm[5]
-                new_msg['origin_ref'] = processed_perm[6]
-                new_msg['granted_ref'] = processed_perm[7]
-                if new_msg['granted_ref']:
-                    perm_res = amhs_cursor.permission.find_one({"origin_ref": new_msg['granted_ref']})
-                    if perm_res:
-                        new_msg['perm_ref'] = perm_res['perm_ref']
-                        new_msg['from'] = perm_res['from']
-                        new_msg['operatore'] = perm_res['operatore']
-                        new_msg['origin_ref'] = perm_res['origin_ref']
-                    else:
-                        new_msg['perm_ref'] = "ref not found"
-                amhs_cursor.permission.insert_one(new_msg)
-                result_records = amhs_cursor.records.find_one({"id": int(log_no)})
-                if result_records['perm']:
-                    perm_item = result_records['perm']
-                else:
-                    perm_item = []
-                perm_item.append((new_msg['tsa'], new_msg['perm_ref']))
-                amhs_cursor.records.update_many(
-                            {"id": new_msg['id']},
-                            {'$set': {
-                            'perm': perm_item
-                            }
-                            }
-                            )
+                    new_msg['perm_ref'] = "ref not found"
+            amhs_cursor.permission.insert_one(new_msg)
+            result_records = amhs_cursor.records.find_one({"id": int(log_no)})
+            if result_records['perm']:
+                perm_item = result_records['perm']
+            else:
+                perm_item = []
+            perm_item.append((new_msg['tsa'], new_msg['perm_ref']))
+            amhs_cursor.records.update_many(
+                        {"id": new_msg['id']},
+                        {'$set': {
+                        'perm': perm_item
+                        }
+                        }
+                        )
 
     return render_template('includes/_newNotamPermMessage.html')
 
 @app.route('/Notam/<notam_no>')
+@token_required
 def notam(notam_no):
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
-    else:
-        notam_no = notam_no.replace('-', '/')
-        result_notam = amhs_cursor.notam.find_one({"notam_no": notam_no})
-        notam_msg = result_notam['full_message']
+        
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+    
+    notam_no = notam_no.replace('-', '/')
+    result_notam = amhs_cursor.notam.find_one({"notam_no": notam_no})
+    notam_msg = result_notam['full_message']
     return render_template('includes/_notampermMessage.html', msg=notam_msg)
 
 @app.route('/Permission/<id_num>/<tsa>/<ref>/<granted>')
+@token_required
 def permission(id_num, tsa, ref, granted):
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
+        
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+    
+    if "not found" not in ref:
+        ref = ref.replace('-', '/')
+        result_permission = amhs_cursor.permission.find_one({"perm_ref": ref, "granted":granted})
     else:
-        print(id_num, ref, granted)
-        if "not found" not in ref:
-            print(ref)
-            ref = ref.replace('-', '/')
-            result_permission = amhs_cursor.permission.find_one({"perm_ref": ref, "granted":granted})
-        else:
-            print(ref)
-            result_permission = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "granted":granted})
-        perm_msg = result_permission['full_message']
+        result_permission = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "granted":granted})
+    perm_msg = result_permission['full_message']
     return render_template('includes/_notampermMessage.html', msg=perm_msg)
 
 @app.route('/Delete/<id_num>/<tsa>/<indicator>')
+@token_required
 def delete(id_num, tsa, indicator):
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
+        
+    if not session['AMHS form']:
+        flash('You Have not Permission to Fill out the Log!', 'error')
+        return redirect(request.referrer)
+    
+    indicator = indicator.replace('-', '/')
+    if indicator[0] in ('A', 'B'):
+        selected_notam = amhs_cursor.notam.find_one({"notam_no": indicator})
+        if selected_notam:
+            related_log = amhs_cursor.records.find_one({"id": selected_notam['id']})
+            amhs_cursor.notam.delete_one({"notam_no": indicator})
+            index = related_log['notam'].index(indicator)
+            related_log['notam'].pop(index)
+            amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'notam': related_log['notam']}})
+            return redirect(request.referrer)
     else:
-        indicator = indicator.replace('-', '/')
-        if indicator[0] in ('A', 'B'):
-            selected_notam = amhs_cursor.notam.find_one({"notam_no": indicator})
-            if selected_notam:
-                related_log = amhs_cursor.records.find_one({"id": selected_notam['id']})
-                amhs_cursor.notam.delete_one({"notam_no": indicator})
-                index = related_log['notam'].index(indicator)
-                related_log['notam'].pop(index)
-                amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'notam': related_log['notam']}})
-                return redirect(request.referrer)
-        else:
-            selected_perm = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
-            if selected_perm:
-                related_log = amhs_cursor.records.find_one({"id": selected_perm['id']})
-                amhs_cursor.permission.delete_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
-                index = related_log['perm'].index([tsa, indicator])
-                related_log['perm'].pop(index)
-                amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'perm': related_log['perm']}})
-                return redirect(request.referrer)
+        selected_perm = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
+        if selected_perm:
+            related_log = amhs_cursor.records.find_one({"id": selected_perm['id']})
+            amhs_cursor.permission.delete_one({"id": int(id_num), "tsa": tsa, "perm_ref": indicator})
+            index = related_log['perm'].index([tsa, indicator])
+            related_log['perm'].pop(index)
+            amhs_cursor.records.update_many({"id": related_log['id']}, {'$set': {'perm': related_log['perm']}})
+            return redirect(request.referrer)
 
 @app.errorhandler(500)
 def internal_error(exception):

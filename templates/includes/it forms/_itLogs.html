@@ -948,7 +948,7 @@
 			<tr id="wholelog-links">
 				<td>
 					<ul style="margin-top: -3vh;">
-						{% if name in result['present_members'] %}
+						{% if session['IT form'] and (name in result['present_members']) %}
 							{% if 'all' in request.base_url %}
 								<li><a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
 								<!--<li><a class="button" style="background-color: #f3f3f3;">pdf</a></li>-->

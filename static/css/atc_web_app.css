@@ -125,9 +125,10 @@ textarea {
 
 #fp-message {
     position:fixed;
+    text-align: center;
     top:14vh;
     left:40vw;
-    width:20vw;
+    width:25vw;
 }
 
 #register-html {

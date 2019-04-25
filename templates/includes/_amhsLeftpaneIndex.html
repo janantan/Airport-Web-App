@@ -8,7 +8,7 @@
 					<table class="leftpane-table">
 						<tr>
 							<td style="font-size: 14px; text-align: left;">
-								{% if session['initial'] %}
+								{% if session['AMHS form'] %}
 									<a href="/amhs log form" class="navigator-links">AMHS Watch Log</a>
 								{% else %}
 								 	<a class="navigator-links">AMHS Watch Log</a>
@@ -17,7 +17,11 @@
 						</tr>
 						<tr>
 							<td style="font-size: 14px; text-align: left;">
-								<a href="/it log form" class="navigator-links">IT Watch Log</a>
+								{% if session['IT form'] %}
+									<a href="/it log form" class="navigator-links">IT Watch Log</a>
+								{% else %}
+								 	<a class="navigator-links">IT Watch Log</a>
+								{% endif %}
 							</td>
 						</tr>
 						<tr>

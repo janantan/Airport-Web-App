@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Airport WEB APP</title>
+        <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
+        <meta name="description" content="Airport WEB APP" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="/static/css/atc_web_app.css" />
+        <link rel="shortcut icon" type="image/png" href="/static/img/icon/atc favicon.png"/>
+        <style>
+            html, body {
+                width: 50%;
+                height: 50%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+    	<div>
+		  <main>
+		    <div id="login-form">
+		      <section>
+		        <form method="POST" action="">
+		          <fieldset>
+		            <div>         
+		              <label for="username">Username</label>
+		              <input id="username" type="text" name="username" required />
+		            </div>
+
+		            <div>
+		              <label for="password">Password</label>
+		              <input id="password" type="password" name="password" required />
+		            </div>
+		          </fieldset>
+
+		          <div>
+		            <input type="submit" value="Login" /> 
+		          </div>      
+		        </form>
+		      </section>
+		    </div>
+		  </main>
+		</div>
+		<script type="text/javascript">
+			window.onunload = refreshParent;
+			function refreshParent() {
+				window.opener.location.reload();
+			}
+		</script>
+    </body>
+</html>
