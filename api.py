@@ -1,7 +1,6 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, jsonify
 from flask import Response, logging, Markup, abort, after_this_request, make_response
 from flask_googlemaps import GoogleMaps, Map, icons
-from werkzeug.http import parse_authorization_header
 from functools import wraps
 from passlib.hash import sha256_crypt
 from pymongo import MongoClient
@@ -56,8 +55,6 @@ def token_required(f):
         if 'loged_in' not in session:
             flash('Please Sign in First!', 'danger')
             return redirect(url_for('logout'))
-
-        print(request.headers)
 
         if 'access-token' in request.headers['Cookie']:
             Token = request.headers['Cookie'].split(' ')
@@ -179,7 +176,6 @@ def login():
                 TOKEN = jwt.encode({'user_id':result['user_id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
                     app.secret_key)
                 token = TOKEN.decode('UTF-8')
-                print('generated token is: ', token)
                 return redirect(url_for('home'))
             else:
                 flash('The Password Does Not Match!', 'danger')
@@ -292,7 +288,7 @@ def amhs_pdf(log_no):
     if not result:
         flash('No Such Result!', 'error')
         return redirect(request.referrer)
-        
+
     msg_flag = 0
     for msg in equipments.amhs_msg_list:
         if result[msg]:
@@ -374,109 +370,125 @@ def index(navigator):
 @app.route('/search', methods=['GET', 'POST'])
 @token_required
 def search():
-    if 'username' in session:
-        i = 1
-        l = []
-        result_list = []
-        search_field = ""
-
-        if request.method == 'POST':
-
-            search_field = request.form.get('search_field')
-
-            if request.form.get('from'):
-                d_from = request.form.get('from')
-                date_from = datetime.datetime.strptime(d_from, "%Y-%m-%d")
-                date_from = date_from.strftime('%Y - %m - %d')
-            elif request.form.get('s_from'):
-                d_from = request.form.get('s_from')
-                date_from = datetime.datetime.strptime(d_from, "%Y-%m-%d")
-                date_from = date_from.strftime('%Y - %m - %d')
-            else:
-                date_from = ""
-
-            if request.form.get('to'):
-                d_to = request.form.get('to')
-                date_to = datetime.datetime.strptime(d_to, "%Y-%m-%d")
-                date_to = date_to.strftime('%Y - %m - %d')
-            elif request.form.get('s_to'):
-                d_to = request.form.get('s_to')
-                date_to = datetime.datetime.strptime(d_to, "%Y-%m-%d")
-                date_to = date_to.strftime('%Y - %m - %d')
-            else:
-                date_to = ""
-
-            if request.form.get('initial'):
-                initial = request.form.get('initial').upper()
-            elif request.form.get('s_initial'):
-                initial = request.form.get('s_initial').upper()
-            else:
-                initial = ""
-
-            shift = request.form.get('shift')
-            airline = request.form.get('s_airline')
-            Type = request.form.get('s_type').upper()
-            flt_no = request.form.get('s_flt_no')
-            reg = request.form.get('s_reg').upper()
-            arr_from = request.form.get('s_arr_from').upper()
-            dep_to = request.form.get('s_dep_to').upper()
-
-            if request.form.get('search_field') == "Logs":
-                if initial or shift:
-                    result = cursor.log_records.find({
-                        'shift_date': {'$gte': date_from, '$lt': date_to},
-                        '$or':[
-                        {'shift': shift},
-                        {'$or':[{'present_members': {'$elemMatch':{'$eq':initial}}}]}
-                        ]
-                        })
-                else:
-                    result = cursor.log_records.find({'shift_date': {'$gte': date_from, '$lt': date_to}})
-
-            
-            elif request.form.get('search_field') == "Flight Statistics":
-                if initial or Type or flt_no or reg or arr_from or dep_to or airline:
-                    result = cursor.flights_statistics.find({
-                            'date': {'$gte': date_from, '$lt': date_to},
-                            '$or':[{'airline': airline} , {'type': Type}, {'register': reg},
-                            {'arr_from': arr_from}, {'dep_to': dep_to}, {'initial': initial},
-                            {'$or':[{'arr_flt_no': flt_no}, {'dep_flt_no': flt_no}]}
-                            ]
-                            })
-                else:
-                    result = cursor.flights_statistics.find({
-                            'date': {'$gte': date_from, '$lt': date_to}
-                            })
-
-            if result:
-                if search_field == 'Logs':
-                    for r in result:
-                        l = [i, r['taken_over_from'], r['hand_over_time'], r['hand_over_to'],
-                        r['team'], (", ".join(r['present_members'])), r['shift'], r['shift_date'], r['id'], "✓"]
-                        result_list.append(l)
-                        i = i+1
-                elif search_field=='Flight Statistics':
-                    for r in result:
-                        l = [i, r]
-                        result_list.append(l)
-                        i = i+1
-
-            else:
-                flash('There is no record!', 'error')
-
-            if not result_list:
-                flash('There is no record!', 'error')
-
-    else:
+    if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
+
+    i = 1
+    l = []
+    result_list = []
+    search_field = ""
+
+    users_result = users_cursor.users.find({'department': 'Aeronautical Information and Communication Technology', 'airport':session['airport']})
+    AICT_personel = []
+    AICT_initial = []
+    for r in users_result:
+        AICT_personel.append(r['first_name']+' '+r['last_name'])
+        if r['initial']:
+            AICT_initial.append(r['initial'])
+
+    if request.method == 'POST':
+
+        search_field = request.form.get('search_field')
+
+        if request.form.get('from'):
+            d_from = request.form.get('from')
+            date_from = datetime.datetime.strptime(d_from, "%Y-%m-%d")
+            date_from = date_from.strftime('%Y - %m - %d')
+        elif request.form.get('i_from'):
+            d_from = request.form.get('i_from')
+            date_from = datetime.datetime.strptime(d_from, "%Y-%m-%d")
+            date_from = date_from.strftime('%Y - %m - %d')
+        else:
+            date_from = ""
+
+        if request.form.get('to'):
+            d_to = request.form.get('to')
+            date_to = datetime.datetime.strptime(d_to, "%Y-%m-%d")
+            date_to = date_to.strftime('%Y - %m - %d')
+        elif request.form.get('i_to'):
+            d_to = request.form.get('i_to')
+            date_to = datetime.datetime.strptime(d_to, "%Y-%m-%d")
+            date_to = date_to.strftime('%Y - %m - %d')
+        else:
+            date_to = ""
+
+        if request.form.get('initial'):
+            initial = request.form.get('initial').upper()
+        else:
+            initial = ""
+
+        if request.form.get('name'):
+            name = request.form.get('name')
+        else:
+            name = ""
+
+        if request.form.get('remark'):
+            remark = request.form.get('remark').upper()
+        elif request.form.get('i_remark'):
+            remark = request.form.get('i_remark').upper()
+        else:
+            remark = ""
+        remark = re.compile(remark)
+        print(remark)
+
+        if request.form.get('shift'):
+            shift = request.form.get('shift')
+        else:
+            shift = ""
+
+        if request.form.get('search_field') == "AMHS Logs":
+            if initial or shift or remark:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    '$or':[
+                    {'shift': shift},
+                    {'remarks': {'$regex': remark }},
+                    {'$or':[{'initial': {'$elemMatch':{'$eq':initial}}}]}
+                    ]
+                    })
+            else:
+                result = amhs_cursor.records.find({'shift_date': {'$gte': date_from, '$lt': date_to}})
+
+        
+        elif request.form.get('search_field') == "IT Logs":
+            if name or remark:
+                result = amhs_cursor.it_records.find({
+                        'shift_date': {'$gte': date_from, '$lt': date_to},
+                        '$or':[
+                        {'remarks': {'$regex': remark}},
+                        {'$or':[{'present_members': {'$elemMatch':{'$eq':name}}}]}
+                        ]
+                        })
+            else:
+                result = amhs_cursor.it_records.find({'shift_date': {'$gte': date_from, '$lt': date_to}})
+
+        if result:
+            if search_field == 'AMHS Logs':
+                for r in result:
+                    l = [i, (', '.join(r['on_duty'])), r['shift'], r['shift_date'], r['id'], "✓"]
+                    result_list.append(l)
+                    i = i+1
+                    print(l)
+            elif search_field=='IT Logs':
+                for r in result:
+                    l = [i, (', '.join(r['present_members'])), r['shift_date'], r['id'], "✓"]
+                    result_list.append(l)
+                    i = i+1
+                    print(l)
+        else:
+            flash('There is no record!', 'error')
+
+        if not result_list:
+            flash('There is no record!', 'error')
 
     return render_template('index.html',
         navigator="search",
         log_records_list=session['log_records_list'],
         result_list=result_list,
         search_field=search_field,
-        team_members=session['all_members']
+        AICT_personel=AICT_personel,
+        AICT_initial=AICT_initial
         )
 
 @app.route('/amhs log form', methods=['GET', 'POST'])
@@ -554,7 +566,6 @@ def amhs_log_form():
             record['signature_path'].append(session['signature_path'])
             amhs_cursor.records.insert_one(record)
             session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
-            print('####', session['amhs_log_no'])
     else:
         logdata = None
         notam_data = None
@@ -868,6 +879,23 @@ def it_log_form():
         session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
         session['log_records_list'].insert(6, record['present_members'])
 
+    presents_signature_path=[]
+    for name in request.form.getlist('present_members'):
+        name = name.split(' ')
+        signature_result = users_cursor.users.find_one({'first_name':name[0], 'last_name':name[1]})
+        if signature_result['signature']:
+            file_like = io.BytesIO(signature_result['signature'])
+            signature = PIL.Image.open(file_like)
+            if signature_result['signature_file_type'] == 'jpg':
+                signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+            else:
+                signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+        else:
+            initial_signature = url_for('static', filename='img/no_signature.jpg')
+        presents_signature_path.append(initial_signature)
+
     if request.method == 'POST':
         amhs_cursor.it_records.update_many(
             {"id": session['it_log_no']},
@@ -876,7 +904,8 @@ def it_log_form():
             'present_members': request.form.getlist('present_members'),
             'team': request.form.get('team'),
             'day': request.form.get('day'),
-            'remarks': request.form.get('remarks')
+            'remarks': request.form.get('remarks'),
+            'presents_signature_path': presents_signature_path
             }
             }
             )
@@ -976,7 +1005,6 @@ def it_forms(form_number):
                     dc_antivirus['com_name'].append(request.form.get('dc com_name_'+str(i)))
                     dc_antivirus['username'].append(request.form.get('dc username_'+str(i)))
                     dc_antivirus['remark'].append(request.form.get('dc antevirus_remark_'+str(i)))
-            print(dc_antivirus)
             amhs_cursor.it_records.update_many(
                 {"id": session['it_log_no']},
                 {'$set': {
@@ -1256,6 +1284,22 @@ def edit_it_log(id_no, form_number):
 
     if request.method == 'POST':
         if form_number == 'info':
+            presents_signature_path=[]
+            for name in request.form.getlist('present_members'):
+                name = name.split(' ')
+                signature_result = users_cursor.users.find_one({'first_name':name[0], 'last_name':name[1]})
+                if signature_result['signature']:
+                    file_like = io.BytesIO(signature_result['signature'])
+                    signature = PIL.Image.open(file_like)
+                    if signature_result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                else:
+                    initial_signature = url_for('static', filename='img/no_signature.jpg')
+                presents_signature_path.append(initial_signature)
             amhs_cursor.it_records.update_many(
                 {"id": int(id_no)},
                 {'$set': {
@@ -1263,7 +1307,8 @@ def edit_it_log(id_no, form_number):
                 'present_members': request.form.getlist('present_members'),
                 'team': request.form.get('team'),
                 'day': request.form.get('day'),
-                'remarks': request.form.get('remarks')
+                'remarks': request.form.get('remarks'),
+                'presents_signature_path': presents_signature_path
                 }
                 }
                 )
@@ -1540,24 +1585,21 @@ def adsb(airport):
     #adsb_cursor = utils.config_mongodb("172.27.13.68", 27017, 'ADSB-BL')
     rule = request.url_rule
     if session['adsb_db']:
-        print("********")
         location = session['adsb_db']
-        print(location)
-        print("********")
     else:        
         location = [
         {
             'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-            'lat': 35.6900,
-            'lng': 51.3112,
+            'lat': 34.345853,
+            'lng': 47.158128,
             'infobox': "<b>Mehrabad Airport</b>"
         }
         ]
     
     airport = Map(
         identifier="airport",
-        lat = 35.6900,
-        lng = 51.3112,
+        lat = 34.345853,
+        lng = 47.158128,
         style = "height:79vh;width:62vw;margin:-8px 0 0 0;",
         zoom = 8,
         maptype = "TERRAIN",
@@ -1580,9 +1622,9 @@ def adsb_get_data(airport):
     location = [
     {
         'icon': 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-        'lat': 35.6900,
-        'lng': 51.3112,
-        'infobox': "<b>Mehrabad Airport</b>"
+        'lat': 34.345853,
+        'lng': 47.158128,
+        'infobox': "<b>Kermanshah Airport</b>"
     }
     ]
     full_result = adsb_cursor.active_flights.find().limit(0).sort("_id", -1)
@@ -1597,15 +1639,14 @@ def adsb_get_data(airport):
                 }
                 )
         session['adsb_db'] = location
-        print(session['adsb_db'])
         flash("Successful!", "success")
     else:
         flash("your data can not be fetched", "error")
     
     airport = Map(
         identifier="airport",
-        lat = 35.6900,
-        lng = 51.3112,
+        lat = 34.345853,
+        lng = 47.158128,
         style = "height:79vh;width:62vw;margin:-8px 0 0 0;",
         zoom = 8,
         maptype = "TERRAIN",

@@ -13,13 +13,13 @@
 						        <td style="width:600px;">
 					            	<select name="search_field" id="search_field" onchange="searchFieldFunction('search_field')" required>
 										<option value="" disabled selected>(select one)</option>
-										<option value="Logs">Logs</option>
-										<option value="Flight Statistics">Flight Statistics</option>
+										<option value="AMHS Logs">AMHS Logs</option>
+										<option value="IT Logs">IT Logs</option>
 									</select>
 						        </td>
 						    </tr>
 					    </thead>
-					    <tbody id="logs-field" style="display: none; border: none; margin-top: 15px;">
+					    <tbody id="amhs-logs-field" style="display: none; border: none; margin-top: 15px;">
 							<tr>
 								<th style="width: 250px;">
 									<label>Initial</label>
@@ -33,21 +33,24 @@
 								<th style="width: 250px;">
 									<span>To</span><span style="color: red;">*</span>
 								</th>
+								<th style="width: 250px;">
+									<label>Remark</label>
+								</th>
 							</tr>
 							<tr>
 								<td>
 									<select name="initial" id="initial">
 										<option value="" disabled selected>(select one)</option>
-										{% for member in team_members %}
-											<option value="{{member[1]}}">{{member[1]}}</option>
+										{% for initial in AICT_initial %}
+											<option value="{{initial}}">{{initial}}</option>
 										{% endfor %}
 									</select>
 								</td>
 								<td>
 									<select name="shift" id="shift">
 										<option value="">(day/night)</option>
-										<option value="D">Day</option>
-										<option value="N">Night</option>
+										<option value="Day">Day</option>
+										<option value="Night">Night</option>
 									</select>
 								</td>
 								<td>
@@ -56,12 +59,15 @@
 								<td>
 									<input type="date" name="to" />
 								</td>
+								<td>
+									<input type="text" style="text-transform:none;" name="remark" size="15" placeholder="search in remarks" />
+								</td>
 							</tr>
 						</tbody>
-						<tbody id="statistics-field" style="display: none; border: none; margin-top: 15px;">
+						<tbody id="it-logs-field" style="display: none; border: none; margin-top: 15px;">
 							<tr>
 								<th style="width: 250px;">
-									<span>Airline</span>
+									<label>Name</label>
 								</th>
 								<th style="width: 250px;">
 									<span>From</span><span style="color: red;">*</span>
@@ -70,77 +76,26 @@
 									<span>To</span><span style="color: red;">*</span>
 								</th>
 								<th style="width: 250px;">
-									<label>Initial</label>
+									<label>Remark</label>
 								</th>
 							</tr>
 							<tr>
 								<td>
-									<select name="s_airline" id="airline">
+									<select name="name" id="name">
 										<option value="" disabled selected>(select one)</option>
-										<option value="IRA">IRA</option>
-										<option value="IRC">IRC</option>
-										<option value="IRB">IRB</option>
-										<option value="KIS">KIS</option>
-										<option value="CPN">CPN</option>
-										<option value="QSM">QSM</option>
-										<option value="TBZ">TBZ</option>
-										<option value="TBN">TBN</option>
-										<option value="IZG">IZG</option>
-										<option value="KRU">KRU</option>
-										<option value="Other Airlines">Other Airlines</option>
-										<option value="Military">Military</option>
+										{% for name in AICT_personel %}
+											<option value="{{name}}">{{name}}</option>
+										{% endfor %}
 									</select>
 								</td>
 								<td>
-									<input type="date" name="s_from" />
+									<input type="date" name="i_from" />
 								</td>
 								<td>
-									<input type="date" name="s_to" />
+									<input type="date" name="i_to" />
 								</td>
 								<td>
-									<select name="s_initial" id="initial">
-										<option value="" disabled selected>(select one)</option>
-										<option value="BL">BL</option>
-										<option value="DN">DN</option>
-										<option value="FM">FM</option>
-										<option value="FY">FY</option>
-										<option value="LM">LM</option>
-										<option value="TK">TK</option>
-									</select>
-								</td>
-							</tr>
-							<tr style="padding-top: 30px;">
-								<th style="width: 250px;">
-									<label>Type</label>
-								</th>
-								<th style="width: 250px;">
-									<label>Flight Number</label>
-								</th>
-								<th style="width: 250px;">
-									<label>Register</label>
-								</th>
-								<th style="width: 250px;">
-									<label>ARR from</label>
-								</th>
-								<th style="width: 250px;">
-									<label>DEP to</label>
-								</th>
-							</tr>
-							<tr>
-								<td>
-									<input id="type" type="text" name="s_type" size="10" />
-								</td>
-								<td>
-									<input id="flt_no" type="text" name="s_flt_no" size="10" />
-								</td>
-								<td>
-									<input id="reg" type="text" name="s_reg" size="10" />
-								</td>
-								<td>
-									<input id="arr_from" type="text" name="s_arr_from" size="10" />
-								</td>
-								<td>
-									<input id="dep_to" type="text" name="s_dep_to" size="10" />
+									<input type="text" style="text-transform:none;" name="i_remark" size="15" placeholder="search in remarks"/>
 								</td>
 							</tr>
 						</tbody>
@@ -153,182 +108,86 @@
 		</section>
 	</div>
 {% else %}
-	{% if search_field == 'Logs' %}
-		<fieldset style="min-height: 160px; max-height: 60vh; background: #fefefe;">
+	{% if search_field == 'AMHS Logs' %}
+		<fieldset style="min-height: 160px; background: #fefefe;">
 			<legend style="font-weight: bold;">Search Result:</legend>
     		<table id="freeze">
     			<thead>
-            		<tr style="background: yellow; border: none; font-size:12px;">
-						<th style="width: 50px;">
+            		<tr style="background: yellow; border: none;">
+						<th>
 							<span>No</span>
 						</th>
-						<th style="width: 100px;">
-							<span>Taken Over from</span>
+						<th style="width: 15vw;">
+							<span>On-Duty</span>
 						</th>
-						<th style="width: 100px;">
-							<span>Hand Over Time</span>
-						</th>
-						<th style="width: 100px;">
-							<span>Hand Over to</span>
-						</th>
-						<th style="width: 50px;">
-							<span>Team</span>
-						</th>
-						<th style="width: 200px;">
-							<span>Present Members</span>
-						</th>
-						<th style="width: 50px;">
+						<th>
 							<span>Shift</span>
 						</th>
-						<th style="width: 100px;">
+						<th style="width: 20vw;">
 							<span>Date</span>
 						</th>
-						<th style="width: 50px;">
+						<th>
 							<span>CK</span>
 						</th>
 					</tr>
 			    </thead>
 			    <tbody style="border: none; margin-top: 0;">
 			    	{% for r in result_list %}
-						<tr class="rows" style="font-size:13px; width: 100%;">
-							<td style="width: 50px;">
+						<tr class="rows">
+							<td>
 								<span>{{r[0]}}</span>
 							</td>
-							<td style="width: 100px;">
+							<td style="width: 15vw;">
 								<span>{{r[1]}}</span>
 							</td>
-							<td style="width: 100px;">
+							<td>
 								<span>{{r[2]}}</span>
 							</td>
-							<td style="width: 100px;">
-								<a href="/logs/{{r[8]}}" title="open log" target="_blank"><span  style="color:blue">{{r[3]}}</span></a>
+							<td style="width: 20vw;">
+								<a href="/amhs logs/{{r[4]}}" title="open log" target="_blank"><span  style="color:blue">{{r[3]}}</span></a>
 							</td>
-							<td style="width: 50px;">
-								<span>{{r[4]}}</span>
-							</td>
-							<td style="width: 200px;">
+							<td>
 								<span>{{r[5]}}</span>
-							</td>
-							<td style="width: 50px;">
-								<span>{{r[6]}}</span>
-							</td>
-							<td style="width: 100px; font-weight:bold;">
-								<span>{{r[7]}}</span>
-							</td>
-							<td style="width: 50px;">
-								<span style="color:red;font-weight:bold;">{{r[9]}}</span>
 							</td>
 						</tr>
 					{% endfor %}
 				</tbody>
 		    </table>
 		</fieldset>
-	{% elif search_field == 'Flight Statistics' %}
-		<fieldset style="min-height: 160px; max-height: 60vh; background: #fefefe;">
+	{% elif search_field == 'IT Logs' %}
+		<fieldset style="min-height: 160px; background: #fefefe;">
 			<legend style="font-weight: bold;">Search Result:</legend>
     		<table id="freeze">
     			<thead>
-            		<tr style="background: yellow; border: none; font-size: 11px;">
-						<th style="width: 50px;">
-							<span>No.</span>
+            		<tr style="background: yellow; border: none;">
+						<th>
+							<span>No</span>
 						</th>
-						<th style="width: 200px;">
+						<th style="width: 30vw;">
+							<span>Present Members</span>
+						</th>
+						<th style="width: 20vw;">
 							<span>Date</span>
 						</th>
-						<th style="width: 100px;">
-							<span>Airline</span>
-						</th>
-						<th style="width: 100px;">
-							<span>Type</span>
-						</th>
-						<th style="width: 70px;">
-							<span>Register</span>
-						</th>
-						<th style="width: 100px;">
-							<span>ARR FLT NO</span>
-						</th>
-						<th style="width: 50px;">
-							<span>ARR from</span>
-						</th>
-						<th style="width: 100px;">
-							<span>ARR Time</span>
-						</th>
-						<th style="width: 120px;">
-							<span>ARR DLA Source</span>
-						</th>
-						<th style="width: 100px;">
-							<span>DEP FLT NO</span>
-						</th>
-						<th style="width: 50px;">
-							<span>DEP to</span>
-						</th>
-						<th style="width: 100px;">
-							<span>DEP Time</span>
-						</th>
-						<th style="width: 120px;">
-							<span>DEP DLA Source</span>
-						</th>
-						<th style="width: 70px;">
-							<span>LGT</span>
-						</th>
-						<th style="width: 100px;">
-							<span>Initial</span>
-						</th>						
-						<th style="width: 100px;">
-							<span>Remarks</span>
+						<th>
+							<span>CK</span>
 						</th>
 					</tr>
 			    </thead>
-			    <tbody style="border: none; margin-top:0;">
+			    <tbody style="border: none; margin-top: 0;">
 			    	{% for r in result_list %}
-						<tr class="rows" style="font-size: 12px;">
-							<td style="width: 50px;">
+						<tr class="rows">
+							<td>
 								<span>{{r[0]}}</span>
 							</td>
-							<td style="width: 200px; font-size: 10px; color:red; font-weight:bold;">
-								<span>{{r[1]['date']}}</span>
+							<td style="width: 30vw;">
+								<span>{{r[1]}}</span>
 							</td>
-							<td style="width: 100px; font-weight:bold;">
-								<a href="/statistics/{{r[1]['airline']}}" title="{{r[1]['airline']}} statistics" target="_blank"><span style="color:blue">{{r[1]['airline']}}</span></a>
+							<td style="width: 20vw;">
+								<a href="/it logs/{{r[3]}}/all" title="open log" target="_blank"><span  style="color:blue">{{r[2]}}</span></a>
 							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['type']}}</span>
-							</td>
-							<td style="width: 70px;">
-								<span>{{r[1]['register']}}</span>
-							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['arr_flt_no']}}</span>
-							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['arr_from']}}</span>
-							</td>
-							<td style="width: 50px;">
-								<span>{{r[1]['arr_time']}}</span>
-							</td>
-							<td style="width: 120px;">
-								<span>{{r[1]['arr_dla_source']}}</span>
-							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['dep_flt_no']}}</span>
-							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['dep_to']}}</span>
-							</td>
-							<td style="width: 50px;">
-								<span>{{r[1]['dep_time']}}</span>
-							</td>
-							<td style="width: 120px;">
-								<span>{{r[1]['dep_dla_source']}}</span>
-							</td>
-							<td style="width: 70px;">
-								<span>{{r[1]['light']}}</span>
-							</td>
-							<td style="width: 100px;">
-								<span>{{r[1]['initial']}}</span>
-							</td>							
-							<td style="width: 100px;">
-								<span>{{r[1]['remarks']}}</span>
+							<td>
+								<span>{{r[4]}}</span>
 							</td>
 						</tr>
 					{% endfor %}
@@ -341,17 +200,17 @@
 <script type="text/javascript">
 	function searchFieldFunction(field) {
 		var x = document.getElementById(field).value;
-		logs = document.getElementById("logs-field");
-		statistics = document.getElementById("statistics-field");
-		if (x == 'Logs') {
-			logs.style.display = "block";
-			statistics.style.display = "none";
-		} else if (x == 'Flight Statistics') {
-			logs.style.display = "none";
-			statistics.style.display = "block";
+		amhs_logs = document.getElementById("amhs-logs-field");
+		it_logs = document.getElementById("it-logs-field");
+		if (x == 'AMHS Logs') {
+			amhs_logs.style.display = "block";
+			it_logs.style.display = "none";
+		} else if (x == 'IT Logs') {
+			amhs_logs.style.display = "none";
+			it_logs.style.display = "block";
 		} else {
-			logs.style.display = "none";
-			statistics.style.display = "none";
+			amhs_logs.style.display = "none";
+			it_logs.style.display = "none";
 		}
 	}
 </script>

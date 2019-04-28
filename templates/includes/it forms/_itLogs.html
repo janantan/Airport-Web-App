@@ -920,13 +920,14 @@
 												<span>{{result['day']}}</span>
 											</td>
 									    </tr>
+									    <tr><td colspan="4"><hr></td></tr>
 									    {% if result['remarks'] %}
 										    <tr>
 						            			<th>
 						            				<span style="color: red;">Remarks</span>
 						            			</th>
 						            			<th colspan="3">
-						            				<span></span><hr>
+						            				<span></span>
 						            			</th>
 										    </tr>
 										    <tr>
@@ -934,6 +935,26 @@
 						            			<td colspan="3" style="text-align: right; direction: rtl;">
 						            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
 						            			</td>
+										    </tr>
+										    <tr><td colspan="4"><hr></td></tr>
+					    				{% endif %}
+					    				{% if result['presents_signature_path'] %}
+										    <tr>
+						            			<th>
+						            				<span style="color: red;">Signature</span>
+						            			</th>
+						            			<th colspan="3">
+						            				<span></span>
+						            			</th>
+										    </tr>
+										    <tr>
+										    	<td colspan="4">
+							            			<figure id="signature">
+						            					{% for sign in result['presents_signature_path'] %}
+															<img src="{{sign}}" width="100" height="100" />
+														{% endfor %}
+													</figure>
+												</td>
 										    </tr>
 					    				{% endif %}
 									</tbody>
