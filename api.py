@@ -469,13 +469,11 @@ def search():
                     l = [i, (', '.join(r['on_duty'])), r['shift'], r['shift_date'], r['id'], "✓"]
                     result_list.append(l)
                     i = i+1
-                    print(l)
             elif search_field=='IT Logs':
                 for r in result:
                     l = [i, (', '.join(r['present_members'])), r['shift_date'], r['id'], "✓"]
                     result_list.append(l)
                     i = i+1
-                    print(l)
         else:
             flash('There is no record!', 'error')
 
@@ -564,6 +562,7 @@ def amhs_log_form():
             record['notam'] = record['perm'] = []
             record['signature_path']=[]
             record['signature_path'].append(session['signature_path'])
+            record['checked'] = False
             amhs_cursor.records.insert_one(record)
             session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
     else:
@@ -619,6 +618,11 @@ def amhs_log_form():
             'tis_to': request.form.get('tis_to'),
             'tis_reason': request.form.get('tis_reason'),
             'tis_end': request.form.get('tis_end'),
+            'scr_during': request.form.get('scr_during'),
+            'scr_from': request.form.get('scr_from'),
+            'scr_to': request.form.get('scr_to'),
+            'scr_reason': request.form.get('scr_reason'),
+            'scr_end': request.form.get('scr_end'),
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
@@ -681,7 +685,7 @@ def amhs_log(id_no):
     if not result:
         flash('No Such Result!', 'error')
         return redirect(request.referrer)
-
+    
     users_result = users_cursor.users.find_one({'username': session['username']})
     if users_result:
         if users_result['initial']:
@@ -697,6 +701,9 @@ def amhs_log(id_no):
             break
     (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
 
+    if (session['admin']) and ('checked' in result.keys()):
+        if result['checked']:
+            flash('Checked Before!', 'success')
 
     return render_template('index.html',
         navigator="amhs logs",
@@ -711,6 +718,36 @@ def amhs_log(id_no):
         notam_data=notam_data,
         perm_data=perm_data
         )
+
+@app.route('/amhs-ck/<id_no>')
+@token_required
+def amhs_ck(id_no):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    result = amhs_cursor.records.find_one({"id": int(id_no)})
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)        
+    if not session['admin']:
+        flash('You Have not Permission to Check the Log!', 'error')
+        return redirect(request.referrer)
+    if 'checked' in result.keys():
+        if result['checked']:
+            flash('Checked Before!', 'success')
+            return redirect(url_for('amhs_log', id_no=id_no))
+    amhs_cursor.records.update_many(
+            {"id": int(id_no)},
+            {'$set': {
+            'id': int(id_no),
+            'checked': True
+            }})
+    flash('Checked', 'success')
+    if int(id_no) < session['amhs_log_no']:
+        return redirect(url_for('amhs_log', id_no=str(int(id_no)+1)))
+    else:
+        return redirect(url_for('amhs_log', id_no=id_no))
+
 
 @app.route('/amhs logs/<id_no>/edit', methods=['GET', 'POST'])
 @token_required
@@ -776,6 +813,11 @@ def edit_amhs_log(id_no):
             'tis_to': request.form.get('tis_to'),
             'tis_reason': request.form.get('tis_reason'),
             'tis_end': request.form.get('tis_end'),
+            'scr_during': request.form.get('scr_during'),
+            'scr_from': request.form.get('scr_from'),
+            'scr_to': request.form.get('scr_to'),
+            'scr_reason': request.form.get('scr_reason'),
+            'scr_end': request.form.get('scr_end'),
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
@@ -859,6 +901,7 @@ def it_log_form():
             record['day'] = today_wd
             record['team'] = ''
             record['remarks'] = ''
+            records['checked'] = False
             amhs_cursor.it_records.insert_one(record)
             session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
             session['log_records_list'].insert(6, record['present_members'])
@@ -875,6 +918,7 @@ def it_log_form():
         record['day'] = today_wd
         record['team'] = ''
         record['remarks'] = ''
+        records['checked'] = False
         amhs_cursor.it_records.insert_one(record)
         session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
         session['log_records_list'].insert(6, record['present_members'])
@@ -1199,6 +1243,10 @@ def it_logs(id_no, form_number):
     else:
         nav = ""
 
+    if (session['admin']) and ('checked' in result.keys()):
+        if result['checked']:
+            flash('Checked Before!', 'success')
+
     return render_template('index.html',
         navigator="it logs",
         log_no=int(id_no),
@@ -1224,6 +1272,35 @@ def it_logs(id_no, form_number):
         fids_system = equipments.fids_system,
         log_records_list=session['log_records_list']
         )
+
+@app.route('/it-ck/<id_no>')
+@token_required
+def it_ck(id_no):
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+    result = amhs_cursor.it_records.find_one({"id": int(id_no)})
+    if not result:
+        flash('No Such Result!', 'error')
+        return redirect(request.referrer)        
+    if not session['admin']:
+        flash('You Have not Permission to Check the Log!', 'error')
+        return redirect(request.referrer)
+    if 'checked' in result.keys():
+        if result['checked']:
+            flash('Checked Before!', 'success')
+            return redirect(url_for('it_logs', id_no=id_no, form_number='all'))
+    amhs_cursor.it_records.update_many(
+            {"id": int(id_no)},
+            {'$set': {
+            'id': int(id_no),
+            'checked': True
+            }})
+    flash('Checked', 'success')
+    if int(id_no) < session['it_log_no']:
+        return redirect(url_for('it_logs', id_no=str(int(id_no)+1), form_number='all'))
+    else:
+        return redirect(url_for('it_logs', id_no=id_no, form_number='all'))
 
 @app.route('/it logs/<id_no>/<form_number>/edit', methods=['GET', 'POST'])
 @token_required

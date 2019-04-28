@@ -1,5 +1,5 @@
 #####################################################
-amhs_channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis']
+amhs_channel_list = ['tsa', 'sta', 'cfa', 'tia', 'mca', 'tis', 'scr']
 amhs_msg_list = ['fpl', 'dla', 'chg', 'notam', 'perm']
 amhs_network = ['server', 'supervisor', 'workstation', 'printer']
 amhs_server_room_eqp = [

@@ -251,6 +251,19 @@
 		<tr id="wholelog-links">
 			<td>
 				<ul style="margin-top: -3vh;">
+					{% if 'checked' in result %}
+						{% if result['checked'] %}
+							<li><a title="Checked"><span style="color: red; font-weight: bold;" class="log-no">✓</span></a></li>
+						{% elif session['admin'] %}
+							<li><a href="/amhs-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
+									<span style="color: blue; font-weight: bold;">✓</span>
+								</a></li>
+						{% endif %}
+					{% elif session['admin'] %}
+						<li><a href="/amhs-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
+								<span style="color: blue; font-weight: bold;">✓</span>
+							</a></li>
+					{% endif %}
 					{% if session['AMHS form'] and (initial in result['on_duty']+result['overtime']) %}
 						<li><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
 					{% endif %}

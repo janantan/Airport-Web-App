@@ -192,7 +192,7 @@
 									        </th>
 									    </tr>
 				        			</thead>
-				        			<tbody style="margin-top: 15px; min-height: 45vh;">
+				        			<tbody style="margin-top: 15px; min-height: {{(channel_list|length)*6.8}}vh;">
 				        				{% for i in range(channel_list|length) %}
 						            		<tr class="ch-rows">
 						            			<td style="width: 50px; padding-bottom:7px;">
@@ -254,7 +254,7 @@
 				        		<legend>Messages</legend>
 				        		<table bgcolor="#f2f2f2" style="width:100%;">
 				        			<thead></thead>
-				        			<tbody style="margin-top: 15px; min-height: 35vh;">
+				        			<tbody style="margin-top: 15px; min-height: {{(msg_list|length)*7}}vh;">
 				        				{% for msg in msg_list %}
 						            		<tr style="width:100%;">
 						            			<td style="width: 100px; padding-bottom:7px;">

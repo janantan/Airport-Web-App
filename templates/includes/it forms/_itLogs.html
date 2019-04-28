@@ -969,6 +969,19 @@
 			<tr id="wholelog-links">
 				<td>
 					<ul style="margin-top: -3vh;">
+						{% if 'checked' in result %}
+							{% if result['checked'] %}
+								<li><a title="Checked"><span style="color: red; font-weight: bold;" class="log-no">✓</span></a></li>
+							{% elif session['admin'] %}
+								<li><a href="/it-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
+										<span style="color: blue; font-weight: bold;">✓</span>
+									</a></li>
+							{% endif %}
+						{% elif session['admin'] %}
+							<li><a href="/it-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
+									<span style="color: blue; font-weight: bold;">✓</span>
+								</a></li>
+						{% endif %}
 						{% if session['IT form'] and (name in result['present_members']) %}
 							{% if 'all' in request.base_url %}
 								<li><a href="/it logs/{{log_no}}/info/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
