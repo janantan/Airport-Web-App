@@ -429,8 +429,6 @@ def search():
             remark = request.form.get('i_remark').upper()
         else:
             remark = ""
-        remark = re.compile(remark)
-        print(remark)
 
         if request.form.get('shift'):
             shift = request.form.get('shift')
@@ -489,6 +487,47 @@ def search():
         AICT_initial=AICT_initial
         )
 
+@app.route('/user-rules', methods=['GET', 'POST'])
+@token_required
+def user_rules():
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+
+    if not session['admin']:
+        flash('You Have not Permission to Assign Rules!', 'error')
+        return redirect(request.referrer)
+    users = users_cursor.users.find({'department':'Aeronautical Information and Communication Technology', 'airport':session['airport']})
+    result_list = []
+    for user in users:
+        result_list.append([user['first_name'], user['last_name'], user['username'], user['initial'], user['admin'], user['AMHS form'], user['IT form']])
+    
+    if request.method == 'POST':
+        for user in result_list:
+            users_cursor.users.update_many(
+                {"username": user[2]},
+                {'$set': {
+                'username': user[2],
+                'admin':True if 'admin' in request.form.getlist(user[2]+'_user_rules') else False,
+                'AMHS form':True if 'amhs' in request.form.getlist(user[2]+'_user_rules') else False,
+                'IT form':True if 'it' in request.form.getlist(user[2]+'_user_rules') else False
+                }
+                }
+                )
+            if user[2] == session['username']:
+                curent_user = users_cursor.users.find_one({'username': user[2]})
+                session['admin'] = curent_user['admin']
+                session['AMHS form'] = curent_user['AMHS form']
+                session['IT form'] = curent_user['IT form']
+        flash('Saved Successfuly!', 'success')
+        return redirect(url_for('user_rules'))
+
+    return render_template('index.html',
+        navigator="user-rules",
+        log_records_list=session['log_records_list'],
+        result=result_list
+        )
+
 @app.route('/amhs log form', methods=['GET', 'POST'])
 @token_required
 def amhs_log_form():
@@ -533,7 +572,7 @@ def amhs_log_form():
                 session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": today})['present_members'])
             (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
         else:
-            logdata = None
+            logdata = {}
             notam_data = None
             perm_data = None
             record = {'event_date': datetime.datetime.utcnow()}
@@ -555,9 +594,16 @@ def amhs_log_form():
                 server_room_equipment[eqp] = {'status':'On', 'remark':''}
             record['server_room_equipment'] = server_room_equipment
             record['room_temp'] = ''
-            for ch in equipments.amhs_channel_list:
-                record[ch+'_during'] = 'OK'
-                record[ch+'_end'] = 'OK'
+            channels_status = {}
+            for channel in equipments.amhs_channel_list: 
+                channels_status[channel] = {
+                'during':'OK',
+                'from':'',
+                'to':'',
+                'reason':'',
+                'end':'OK'
+                }
+            record['channels_status'] = channels_status
             record['fpl'] = record['dla'] = record['chg'] = ""
             record['notam'] = record['perm'] = []
             record['signature_path']=[]
@@ -566,15 +612,56 @@ def amhs_log_form():
             amhs_cursor.records.insert_one(record)
             session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
     else:
-        logdata = None
+        logdata = {}
         notam_data = None
         perm_data = None
+        record = {'event_date': datetime.datetime.utcnow()}
+        record['id'] = 1
+        record['shift_date'] = session['datetime']
+        record['shift_jdate'] = session['jdatetime']
+        record['on_duty'] = utils.regex(session['initial'])
+        record['shift_switch'] = [""]
+        record['overtime'] = [""]
+        record['daily_leave'] = [""]
+        record['day'] = today_wd
+        record['shift'] = today_shift
+        record['team'] = ''
         server_room_equipment = {}
+        for eqp in equipments.amhs_server_room_eqp:
+            server_room_equipment[eqp] = {'status':'On', 'remark':''}
+        record['server_room_equipment'] = server_room_equipment
+        record['room_temp'] = ''
+        channels_status = {}
+        for channel in equipments.amhs_channel_list: 
+            channels_status[channel] = {
+            'during':'OK',
+            'from':'',
+            'to':'',
+            'reason':'',
+            'end':'OK'
+            }
+        record['channels_status'] = channels_status
+        record['fpl'] = record['dla'] = record['chg'] = ""
+        record['notam'] = record['perm'] = []
+        record['signature_path']=[]
+        record['signature_path'].append(session['signature_path'])
+        record['checked'] = False
+        amhs_cursor.records.insert_one(record)
+        session['amhs_log_no'] = amhs_cursor.records.estimated_document_count()
 
     if request.method == 'POST':
         server_room_equipment = {}
         for eqp in equipments.amhs_server_room_eqp: 
             server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
+        channels_status = {}
+        for channel in equipments.amhs_channel_list: 
+            channels_status[channel] = {
+            'during':request.form.get(channel+'_during'),
+            'from':request.form.get(channel+'_from'),
+            'to':request.form.get(channel+'_to'),
+            'reason':request.form.get(channel+'_reason'),
+            'end':request.form.get(channel+'_end')
+            }
         amhs_cursor.records.update_many(
             {"id": session['amhs_log_no']},
             {'$set': {
@@ -588,41 +675,7 @@ def amhs_log_form():
             'shift': request.form.get('shift'),
             'room_temp': request.form.get('room_temp'),
             'server_room_equipment': server_room_equipment,
-            'tsa_during': request.form.get('tsa_during'),
-            'tsa_from': request.form.get('tsa_from'),
-            'tsa_to': request.form.get('tsa_to'),
-            'tsa_reason': request.form.get('tsa_reason'),
-            'tsa_end': request.form.get('tsa_end'),
-            'sta_during': request.form.get('sta_during'),
-            'sta_from': request.form.get('sta_from'),
-            'sta_to': request.form.get('sta_to'),
-            'sta_reason': request.form.get('sta_reason'),
-            'sta_end': request.form.get('sta_end'),
-            'cfa_during': request.form.get('cfa_during'),
-            'cfa_from': request.form.get('cfa_from'),
-            'cfa_to': request.form.get('cfa_to'),
-            'cfa_reason': request.form.get('cfa_reason'),
-            'cfa_end': request.form.get('cfa_end'),
-            'tia_during': request.form.get('tia_during'),
-            'tia_from': request.form.get('tia_from'),
-            'tia_to': request.form.get('tia_to'),
-            'tia_reason': request.form.get('tia_reason'),
-            'tia_end': request.form.get('tia_end'),
-            'mca_during': request.form.get('mca_during'),
-            'mca_from': request.form.get('mca_from'),
-            'mca_to': request.form.get('mca_to'),
-            'mca_reason': request.form.get('mca_reason'),
-            'mca_end': request.form.get('mca_end'),
-            'tis_during': request.form.get('tis_during'),
-            'tis_from': request.form.get('tis_from'),
-            'tis_to': request.form.get('tis_to'),
-            'tis_reason': request.form.get('tis_reason'),
-            'tis_end': request.form.get('tis_end'),
-            'scr_during': request.form.get('scr_during'),
-            'scr_from': request.form.get('scr_from'),
-            'scr_to': request.form.get('scr_to'),
-            'scr_reason': request.form.get('scr_reason'),
-            'scr_end': request.form.get('scr_end'),
+            'channels_status': channels_status,
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
@@ -632,27 +685,28 @@ def amhs_log_form():
             )
         update_signature = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
         update_signature_path=[]
-        od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
-        ov = update_signature['overtime'] if update_signature['overtime'][0] else []
-        for initial in od+ov:
-            signature_result = users_cursor.users.find_one({'initial': initial})
-            if signature_result['signature']:
-                file_like = io.BytesIO(signature_result['signature'])
-                signature = PIL.Image.open(file_like)
-                if signature_result['signature_file_type'] == 'jpg':
-                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
-                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+        if update_signature:
+            od = update_signature['on_duty'] if update_signature['on_duty'][0] else []
+            ov = update_signature['overtime'] if update_signature['overtime'][0] else []
+            for initial in od+ov:
+                signature_result = users_cursor.users.find_one({'initial': initial})
+                if signature_result['signature']:
+                    file_like = io.BytesIO(signature_result['signature'])
+                    signature = PIL.Image.open(file_like)
+                    if signature_result['signature_file_type'] == 'jpg':
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), "JPEG")
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
+                    else:
+                        signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
+                        initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
                 else:
-                    signature.save(os.path.join(app.config['SAVE_FOLDER'], signature_result['username']+'_signature.'+signature_result['signature_file_type']), signature_result['signature_file_type'].upper())
-                    initial_signature = url_for('static', filename='img/' + signature_result['username'] +'_signature.'+signature_result['signature_file_type'])
-            else:
-                initial_signature = url_for('static', filename='img/no_signature.jpg')
-            update_signature_path.append(initial_signature)
+                    initial_signature = url_for('static', filename='img/no_signature.jpg')
+                update_signature_path.append(initial_signature)
 
-        amhs_cursor.records.update_many(
-                {"id": session['amhs_log_no']},
-                {'$set': {'signature_path': update_signature_path}}
-                )
+            amhs_cursor.records.update_many(
+                    {"id": session['amhs_log_no']},
+                    {'$set': {'signature_path': update_signature_path}}
+                    )
         flash('Saved Successfuly!', 'success')
         if not session['log_records_list']:
             result = amhs_cursor.records.find_one({"id": session['amhs_log_no']})
@@ -701,10 +755,6 @@ def amhs_log(id_no):
             break
     (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
 
-    if (session['admin']) and ('checked' in result.keys()):
-        if result['checked']:
-            flash('Checked Before!', 'success')
-
     return render_template('index.html',
         navigator="amhs logs",
         log_no=int(id_no),
@@ -732,10 +782,6 @@ def amhs_ck(id_no):
     if not session['admin']:
         flash('You Have not Permission to Check the Log!', 'error')
         return redirect(request.referrer)
-    if 'checked' in result.keys():
-        if result['checked']:
-            flash('Checked Before!', 'success')
-            return redirect(url_for('amhs_log', id_no=id_no))
     amhs_cursor.records.update_many(
             {"id": int(id_no)},
             {'$set': {
@@ -770,6 +816,15 @@ def edit_amhs_log(id_no):
         server_room_equipment = {}
         for eqp in equipments.amhs_server_room_eqp: 
             server_room_equipment[eqp] = {'status':request.form.get(eqp), 'remark':request.form.get(eqp+' remark')}
+        channels_status = {}
+        for channel in equipments.amhs_channel_list: 
+            channels_status[channel] = {
+            'during':request.form.get(channel+'_during'),
+            'from':request.form.get(channel+'_from'),
+            'to':request.form.get(channel+'_to'),
+            'reason':request.form.get(channel+'_reason'),
+            'end':request.form.get(channel+'_end')
+            }
         amhs_cursor.records.update_many(
             {"id": int(id_no)},
             {'$set': {
@@ -783,41 +838,7 @@ def edit_amhs_log(id_no):
             'shift': request.form.get('shift'),
             'room_temp': request.form.get('room_temp'),
             'server_room_equipment': server_room_equipment,
-            'tsa_during': request.form.get('tsa_during'),
-            'tsa_from': request.form.get('tsa_from'),
-            'tsa_to': request.form.get('tsa_to'),
-            'tsa_reason': request.form.get('tsa_reason'),
-            'tsa_end': request.form.get('tsa_end'),
-            'sta_during': request.form.get('sta_during'),
-            'sta_from': request.form.get('sta_from'),
-            'sta_to': request.form.get('sta_to'),
-            'sta_reason': request.form.get('sta_reason'),
-            'sta_end': request.form.get('sta_end'),
-            'cfa_during': request.form.get('cfa_during'),
-            'cfa_from': request.form.get('cfa_from'),
-            'cfa_to': request.form.get('cfa_to'),
-            'cfa_reason': request.form.get('cfa_reason'),
-            'cfa_end': request.form.get('cfa_end'),
-            'tia_during': request.form.get('tia_during'),
-            'tia_from': request.form.get('tia_from'),
-            'tia_to': request.form.get('tia_to'),
-            'tia_reason': request.form.get('tia_reason'),
-            'tia_end': request.form.get('tia_end'),
-            'mca_during': request.form.get('mca_during'),
-            'mca_from': request.form.get('mca_from'),
-            'mca_to': request.form.get('mca_to'),
-            'mca_reason': request.form.get('mca_reason'),
-            'mca_end': request.form.get('mca_end'),
-            'tis_during': request.form.get('tis_during'),
-            'tis_from': request.form.get('tis_from'),
-            'tis_to': request.form.get('tis_to'),
-            'tis_reason': request.form.get('tis_reason'),
-            'tis_end': request.form.get('tis_end'),
-            'scr_during': request.form.get('scr_during'),
-            'scr_from': request.form.get('scr_from'),
-            'scr_to': request.form.get('scr_to'),
-            'scr_reason': request.form.get('scr_reason'),
-            'scr_end': request.form.get('scr_end'),
+            'channels_status': channels_status,
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
@@ -1243,10 +1264,6 @@ def it_logs(id_no, form_number):
     else:
         nav = ""
 
-    if (session['admin']) and ('checked' in result.keys()):
-        if result['checked']:
-            flash('Checked Before!', 'success')
-
     return render_template('index.html',
         navigator="it logs",
         log_no=int(id_no),
@@ -1286,10 +1303,6 @@ def it_ck(id_no):
     if not session['admin']:
         flash('You Have not Permission to Check the Log!', 'error')
         return redirect(request.referrer)
-    if 'checked' in result.keys():
-        if result['checked']:
-            flash('Checked Before!', 'success')
-            return redirect(url_for('it_logs', id_no=id_no, form_number='all'))
     amhs_cursor.it_records.update_many(
             {"id": int(id_no)},
             {'$set': {

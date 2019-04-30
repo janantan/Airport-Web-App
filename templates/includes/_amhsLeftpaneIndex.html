@@ -1,6 +1,27 @@
 <table style="width: 100%;">
 	<thead></thead>
 	<tbody>
+		{% if session['admin'] %}
+			<tr style="padding: 0;">
+				<td style="padding: 0;">
+					<fieldset>
+		            	<legend style="font-weight: bold;">Admin Access</legend>
+						<table class="leftpane-table">
+							<tr>
+								<td style="font-size: 14px; text-align: left;">
+									<a href="/user-rules" class="navigator-links">User Rules</a>
+								</td>												
+							</tr>
+							<tr>
+								<td style="font-size: 14px; text-align: left;">
+									<a href="/log-components" class="navigator-links">Log Components</a>
+								</td>												
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+		{% endif %}
 		<tr style="padding: 0;">
 			<td style="padding: 0;">
 				<fieldset>

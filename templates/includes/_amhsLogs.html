@@ -148,17 +148,17 @@
 							    		{{ch.upper()}}
 							    	</td>
 							    	<td>
-							    		{{result[ch+'_during']}}
+							    		{{result['channels_status'][ch]['during']}}
 							    	</td>
 							    	<td>
-							    		{%if result[ch+'_from']%}from {%endif%} {{result[ch+'_from']}}
-							    		{%if result[ch+'_to']%} to {%endif%} {{result[ch+'_to']}}
+							    		{%if result['channels_status'][ch]['from']%}from {%endif%} {{result['channels_status'][ch]['from']}}
+							    		{%if result['channels_status'][ch]['to']%} to {%endif%} {{result['channels_status'][ch]['to']}}
 							    	</td>
 							    	<td>
-							    		{{result[ch+'_reason']}}
+							    		{{result['channels_status'][ch]['reason']}}
 							    	</td>
 							    	<td>
-							    		{{result[ch+'_end']}}
+							    		{{result['channels_status'][ch]['end']}}
 							    	</td>
 							    </tr>
 							{% endfor %}

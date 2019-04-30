@@ -198,70 +198,43 @@
 						            			<td style="width: 50px; padding-bottom:7px;">
 										            <span>{{channel_list[i].upper()}}</span>
 										        </td>
-										        {% if 'channels_status' in result %}
-											        {% if result['channels_status'][channel_list[i]]['during'] %}
-												        <td style="width: 200px; padding-bottom:7px;">
-												        	{% if result['channels_status'][channel_list[i]]['during'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
-											        		{% if result['channels_status'][channel_list[i]]['during'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
-											             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" {{ok}}/>OK</label>
-															<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" {{us}}/>US</label>
-												        </td>
-												    {% else %}
-												    	<td style="width: 200px; padding-bottom:7px;">
-											             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" checked/>OK</label>
-															<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" />US</label>
-												        </td>
-												    {% endif %}
-							            			<td style="width: 350px; padding-bottom:7px;">			            			         
-										             	<input type="time" name="{{channel_list[i]}}_from" value="{{result['channels_status'][channel_list[i]]['from']}}" style="width:100px;" />
-														<input type="time" name="{{channel_list[i]}}_to" value="{{result['channels_status'][channel_list[i]]['to']}}" style="width:100px;" />
+										        {% if result[channel_list[i]+'_during'] %}
+											        <td style="width: 200px; padding-bottom:7px;">
+											        	{% if result[channel_list[i]+'_during'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
+										        		{% if result[channel_list[i]+'_during'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" {{ok}}/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" {{us}}/>US</label>
 											        </td>
-							            			<td style="width: 0px; padding-bottom:7px;">			            			         
-										            	<select name="{{channel_list[i]}}_reason" style="width:150px;">
-															<option style="font-size:12px;">{{result['channels_status'][channel_list[i]]['reason']}}</option>
-															<option style="font-size:12px;" value="Failure at the Other End">Failure at the Other End</option>
-															<option style="font-size:12px;" value="Failure at the Center Side">Failure at the Center Side</option>
-															<option style="font-size:12px;" value="Circuit Break">Circuit Break</option>
-															<option style="font-size:12px;" value="ATN Fault">ATN Fault</option>
-															<option style="font-size:12px;" value="Nobody at the Other End">Nobody at the Other End</option>
-															<option style="font-size:12px;" value="Unknown">Unknown</option>
-															<option style="font-size:12px;" value="Other">Other</option>
-														</select>
-											        </td>
-											        {% if result['channels_status'][channel_list[i]]['end'] %}
-											        	<td style="width: 200px; padding-bottom:7px;">		        	
-												        	{% if result['channels_status'][channel_list[i]]['end'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
-											        		{% if result['channels_status'][channel_list[i]]['end'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
-											             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" {{ok}}/>OK</label>
-															<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" {{us}}/>US</label>
-														</td>
-													{% else %}
-												    	<td style="width: 200px; padding-bottom:7px;">
-											             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" checked/>OK</label>
-															<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" />US</label>
-												        </td>
-												    {% endif %}
-												{% else %}
+											    {% else %}
 											    	<td style="width: 200px; padding-bottom:7px;">
 										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="OK" checked/>OK</label>
 														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_during" value="US" />US</label>
 											        </td>
-							            			<td style="width: 350px; padding-bottom:7px;">
-										             	<input type="time" name="{{channel_list[i]}}_from" style="width:100px;" />
-														<input type="time" name="{{channel_list[i]}}_to" style="width:100px;" />
-											        </td>
-							            			<td style="width: 0px; padding-bottom:7px;">
-										            	<select name="{{channel_list[i]}}_reason" style="width:150px;">
-															<option style="font-size:12px;"></option>
-															<option style="font-size:12px;" value="Failure at the Other End">Failure at the Other End</option>
-															<option style="font-size:12px;" value="Failure at the Center Side">Failure at the Center Side</option>
-															<option style="font-size:12px;" value="Circuit Break">Circuit Break</option>
-															<option style="font-size:12px;" value="ATN Fault">ATN Fault</option>
-															<option style="font-size:12px;" value="Nobody at the Other End">Nobody at the Other End</option>
-															<option style="font-size:12px;" value="Unknown">Unknown</option>
-															<option style="font-size:12px;" value="Other">Other</option>
-														</select>
-											        </td>
+											    {% endif %}
+						            			<td style="width: 350px; padding-bottom:7px;">			            			         
+									             	<input type="time" name="{{channel_list[i]}}_from" value="{{result[channel_list[i]+'_from']}}" style="width:100px;" />
+													<input type="time" name="{{channel_list[i]}}_to" value="{{result[channel_list[i]+'_to']}}" style="width:100px;" />
+										        </td>					        
+						            			<td style="width: 0px; padding-bottom:7px;">			            			         
+									            	<select name="{{channel_list[i]}}_reason" style="width:150px;">
+														<option style="font-size:12px;">{{result[channel_list[i]+'_reason']}}</option>
+														<option style="font-size:12px;" value="Failure at the Other End">Failure at the Other End</option>
+														<option style="font-size:12px;" value="Failure at the Center Side">Failure at the Center Side</option>
+														<option style="font-size:12px;" value="Circuit Break">Circuit Break</option>
+														<option style="font-size:12px;" value="ATN Fault">ATN Fault</option>
+														<option style="font-size:12px;" value="Nobody at the Other End">Nobody at the Other End</option>
+														<option style="font-size:12px;" value="Unknown">Unknown</option>
+														<option style="font-size:12px;" value="Other">Other</option>
+													</select>
+										        </td>
+										        {% if result[channel_list[i]+'_end'] %}
+										        	<td style="width: 200px; padding-bottom:7px;">		        	
+											        	{% if result[channel_list[i]+'_end'] == "OK" %}{% set ok = 'checked' %}{% else %}{% set ok = '' %}{% endif %}
+										        		{% if result[channel_list[i]+'_end'] == "US" %}{% set us = 'checked' %}{% else %}{% set us = '' %}{% endif %}
+										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" {{ok}}/>OK</label>
+														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" {{us}}/>US</label>
+													</td>
+												{% else %}
 											    	<td style="width: 200px; padding-bottom:7px;">
 										             	<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="OK" checked/>OK</label>
 														<label style="display: inline-block;"><input type="radio" name="{{channel_list[i]}}_end" value="US" />US</label>

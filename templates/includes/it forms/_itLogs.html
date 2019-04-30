@@ -6,7 +6,19 @@
 			<a href="/it logs/{{log_no}}/i103" class="button">International Terminal</a>
 			<a href="/it logs/{{log_no}}/i104" class="button">Office Building</a>
 			<a href="/it logs/{{log_no}}/i105" class="button">Technical Block</a>
+			{% if log_no >= session['it_log_no'] %}
+				<a style="float: right;" class="next" title="Next Shift"></a>
+			{% else %}
+				<a style="float: right;" href="/it logs/{{log_no+1}}/all" class="next" title="Next Shift"></a>
+			{% endif %}
+			<a style="float: right; font-size: 16px; padding: 5px 20px;" class="log-no" title="Log Number">{{log_no}}</a>
+			{% if log_no > 1 %}
+				<a style="float: right;" href="/it logs/{{log_no-1}}/all" class="previous" title="Previous Shift"></a>
+			{% else %}
+				<a style="float: right;" class="previous" title="Previous Shift"></a>
+			{% endif %}
 		</div>
+		
 		{% if nav == "i101" %}
 			<table id="freeze-wholelog">
 				<thead></thead>
@@ -1002,19 +1014,6 @@
 						{% endif %}
 						{% if 'all' not in request.base_url %}
 							<li><a href="/it logs/{{log_no}}/all" class="button" style="background-color: #f3f3f3;">Back</a></li>
-						{% endif %}
-						{% if 'all' in request.base_url %}
-							{% if log_no >= session['it_log_no'] %}
-								<li style="float: right;"><a class="next" title="Next Shift"></a></li>
-							{% else %}
-								<li style="float: right;"><a href="/it logs/{{log_no+1}}/all" class="next" title="Next Shift"></a></li>
-							{% endif %}
-							<li style="float: right; font-size: 16px;"><a class="log-no" title="Log Number">{{log_no}}</a></li>
-							{% if log_no > 1 %}
-								<li style="float: right;"><a href="/it logs/{{log_no-1}}/all" class="previous" title="Previous Shift"></a></li>
-							{% else %}
-								<li style="float: right;"><a class="previous" title="Previous Shift"></a></li>
-							{% endif %}
 						{% endif %}
 					</ul>
 				</td>
