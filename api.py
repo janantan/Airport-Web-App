@@ -487,15 +487,15 @@ def search():
         AICT_initial=AICT_initial
         )
 
-@app.route('/user-rules', methods=['GET', 'POST'])
+@app.route('/user-roles', methods=['GET', 'POST'])
 @token_required
-def user_rules():
+def user_roles():
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
 
     if not session['admin']:
-        flash('You Have not Permission to Assign Rules!', 'error')
+        flash('You Have not Permission to Assign Roles!', 'error')
         return redirect(request.referrer)
     users = users_cursor.users.find({'department':'Aeronautical Information and Communication Technology', 'airport':session['airport']})
     result_list = []
@@ -508,9 +508,9 @@ def user_rules():
                 {"username": user[2]},
                 {'$set': {
                 'username': user[2],
-                'admin':True if 'admin' in request.form.getlist(user[2]+'_user_rules') else False,
-                'AMHS form':True if 'amhs' in request.form.getlist(user[2]+'_user_rules') else False,
-                'IT form':True if 'it' in request.form.getlist(user[2]+'_user_rules') else False
+                'admin':True if 'admin' in request.form.getlist(user[2]+'_user_roles') else False,
+                'AMHS form':True if 'amhs' in request.form.getlist(user[2]+'_user_roles') else False,
+                'IT form':True if 'it' in request.form.getlist(user[2]+'_user_roles') else False
                 }
                 }
                 )
@@ -520,10 +520,10 @@ def user_rules():
                 session['AMHS form'] = curent_user['AMHS form']
                 session['IT form'] = curent_user['IT form']
         flash('Saved Successfuly!', 'success')
-        return redirect(url_for('user_rules'))
+        return redirect(url_for('user_roles'))
 
     return render_template('index.html',
-        navigator="user-rules",
+        navigator="user-roles",
         log_records_list=session['log_records_list'],
         result=result_list
         )
@@ -1752,7 +1752,7 @@ def adsb_get_data(airport):
 @app.route('/New Message/<msg_type>/<log_no>', methods=['GET', 'POST'])
 @token_required
 def new_message(msg_type, log_no):
-
+    
     if 'username' not in session:
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
@@ -1763,6 +1763,7 @@ def new_message(msg_type, log_no):
     
     new_msg = {}
     if request.method == 'POST':
+        print('POST')
         new_msg['datetime'] = datetime.datetime.utcnow()
         new_msg['full_message'] = request.form.get('new-message')
         new_msg['id'] = int(log_no)
@@ -1790,6 +1791,9 @@ def new_message(msg_type, log_no):
                         )
         elif msg_type == 'Permission':
             processed_perm = utils.permission_processing(new_msg['full_message'])
+            if processed_perm == "Invalid Permission Referece!":
+                flash('Invalid Permission Referece! Please Check the Message.', 'error')
+                return redirect(request.referrer)
             new_msg['tsa'] = processed_perm[0]
             new_msg['perm_ref'] = processed_perm[1]
             new_msg['from'] = processed_perm[2]

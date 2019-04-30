@@ -264,7 +264,6 @@ def permission_processing(perm):
     org_ref = m if m else None
     if (org_ref) and (len(org_ref) > 1):
         org_ref = (org_ref[1]).replace(' ', '')
-        print(org_ref)
     m = re.search('FROM:(.+)', perm)
     From = m.groups()[0] if m else None
     m = re.search('OPERATOR:(.+)', perm)
@@ -275,6 +274,8 @@ def permission_processing(perm):
     gr = m.groups()[0] if m else None
     if not gr:
         granted = 'NO'
+        if not perm_ref:
+            return "Invalid Permission Referece!"
     elif gr == 'GRANTED':
         granted = 'YES'
     else:
