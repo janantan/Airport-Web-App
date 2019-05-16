@@ -1,6 +1,6 @@
 <div id="flight-form">
 	<section>
-		<form method="POST" action="">
+		<form method="POST" action="" enctype="multipart/form-data">
 			<table id="freeze-wholelog">
 				<thead>
 				</thead>
@@ -301,6 +301,35 @@
 										</tr>
 										<tr>
 											<td style="padding-bottom: 7px;">
+												<fieldset>
+									        		<legend>Attachments</legend>
+									        		{% if result['attachments']['title']|length %}
+									        			<table>
+									        				{% for i in range(result['attachments']['title']|length) %}
+									        					<tbody style="height: 7vh;">
+									        						<tr>
+									        							<td style="padding-bottom: 0;">
+									        								<span>{{result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i]}}</span>
+									        							</td>
+									        							<td style="padding-bottom: 0;">
+									        								<a href="{{attachments[i]}}" target="_blank"><span style="color: blue;">show attached file</span></a>
+									        							</td>
+									        						</tr>
+								        						</tbody>
+								        					{% endfor %}
+								        				</table>
+								        			{% endif %}
+									        		<div style="text-align: left;" id="attachments1">
+									        			<input style="text-transform:none;" type="text" name="title_1" placeholder="Title"/>
+														<input type="file" name="attachments_1" />
+											            <a href="javascript:addAttachmentFile('attachments1','del')" title="delete" class="add-box" style="padding: 3px 7px; color: red;"> - </a>
+											            <a href="javascript:addAttachmentFile('attachments1', 'add')" title="add new" class="add-box" style="padding: 3px 7px;"> + </a>
+													</div>
+												</fieldset>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-bottom: 7px;">
 												<fieldset class="signature" style="margin-bottom:0;">
 													<legend>Signature</legend>
 													<figure id="signature">
@@ -334,3 +363,30 @@
 		</form>
 	</section>
 </div>
+
+<script type="text/javascript">
+	var i=1;
+	var i_list = ["attachments1"];
+	function addAttachmentFile(id_name, action) {
+	    var original = document.getElementById(id_name);
+		var clone = original.cloneNode(true); // "deep" clone
+		if (action == 'add'){
+			clone.id = "attachments" + ++i;
+			i_list.push(clone.id);
+			var title = "title_"+id_name.substring(11, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(title, "title_"+i);
+			var attachments = "attachments_"+id_name.substring(11, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(attachments, "attachments_"+i);
+			clone.innerHTML = clone.innerHTML.replace(id_name, clone.id);
+			var str = "attachments"+id_name.substring(11, id_name.length);
+			clone.innerHTML = clone.innerHTML.replace(str, "attachments"+i);
+			original.parentNode.appendChild(clone);
+		} else {
+			if (i_list.length > 1) {
+				original.parentNode.removeChild(original);
+				i_list.splice(i_list.indexOf(id_name), 1);
+			}
+		}
+
+	}
+</script>

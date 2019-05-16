@@ -225,6 +225,28 @@
 							    </tr>
 							    <tr><td colspan="6"><hr></td></tr>
 						    {% endif %}
+						    {% if result['attachments'] and result['attachments']['title']|length %}
+							    <tr>
+			            			<th>
+			            				<span style="color: red;">Attachments</span>
+			            			</th>
+			            			<th colspan="5">
+			            				<span></span>
+			            			</th>
+							    </tr>
+							    {% for i in range(result['attachments']['title']|length) %}
+								    <tr>
+								    	<td></td>
+				            			<td>
+				            				<span>{{result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i]}}</span>
+				            			</td>
+				            			<td>
+				            				<a href="{{attachments[i]}}" target="_blank"><span style="color: blue;">show attached file</span></a>
+				            			</td>
+								    </tr>
+								{% endfor %}
+							    <tr><td colspan="6"><hr></td></tr>
+						    {% endif %}
 						    <tr>
 		            			<th>
 		            				<span style="color: red;">Signature</span>
@@ -267,7 +289,7 @@
 					{% if session['AMHS form'] and (initial in result['on_duty']+result['overtime']) %}
 						<li><a href="/amhs logs/{{log_no}}/edit" class="button" style="background-color: #f3f3f3;">Edit</a></li>
 					{% endif %}
-					<li><a href="/amhs-pdf/{{log_no}}" class="button" style="background-color: #f3f3f3;">pdf</a></li>
+					<li><a class="button" style="background-color: #f3f3f3;">pdf</a></li>
 					{% if log_no >= session['amhs_log_no'] %}
 						<li style="float: right;"><a class="next" title="Next Shift"></a></li>
 					{% else %}

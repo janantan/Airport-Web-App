@@ -27,8 +27,9 @@ import utils, config, equipments
 cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.DB_NAME)
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
 users_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.USERS_DB_NAME)
-UPLOAD_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/uploded_files/save_folder'
-SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/img'
+UPLOAD_FOLDER = 'E:/BL/amhs_log/static/uploded_files/save_folder'
+ATTACHED_FILE_FOLDER = 'E:/BL/amhs_log/static/attached_files'
+SAVE_FOLDER = 'E:/BL/amhs_log/static/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
@@ -36,6 +37,7 @@ app = Flask(__name__)
 app.secret_key = 'secret@airport_web_app@password_hash@840'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['ATTACHED_FILE_FOLDER'] = ATTACHED_FILE_FOLDER
 app.config['SAVE_FOLDER'] = SAVE_FOLDER
 #set key as config for googlemaps
 #app.config['GOOGLEMAPS_KEY'] = "AIzaSyBlWehb6tP8Fn5VqGEgcoounuDwx8k-mY8"
@@ -102,9 +104,8 @@ def token_required(f):
                 session['department'] = result['department']
                 session['airport'] = result['airport']
                 session['admin'] = result['admin']
-                if result['AMHS form']:
-                    session['AMHS form'] = result['AMHS form']
-                    session['IT form'] = result['IT form']
+                session['AMHS form'] = result['AMHS form']
+                session['IT form'] = result['IT form']
                 session['message'] = result['first_name']+" "+result['last_name']
         
         else:
@@ -148,7 +149,17 @@ def home():
     if not session.get('log_records_list', default=None):
         session['log_records_list'] = []
 
-    return redirect(url_for('fids', airport=session['airport'], arr_dep="all"))
+    #return redirect(url_for('fids', airport=session['airport'], arr_dep="all"))
+    if (session['AMHS form'] and session['amhs_log_no']):
+        return redirect(url_for('amhs_log', id_no=session['amhs_log_no']))
+    elif (session['IT form'] and session['it_log_no']):
+        return redirect(url_for('it_logs', id_no=session['it_log_no'], form_number="None"))
+    else:
+        return render_template('index.html',
+            navigator="None",
+            log_records_list=session['log_records_list'],
+            title=''
+            )
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -181,7 +192,7 @@ def login():
                 flash('The Password Does Not Match!', 'danger')
         else:
             flash('Not Signed up Username! Please Sign up First.', 'error')
-    return render_template('home.html')
+    return render_template('home.html', title='')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -249,7 +260,7 @@ def register():
                 flash('The Password Does Not Match!', 'error')
                 return redirect(url_for('register'))
             
-    return render_template('register.html')
+    return render_template('register.html', title='register')
 
 @app.route('/change password', methods=['GET', 'POST'])
 @token_required
@@ -277,6 +288,7 @@ def change_password():
             flash('Current Password Not Matched!', 'danger')
     return render_template('index.html',
         navigator="change password",
+        title='change password',
         log_records_list=session['log_records_list']
         )
 
@@ -298,7 +310,7 @@ def amhs_pdf(log_no):
     
     signature_path = []
     for sign in result['signature_path']:
-        signature_path.append('E:/AFTN-AMHS/Python/projects/Airport-Web-App'+sign)
+        signature_path.append('E:/BL/amhs_log/'+sign)
 
     pdfkit.from_string(render_template('includes/_forAmhsPdf.html',
         result=result,
@@ -311,9 +323,10 @@ def amhs_pdf(log_no):
         msg_flag=msg_flag,
         notam_data=notam_data,
         perm_data=perm_data,
+        title='amhs log pdf',
         signature_path=signature_path
         ), 'static/pdf/amhs/log number '+log_no+'.pdf')
-    os.startfile('E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/pdf/amhs/log number '+log_no+'.pdf')
+    os.startfile('E:/BL/amhs_log/static/pdf/amhs/log number '+log_no+'.pdf')
 
     return redirect(url_for('amhs_log', id_no=int(log_no)))
 
@@ -357,6 +370,7 @@ def index(navigator):
     return render_template('index.html',
         datetime=session['datetime'],
         navigator=navigator,
+        title=navigator,
         log_no=session['log_no'],
         flt_scheldule_dict=flt_scheldule_dict,
         week_days=wd,
@@ -428,24 +442,64 @@ def search():
         elif request.form.get('i_remark'):
             remark = request.form.get('i_remark').upper()
         else:
-            remark = ""
+            remark = ''
 
         if request.form.get('shift'):
             shift = request.form.get('shift')
         else:
-            shift = ""
+            shift = ''
 
         if request.form.get('search_field') == "AMHS Logs":
-            if initial or shift or remark:
+            if initial and shift and remark:
                 result = amhs_cursor.records.find({
                     'shift_date': {'$gte': date_from, '$lt': date_to},
-                    '$or':[
+                    '$and':[
                     {'shift': shift},
                     {'remarks': {'$regex': remark }},
-                    {'$or':[{'initial': {'$elemMatch':{'$eq':initial}}}]}
+                    {'$or':[{'on_duty': {'$elemMatch':{'$eq':initial}}}, {'overtime': {'$elemMatch':{'$eq':initial}}}]}
                     ]
                     })
+            elif initial and shift:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    '$and':[
+                    {'shift': shift},
+                    {'$or':[{'on_duty': {'$elemMatch':{'$eq':initial}}}, {'overtime': {'$elemMatch':{'$eq':initial}}}]}
+                    ]
+                    })
+            elif initial and remark:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    '$and':[
+                    {'remarks': {'$regex': remark }},
+                    {'$or':[{'on_duty': {'$elemMatch':{'$eq':initial}}}, {'overtime': {'$elemMatch':{'$eq':initial}}}]}
+                    ]
+                    })
+            elif shift and remark:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    '$and':[
+                    {'remarks': {'$regex': remark }},
+                    {'shift': shift}
+                    ]
+                    })
+            elif initial:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    '$or':[{'on_duty': {'$elemMatch':{'$eq':initial}}}, {'overtime': {'$elemMatch':{'$eq':initial}}}]
+                    })
+            elif shift:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    'shift': shift
+                    })
+            elif remark:
+                result = amhs_cursor.records.find({
+                    'shift_date': {'$gte': date_from, '$lt': date_to},
+                    'remarks': {'$regex': remark }
+                    })
             else:
+                print('else')
                 result = amhs_cursor.records.find({'shift_date': {'$gte': date_from, '$lt': date_to}})
 
         
@@ -480,6 +534,7 @@ def search():
 
     return render_template('index.html',
         navigator="search",
+        title='search',
         log_records_list=session['log_records_list'],
         result_list=result_list,
         search_field=search_field,
@@ -524,6 +579,7 @@ def user_roles():
 
     return render_template('index.html',
         navigator="user-roles",
+        title='user roles',
         log_records_list=session['log_records_list'],
         result=result_list
         )
@@ -545,6 +601,7 @@ def amhs_log_form():
     session['datetime'] = datetime.datetime.utcnow().strftime('%Y - %m - %d')
     session['jdatetime'] = jdatetime.datetime.now().strftime('%Y - %m - %d')
     today = session['datetime']
+    attachments_path_list = []
     if jdatetime.datetime.now().month > 6:
         A = datetime.time(3, 30)
         B = datetime.time(15, 30)
@@ -571,6 +628,11 @@ def amhs_log_form():
             if amhs_cursor.it_records.find_one({"shift_date": today}):
                 session['log_records_list'].insert(6, amhs_cursor.it_records.find_one({"shift_date": today})['present_members'])
             (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+            if 'attachments' in logdata:
+                for i in range(len(logdata['attachments']['attached_file_type'])):
+                    file_path = url_for('static',
+                        filename='attached_files/amhs log no ' + str(amhs_cursor.records.estimated_document_count()) +'/'+logdata['attachments']['title'][i]+'.'+logdata['attachments']['attached_file_type'][i])
+                    attachments_path_list.append(file_path)
         else:
             logdata = {}
             notam_data = None
@@ -606,6 +668,7 @@ def amhs_log_form():
             record['channels_status'] = channels_status
             record['fpl'] = record['dla'] = record['chg'] = ""
             record['notam'] = record['perm'] = []
+            record['attachments'] = {'title':[], 'attached_file_type':[]}
             record['signature_path']=[]
             record['signature_path'].append(session['signature_path'])
             record['checked'] = False
@@ -643,6 +706,7 @@ def amhs_log_form():
         record['channels_status'] = channels_status
         record['fpl'] = record['dla'] = record['chg'] = ""
         record['notam'] = record['perm'] = []
+        record['attachments'] = {'title':[], 'attached_file_type':[]}
         record['signature_path']=[]
         record['signature_path'].append(session['signature_path'])
         record['checked'] = False
@@ -662,6 +726,24 @@ def amhs_log_form():
             'reason':request.form.get(channel+'_reason'),
             'end':request.form.get(channel+'_end')
             }
+        attachments = {'title':[], 'attached_file_type':[]}
+        if logdata:
+            attachments = logdata['attachments']
+        for i in range (1, 100):
+            if 'attachments_'+str(i) in request.files:
+                attachments['title'].append(request.form.get('title_'+str(i)))
+                file = request.files['attachments_'+str(i)]
+                filename1 = secure_filename(file.filename)
+                    #if allowed_file(filename1):
+                file.save(os.path.join(app.config['ATTACHED_FILE_FOLDER'], filename1))
+                file_type  = filename1.rsplit('.', 1)[1].lower()
+                #opened_file = open(app.config['ATTACHED_FILE_FOLDER']+'/'+filename1, 'rb').read()
+                directory = app.config['ATTACHED_FILE_FOLDER']+'/'+'amhs log no '+str(session['amhs_log_no'])
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                os.rename(app.config['ATTACHED_FILE_FOLDER']+'/'+filename1,
+                    directory+'/'+request.form.get('title_'+str(i))+'.'+ file_type)
+                attachments['attached_file_type'].append(file_type)
         amhs_cursor.records.update_many(
             {"id": session['amhs_log_no']},
             {'$set': {
@@ -679,7 +761,8 @@ def amhs_log_form():
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
-            'remarks': request.form.get('remarks')
+            'remarks': request.form.get('remarks'),
+            'attachments': attachments
             }
             }
             )
@@ -716,6 +799,7 @@ def amhs_log_form():
 
     return render_template('index.html',
         navigator="amhs log form",
+        title= 'amhs log form',
         log_no=session['amhs_log_no'],
         wd=today_wd,
         result = logdata,
@@ -725,7 +809,8 @@ def amhs_log_form():
         msg_list=equipments.amhs_msg_list,
         log_records_list=session['log_records_list'],
         notam_data=notam_data,
-        perm_data=perm_data
+        perm_data=perm_data,
+        attachments=attachments_path_list
         )
 
 @app.route('/amhs logs/<id_no>', methods=['GET', 'POST'])
@@ -754,9 +839,17 @@ def amhs_log(id_no):
             msg_flag = 1
             break
     (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+    attachments = []
+    if 'attachments' in result:
+        for i in range(len(result['attachments']['attached_file_type'])):
+            file_path = url_for('static',
+                filename='attached_files/amhs log no ' + id_no +'/'+result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i])
+            print(file_path)
+            attachments.append(file_path)
 
     return render_template('index.html',
         navigator="amhs logs",
+        title='amhs log number '+id_no,
         log_no=int(id_no),
         result = result,
         initial=initial,
@@ -766,7 +859,8 @@ def amhs_log(id_no):
         msg_flag=msg_flag,
         log_records_list=session['log_records_list'],
         notam_data=notam_data,
-        perm_data=perm_data
+        perm_data=perm_data,
+        attachments=attachments
         )
 
 @app.route('/amhs-ck/<id_no>')
@@ -812,6 +906,12 @@ def edit_amhs_log(id_no):
         return redirect(request.referrer)
 
     (notam_data, perm_data) = utils.notam_permission_data(result, amhs_cursor)
+    attachments_path_list = []
+    if 'attachments' in result:
+        for i in range(len(result['attachments']['attached_file_type'])):
+            file_path = url_for('static',
+                filename='attached_files/amhs log no ' + str(amhs_cursor.records.estimated_document_count()) +'/'+result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i])
+            attachments_path_list.append(file_path)
     if request.method == 'POST':
         server_room_equipment = {}
         for eqp in equipments.amhs_server_room_eqp: 
@@ -825,6 +925,22 @@ def edit_amhs_log(id_no):
             'reason':request.form.get(channel+'_reason'),
             'end':request.form.get(channel+'_end')
             }
+        attachments = result['attachments']
+        for i in range (1, 100):
+            if 'attachments_'+str(i) in request.files:
+                attachments['title'].append(request.form.get('title_'+str(i)))
+                file = request.files['attachments_'+str(i)]
+                filename1 = secure_filename(file.filename)
+                    #if allowed_file(filename1):
+                file.save(os.path.join(app.config['ATTACHED_FILE_FOLDER'], filename1))
+                file_type  = filename1.rsplit('.', 1)[1].lower()
+                #opened_file = open(app.config['ATTACHED_FILE_FOLDER']+'/'+filename1, 'rb').read()
+                directory = app.config['ATTACHED_FILE_FOLDER']+'/'+'amhs log no '+str(session['amhs_log_no'])
+                if not os.path.exists(directory):
+                    os.makedirs(directory)
+                os.rename(app.config['ATTACHED_FILE_FOLDER']+'/'+filename1,
+                    directory+'/'+request.form.get('title_'+str(i))+'.'+ file_type)
+                attachments['attached_file_type'].append(file_type)
         amhs_cursor.records.update_many(
             {"id": int(id_no)},
             {'$set': {
@@ -842,7 +958,8 @@ def edit_amhs_log(id_no):
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
-            'remarks': request.form.get('remarks')
+            'remarks': request.form.get('remarks'),
+            'attachments': attachments
             }
             }
             )
@@ -874,6 +991,7 @@ def edit_amhs_log(id_no):
 
     return render_template('index.html',
         navigator="edit amhs logs",
+        title='edit amhs log number '+ id_no,
         log_no=int(id_no),
         result = result,
         channel_list=equipments.amhs_channel_list,
@@ -881,7 +999,8 @@ def edit_amhs_log(id_no):
         msg_list=equipments.amhs_msg_list,
         log_records_list=session['log_records_list'],
         notam_data=notam_data,
-        perm_data=perm_data
+        perm_data=perm_data,
+        attachments=attachments_path_list
         )
 
 @app.route('/it log form', methods=['GET', 'POST'])
@@ -980,6 +1099,7 @@ def it_log_form():
 
     return render_template('index.html',
         navigator="it log form",
+        title='it log form',
         nav='',
         log_no=session['amhs_log_no'],
         wd=today_wd,
@@ -1211,6 +1331,7 @@ def it_forms(form_number):
 
     return render_template('index.html',
         navigator="it log form",
+        title='it form '+ nav,
         nav=nav,
         result=logdata,
         data_center_cooling = equipments.data_center_cooling,
@@ -1266,6 +1387,7 @@ def it_logs(id_no, form_number):
 
     return render_template('index.html',
         navigator="it logs",
+        title='it log number '+id_no,
         log_no=int(id_no),
         nav=nav,
         result = result,
@@ -1581,6 +1703,7 @@ def edit_it_log(id_no, form_number):
     
     return render_template('index.html',
         navigator = "it log form",
+        title='edit it log number '+id_no,
         log_no=int(id_no),
         nav=nav,
         wd=result['day'],
@@ -1662,6 +1785,7 @@ def fids(airport, arr_dep):
 
     return render_template('index.html',
         navigator="fids",
+        title='fids '+airport,
         airport=airport,
         arr_dep=arr_dep,
         log_records_list=session['log_records_list'],
@@ -1700,6 +1824,7 @@ def adsb(airport):
 
     return render_template('index.html',
         navigator="map",
+        title='map '+airport,
         log_records_list=session['log_records_list'],
         airport=airport
     )
@@ -1745,6 +1870,7 @@ def adsb_get_data(airport):
 
     return render_template('index.html',
         navigator="map",
+        title='map '+airport,
         log_records_list=session['log_records_list'],
         airport=airport
     )
@@ -1826,7 +1952,7 @@ def new_message(msg_type, log_no):
                         }
                         )
 
-    return render_template('includes/_newNotamPermMessage.html')
+    return render_template('includes/_newNotamPermMessage.html', title='new message')
 
 @app.route('/Notam/<notam_no>')
 @token_required
@@ -1842,7 +1968,7 @@ def notam(notam_no):
     notam_no = notam_no.replace('-', '/')
     result_notam = amhs_cursor.notam.find_one({"notam_no": notam_no})
     notam_msg = result_notam['full_message']
-    return render_template('includes/_notampermMessage.html', msg=notam_msg)
+    return render_template('includes/_notampermMessage.html', msg=notam_msg, title='notam '+notam_no)
 
 @app.route('/Permission/<id_num>/<tsa>/<ref>/<granted>')
 @token_required
@@ -1861,7 +1987,7 @@ def permission(id_num, tsa, ref, granted):
     else:
         result_permission = amhs_cursor.permission.find_one({"id": int(id_num), "tsa": tsa, "granted":granted})
     perm_msg = result_permission['full_message']
-    return render_template('includes/_notampermMessage.html', msg=perm_msg)
+    return render_template('includes/_notampermMessage.html', msg=perm_msg, title='permission '+ref)
 
 @app.route('/Delete/<id_num>/<tsa>/<indicator>')
 @token_required
@@ -1903,7 +2029,7 @@ def internal_error(exception):
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.info('microblog startup')
-    return render_template('500.html'), 500
+    return render_template('500.html', title='error'), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8081, debug = True)
+    app.run(host='0.0.0.0', port=5000, debug = True)
