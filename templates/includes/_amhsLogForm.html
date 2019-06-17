@@ -331,7 +331,7 @@
 							<fieldset>
 				        		<legend>Remarks of Duty</legend>
 				        		<div id="remarks">
-									<textarea name="remarks">{{result['remarks']}}</textarea>
+									<textarea name="remarks">{{('\n'.join(result['remarks']))}}</textarea>
 								</div>
 							</fieldset>
 						</td>

@@ -336,3 +336,9 @@ IR FPN: '''
         perm_data = None
 
     return (notam_data, perm_data)
+
+def checked(ck):
+    if ck:
+        return "✓"
+    else:
+        return ""

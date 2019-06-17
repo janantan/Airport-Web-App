@@ -51,9 +51,15 @@
 							</td>
 						</tr>
 						<tr>
-							<td style="font-size: 14px; text-align: left;">
-								<a href="/it logs/{{session['it_log_no']}}/all" class="navigator-links">The Previous IT Logs</a>
-							</td>
+							{% if session['admin'] %}
+								<td style="font-size: 14px; text-align: left;">
+									<a href="/it logs/{{session['unchecked_it_log']}}/all" class="navigator-links">The Previous IT Logs</a>
+								</td>
+							{% else %}
+								<td style="font-size: 14px; text-align: left;">
+									<a href="/it logs/{{session['it_log_no']}}/all" class="navigator-links">The Previous IT Logs</a>
+								</td>
+							{% endif %}							
 						</tr>
 						<tr>
 							<td style="font-size: 14px; text-align: left;">

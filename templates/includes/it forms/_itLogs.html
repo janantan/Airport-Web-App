@@ -884,24 +884,24 @@
 				</tbody>
 			</table>
 		{% else %}
-			<table>
+			<table id="freeze-wholelog">
 				<thead></thead>
-				<tbody>
+				<tbody style="height:73vh;">					
 					<tr>
 						<td style="padding-bottom: 7px;">
-							<fieldset>
+							<fieldset style="background: #fefefe; height:65vh;">
 				        		<legend style="text-align: left; font-weight: bold;">Log Number: {{log_no}}</legend>
-				        		<table id="it-shift-brief">
+				        		<table id="shift-brief">
 				        			<thead></thead>
-				        			<tbody style="margin-top: 15px; min-height: 28vh;">
+				        			<tbody style="margin-top: 15px; height: 60vh;">
 					            		<tr>
 					            			<td>
 								             	<span class="font-style">Team No.</span>
 									        </td>
-									        <td class="right-border" style="color: red;">
+									        <td colspan="2" class="right-border" style="color: red;">
 					              				<span>{{result['team']}}</span>
 									        </td>
-									        <td>
+									        <td colspan="2">
 												<span class="font-style">UTC Date:</span>
 											</td>
 											<td>
@@ -912,10 +912,13 @@
 					            			<td>			            			         
 								            	<span class="font-style">Present Members</span>
 									        </td>
-									        <td class="right-border" style="color: red;">
-												<span>{{(', '.join(result['present_members']))}}</span>
+									        <td colspan="2" class="right-border" style="color: red;">
+									        	{% for name in result['present_members'] %}
+													<p style="margin: 2px 0; font-size: 15px;">{{name}}</p>
+												{% endfor %}
+												<!--<span>{{('\n '.join(result['present_members']))}}</span>-->
 											</td>
-											<td>
+											<td colspan="2">
 												<span class="font-style">LCL Date:</span>
 											</td>
 											<td>
@@ -924,43 +927,47 @@
 									    </tr>
 									    <tr>
 					            			<td></td>
-									        <td class="right-border"></td>
-											<td>
+									        <td colspan="2" class="right-border"></td>
+											<td colspan="2">
 												<span class="font-style">Week Day:</span>
 											</td>
 											<td>
 												<span>{{result['day']}}</span>
 											</td>
 									    </tr>
-									    <tr><td colspan="4"><hr></td></tr>
-									    {% if result['remarks'] %}
+									    <tr><td colspan="6"><hr></td></tr>
+									    {% if result['remarks'] and (result['remarks'][0])|length %}
 										    <tr>
 						            			<th>
 						            				<span style="color: red;">Remarks</span>
 						            			</th>
-						            			<th colspan="3">
+						            			<th colspan="5">
 						            				<span></span>
 						            			</th>
 										    </tr>
 										    <tr>
 						            			<td></td>
-						            			<td colspan="3" style="text-align: right; direction: rtl;">
-						            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
+						            			<td colspan="5" style="text-align: right; direction: rtl;">
+						            				{% for line in result['remarks'] %}
+						            					<div style="margin-right:10px; font-family: 'BNazanin';">
+						            						{{line}}
+						            					</div>
+						            				{% endfor %}
 						            			</td>
 										    </tr>
-										    <tr><td colspan="4"><hr></td></tr>
+										    <tr><td colspan="6"><hr></td></tr>
 					    				{% endif %}
 					    				{% if result['presents_signature_path'] %}
 										    <tr>
 						            			<th>
 						            				<span style="color: red;">Signature</span>
 						            			</th>
-						            			<th colspan="3">
+						            			<th colspan="6">
 						            				<span></span>
 						            			</th>
 										    </tr>
 										    <tr>
-										    	<td colspan="4">
+										    	<td colspan="6">
 							            			<figure id="signature">
 						            					{% for sign in result['presents_signature_path'] %}
 															<img src="{{sign}}" width="100" height="100" />
@@ -986,12 +993,12 @@
 								<li><a title="Checked"><span style="color: red; font-weight: bold;" class="log-no">✓</span></a></li>
 							{% elif session['admin'] %}
 								<li><a href="/it-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
-										<span style="color: blue; font-weight: bold;">✓</span>
+										<span style="color: blue; font-weight: bold;">check</span>
 									</a></li>
 							{% endif %}
 						{% elif session['admin'] %}
 							<li><a href="/it-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
-									<span style="color: blue; font-weight: bold;">✓</span>
+									<span style="color: blue; font-weight: bold;">check</span>
 								</a></li>
 						{% endif %}
 						{% if session['IT form'] and (name in result['present_members']) %}

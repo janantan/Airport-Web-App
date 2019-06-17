@@ -101,9 +101,15 @@
 										<td colspan="2" style="font-size: 15px;">
 											{{item}}
 										</td>
-										<td>
-											{{result['server_room_equipment'][item]['status']}}
-								        </td>
+										{% if result['server_room_equipment'][item]['status'] == 'On' %}
+											<td>
+												{{result['server_room_equipment'][item]['status']}}
+									        </td>
+								        {% else %}
+									        <td>
+												<span style="color: red;">{{result['server_room_equipment'][item]['status']}}</span>
+									        </td>
+								        {% endif %}
 								        <td colspan="2">
 											{{result['server_room_equipment'][item]['remark']}}
 										</td>
@@ -208,7 +214,7 @@
 							    {% endfor %}
 							    <tr><td colspan="6"><hr></td></tr>
 						    {% endif %}
-						    {% if result['remarks'] %}
+						    {% if result['remarks'] and (result['remarks'][0])|length %}
 							    <tr>
 			            			<th>
 			            				<span style="color: red;">Remarks</span>
@@ -220,7 +226,11 @@
 							    <tr>
 			            			<td></td>
 			            			<td colspan="5" style="text-align: right; direction: rtl;">
-			            				<span style="margin-right: 30px;"><span style="font-family: 'BNazanin';">{{result['remarks']}}</span></span>
+			            				{% for line in result['remarks'] %}
+			            					<div style="margin-right:10px; font-family: 'BNazanin';">
+			            						{{line}}
+			            					</div>
+			            				{% endfor %}
 			            			</td>
 							    </tr>
 							    <tr><td colspan="6"><hr></td></tr>
@@ -278,12 +288,12 @@
 							<li><a title="Checked"><span style="color: red; font-weight: bold;" class="log-no">✓</span></a></li>
 						{% elif session['admin'] %}
 							<li><a href="/amhs-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
-									<span style="color: blue; font-weight: bold;">✓</span>
+									<span style="color: blue; font-weight: bold;">check</span>
 								</a></li>
 						{% endif %}
 					{% elif session['admin'] %}
 						<li><a href="/amhs-ck/{{log_no}}" class="button" title="Check the Log" style="background-color: #f3f3f3;">
-								<span style="color: blue; font-weight: bold;">✓</span>
+								<span style="color: blue; font-weight: bold;">check</span>
 							</a></li>
 					{% endif %}
 					{% if session['AMHS form'] and (initial in result['on_duty']+result['overtime']) %}

@@ -85,7 +85,6 @@
 														<option value="2">2</option>
 														<option value="3">3</option>
 														<option value="4">4</option>
-														<option value="5">5</option>
 													</select>
 										        </td>
 										        <td style="padding-bottom:15px;">
@@ -112,7 +111,7 @@
 													<fieldset>
 										        		<legend style="text-align: left;">Remarks of Duty</legend>
 										        		<div id="remarks">
-															<textarea name="remarks">{{result['remarks']}}</textarea>
+															<textarea name="remarks">{{('\n'.join(result['remarks']))}}</textarea>
 														</div>
 													</fieldset>
 												</td>

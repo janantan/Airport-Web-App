@@ -294,7 +294,7 @@
 												<fieldset style="margin-bottom:0;">
 									        		<legend>Remarks of Duty</legend>
 									        		<div id="remarks">
-														<textarea name="remarks">{{result['remarks']}}</textarea>
+														<textarea name="remarks">{{('\n'.join(result['remarks']))}}</textarea>
 													</div>
 												</fieldset>
 											</td>
@@ -303,22 +303,24 @@
 											<td style="padding-bottom: 7px;">
 												<fieldset>
 									        		<legend>Attachments</legend>
-									        		{% if result['attachments']['title']|length %}
-									        			<table>
-									        				{% for i in range(result['attachments']['title']|length) %}
-									        					<tbody style="height: 7vh;">
-									        						<tr>
-									        							<td style="padding-bottom: 0;">
-									        								<span>{{result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i]}}</span>
-									        							</td>
-									        							<td style="padding-bottom: 0;">
-									        								<a href="{{attachments[i]}}" target="_blank"><span style="color: blue;">show attached file</span></a>
-									        							</td>
-									        						</tr>
-								        						</tbody>
-								        					{% endfor %}
-								        				</table>
-								        			{% endif %}
+									        		{% if result['attachments'] %}
+										        		{% if result['attachments']['title']|length %}
+										        			<table>
+										        				{% for i in range(result['attachments']['title']|length) %}
+										        					<tbody style="height: 7vh;">
+										        						<tr>
+										        							<td style="padding-bottom: 0;">
+										        								<span>{{result['attachments']['title'][i]+'.'+result['attachments']['attached_file_type'][i]}}</span>
+										        							</td>
+										        							<td style="padding-bottom: 0;">
+										        								<a href="{{attachments[i]}}" target="_blank"><span style="color: blue;">show attached file</span></a>
+										        							</td>
+										        						</tr>
+									        						</tbody>
+									        					{% endfor %}
+									        				</table>
+									        			{% endif %}
+									        		{% endif %}
 									        		<div style="text-align: left;" id="attachments1">
 									        			<input style="text-transform:none;" type="text" name="title_1" placeholder="Title"/>
 														<input type="file" name="attachments_1" />

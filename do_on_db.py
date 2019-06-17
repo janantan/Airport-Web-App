@@ -5,7 +5,8 @@ import utils, config, equipments
 
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
 
-for i in range(1, amhs_cursor.records.estimated_document_count()+1):
+for i in range(1, amhs_cursor.records.estimated_document_count()):
+#for i in range(1, 431):
 
 	record = amhs_cursor.records.find_one({"id": i})
 	#channels_status = record['channels_status']
@@ -27,7 +28,7 @@ for i in range(1, amhs_cursor.records.estimated_document_count()+1):
         {"id": i},
         {'$set': {
         'id': i,
-        'shift': n_d
+        'checked': True
         }
         }
         )

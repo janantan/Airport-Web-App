@@ -150,6 +150,16 @@ def home():
         session['log_records_list'] = []
 
     #return redirect(url_for('fids', airport=session['airport'], arr_dep="all"))
+    if session['admin']:
+        unchecked_amhs_log = amhs_cursor.records.find_one({"checked": False})
+        unchecked_it_log = amhs_cursor.it_records.find_one({"checked": False})
+        if unchecked_it_log:
+            session['unchecked_it_log'] = unchecked_it_log['id']
+        else:
+            session['unchecked_it_log'] = session['it_log_no']
+        if unchecked_amhs_log:
+            return redirect(url_for('amhs_log', id_no=unchecked_amhs_log['id']))
+
     if (session['AMHS form'] and session['amhs_log_no']):
         return redirect(url_for('amhs_log', id_no=session['amhs_log_no']))
     elif (session['IT form'] and session['it_log_no']):
@@ -504,13 +514,23 @@ def search():
 
         
         elif request.form.get('search_field') == "IT Logs":
-            if name or remark:
+            if name and remark:
                 result = amhs_cursor.it_records.find({
                         'shift_date': {'$gte': date_from, '$lt': date_to},
-                        '$or':[
+                        '$and':[
                         {'remarks': {'$regex': remark}},
                         {'$or':[{'present_members': {'$elemMatch':{'$eq':name}}}]}
                         ]
+                        })
+            elif name:
+                result = amhs_cursor.it_records.find({
+                        'shift_date': {'$gte': date_from, '$lt': date_to},
+                        '$or':[{'present_members': {'$elemMatch':{'$eq':name}}}]
+                        })
+            elif remark:
+                result = amhs_cursor.it_records.find({
+                        'shift_date': {'$gte': date_from, '$lt': date_to},
+                        'remarks': {'$regex': remark}
                         })
             else:
                 result = amhs_cursor.it_records.find({'shift_date': {'$gte': date_from, '$lt': date_to}})
@@ -518,12 +538,12 @@ def search():
         if result:
             if search_field == 'AMHS Logs':
                 for r in result:
-                    l = [i, (', '.join(r['on_duty'])), r['shift'], r['shift_date'], r['id'], "✓"]
+                    l = [i, (', '.join(r['on_duty'])), r['shift'], r['shift_date'], r['id'], utils.checked(r['checked'])]
                     result_list.append(l)
                     i = i+1
             elif search_field=='IT Logs':
                 for r in result:
-                    l = [i, (', '.join(r['present_members'])), r['shift_date'], r['id'], "✓"]
+                    l = [i, (', '.join(r['present_members'])), r['shift_date'], r['id'], utils.checked(r['checked'])]
                     result_list.append(l)
                     i = i+1
         else:
@@ -761,7 +781,7 @@ def amhs_log_form():
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
-            'remarks': request.form.get('remarks'),
+            'remarks': request.form.get('remarks').split("\n"),
             'attachments': attachments
             }
             }
@@ -884,9 +904,13 @@ def amhs_ck(id_no):
             }})
     flash('Checked', 'success')
     if int(id_no) < session['amhs_log_no']:
-        return redirect(url_for('amhs_log', id_no=str(int(id_no)+1)))
+        unchecked_log = amhs_cursor.records.find_one({"checked": False})
+        if unchecked_log:
+            return redirect(url_for('amhs_log', id_no=unchecked_log['id']))
+        else:
+            return redirect(url_for('amhs_log', id_no=session['amhs_log_no']))
     else:
-        return redirect(url_for('amhs_log', id_no=id_no))
+        return redirect(url_for('amhs_log', id_no=session['amhs_log_no']))
 
 
 @app.route('/amhs logs/<id_no>/edit', methods=['GET', 'POST'])
@@ -958,7 +982,7 @@ def edit_amhs_log(id_no):
             'fpl': request.form.get('fpl'),
             'dla': request.form.get('dla'),
             'chg': request.form.get('chg'),
-            'remarks': request.form.get('remarks'),
+            'remarks': request.form.get('remarks').split("\n"),
             'attachments': attachments
             }
             }
@@ -1040,8 +1064,7 @@ def it_log_form():
             record['present_members'] = request.form.getlist('present_members')
             record['day'] = today_wd
             record['team'] = ''
-            record['remarks'] = ''
-            records['checked'] = False
+            record['checked'] = False
             amhs_cursor.it_records.insert_one(record)
             session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
             session['log_records_list'].insert(6, record['present_members'])
@@ -1057,8 +1080,7 @@ def it_log_form():
         record['present_members'] = request.form.getlist('present_members')
         record['day'] = today_wd
         record['team'] = ''
-        record['remarks'] = ''
-        records['checked'] = False
+        record['checked'] = False
         amhs_cursor.it_records.insert_one(record)
         session['it_log_no'] = amhs_cursor.it_records.estimated_document_count()
         session['log_records_list'].insert(6, record['present_members'])
@@ -1088,7 +1110,7 @@ def it_log_form():
             'present_members': request.form.getlist('present_members'),
             'team': request.form.get('team'),
             'day': request.form.get('day'),
-            'remarks': request.form.get('remarks'),
+            'remarks': request.form.get('remarks').split("\n"),
             'presents_signature_path': presents_signature_path
             }
             }
@@ -1115,7 +1137,7 @@ def it_forms(form_number):
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
         
-    if not session['AMHS form']:
+    if not session['IT form']:
         flash('You Have not Permission to Fill out the Log!', 'error')
         return redirect(request.referrer)
 
@@ -1433,9 +1455,13 @@ def it_ck(id_no):
             }})
     flash('Checked', 'success')
     if int(id_no) < session['it_log_no']:
-        return redirect(url_for('it_logs', id_no=str(int(id_no)+1), form_number='all'))
+        unchecked_log = amhs_cursor.it_records.find_one({"checked": False})
+        if unchecked_log:
+            return redirect(url_for('it_logs', id_no=unchecked_log['id'], form_number='all'))
+        else:
+            return redirect(url_for('it_logs', id_no=session['it_log_no'], form_number='all'))
     else:
-        return redirect(url_for('it_logs', id_no=id_no, form_number='all'))
+        return redirect(url_for('it_logs', id_no=session['it_log_no'], form_number='all'))
 
 @app.route('/it logs/<id_no>/<form_number>/edit', methods=['GET', 'POST'])
 @token_required
@@ -1519,7 +1545,7 @@ def edit_it_log(id_no, form_number):
                 'present_members': request.form.getlist('present_members'),
                 'team': request.form.get('team'),
                 'day': request.form.get('day'),
-                'remarks': request.form.get('remarks'),
+                'remarks': request.form.get('remarks').split("\n"),
                 'presents_signature_path': presents_signature_path
                 }
                 }
@@ -1961,9 +1987,9 @@ def notam(notam_no):
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
         
-    if not session['AMHS form']:
-        flash('You Have not Permission to Fill out the Log!', 'error')
-        return redirect(request.referrer)
+    #if not session['AMHS form']:
+        #flash('You Have not Permission to Fill out the Log!', 'error')
+        #return redirect(request.referrer)
     
     notam_no = notam_no.replace('-', '/')
     result_notam = amhs_cursor.notam.find_one({"notam_no": notam_no})
@@ -1977,9 +2003,9 @@ def permission(id_num, tsa, ref, granted):
         flash('Please Sign in First!', 'error')
         return redirect(request.referrer)
         
-    if not session['AMHS form']:
-        flash('You Have not Permission to Fill out the Log!', 'error')
-        return redirect(request.referrer)
+    #if not session['AMHS form']:
+        #flash('You Have not Permission to Fill out the Log!', 'error')
+        #return redirect(request.referrer)
     
     if "not found" not in ref:
         ref = ref.replace('-', '/')
