@@ -1,21 +1,24 @@
 <div id="logdata-form">
 	<form method="POST" action="">
-		<fieldset style="background: #fefefe; height:65vh;">
+		<fieldset style="background: #fefefe; height:70vh;">
 			<legend style="font-weight: bold;">User Roles</legend>
-    		<table id="freeze">
+    		<table id="freeze" style="font-size: 14px;">
     			<thead>
             		<tr style="background: yellow; border: none;">
-						<th style="width: 15vw;">
+						<th style="width: 12vw;">
 							<span>Name</span>
 						</th>
 						<th>
 							<span>Username</span>
 						</th>
-						<th>
+						<th style="width: 7vw;">
 							<span>Initial</span>
 						</th>
 						<th colspan="3" style="width: 20vw;">
 							<span>Roles</span>
+						</th>
+						<th>
+							<span>Reset Password</span>
 						</th>
 					</tr>
 			    </thead>
@@ -46,6 +49,9 @@
 							</td>
 							<td style="width: 7vw;">
 								IT User<input type="checkbox" name="{{r[2]}}_user_roles" value="it" {% if r[6] %}checked{% endif %}/>
+							</td>
+							<td>
+								<a href="/reset-password/{{r[2]}}" class="button" title="reset password to '123'">reset</a>
 							</td>
 						</tr>
 					{% endfor %}

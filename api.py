@@ -302,6 +302,16 @@ def change_password():
         log_records_list=session['log_records_list']
         )
 
+@app.route('/reset-password/<username>')
+def reset_pass(username):
+    new_pass = sha256_crypt.hash(str('123'))
+    users_cursor.users.update_many(
+            {"username": username},
+            {'$set': {'password': new_pass}}
+            )
+    flash('The Password Changed Successfuly!', 'success')
+    return redirect(request.referrer)
+
 @app.route('/amhs-pdf/<log_no>')
 def amhs_pdf(log_no):
 
