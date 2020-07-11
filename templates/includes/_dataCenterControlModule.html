@@ -1,0 +1,120 @@
+<div id="flight-form">
+	<section id="freeze-fieldset">
+		<form method="POST" action="" enctype="multipart/form-data">
+			<fieldset>
+				<legend>Control Data</legend>
+				<table>
+					<thead></thead>
+					<tbody style="height: 75vh;">
+						<tr>
+							<td style="padding-bottom: 7px;">
+				        		<table>
+				        			<thead></thead>
+				        			<tbody style="margin-top: 15px;">
+					            		<tr style="background: yellow;">
+					            			<th style="width: 210px;">
+									            <span>Today</span>
+									        </th>
+									        <th style="width: 210px;">			            			         
+								             	<span>Last Temperature</span>
+									        </th>
+					            			<th style="width: 210px;">
+								             	<span>Last Humidity</span>
+									        </th>
+					            			<th style="width: 210px;">			            			         
+								            	<span>Select a Date</span>
+									        </th>
+									    </tr>
+									    <tr>
+					            			<td>
+												<p class="alert-datetime">{{session['datetime']}}</p>
+									        </td>
+									        <td>
+									        	<input type="text" value="{{temperature}} &#8451;" size="7" style="text-align:center;" disabled />
+									        </td>
+					            			<td>
+					              				<input type="text" value="{{humidity}} %" size="7" style="text-align:center;" disabled />
+									        </td>
+									        <td>
+					              				<input id="plot_date" type="date" name="plot_date" onchange="chooseDate();" />
+									        </td>
+									    </tr>
+									</tbody>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div id="t-plot" style="margin-bottom: 15px;">
+									<figure class="figure">
+										<!--<img id="temp-plot-date" src="/static/img/temperature_date.jpg?{{unique_datetime}}" />-->
+										<img id="temp-plot" src="{{temp_plot_path}}?{{unique_datetime}}" alt="temperature plot {{session['datetime']}}" width="100%" height="100%" />
+									</figure>
+								</div>
+								<div id="myModal" class="modal">
+									<span class="close">&times;</span>
+									<img class="modal-content" id="img01">
+									<div id="caption"></div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div id="h-plot" style="margin-bottom: 15px;">
+									<figure class="figure">
+										<!--<img id="humidity-plot-date" src="/static/img/humidity_date.jpg?{{unique_datetime}}" />-->
+										<img id="humidity-plot" src="{{humidity_plot_path}}?{{unique_datetime}}" alt="humidity plot {{session['datetime']}}" width="800" height="400" />
+									</figure>
+								</div>
+								<div id="myModal" class="modal">
+									<span class="close">&times;</span>
+									<img class="modal-content" id="img02">
+									<div id="caption"></div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</fieldset>
+		</form>
+	</section>
+</div>
+
+<script type="text/javascript">
+	var modal = document.getElementById("myModal");
+	var temp_img = document.getElementById("temp-plot");
+	var hum_img = document.getElementById("humidity-plot");
+	var modalImg1 = document.getElementById("img01");
+	var modalImg2 = document.getElementById("img01");
+	var captionText = document.getElementById("caption");
+	temp_img.onclick = function(){
+	  modal.style.display = "block";
+	  modalImg1.src = this.src;
+	  captionText.innerHTML = this.alt;
+	}
+	hum_img.onclick = function(){
+	  modal.style.display = "block";
+	  modalImg2.src = this.src;
+	  captionText.innerHTML = this.alt;
+	}
+	var span = document.getElementsByClassName("close")[0];
+	span.onclick = function() { 
+		modal.style.display = "none";
+	}
+
+	function chooseDate(){
+		var date = document.getElementById("plot_date").value;
+		const xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				window.location.href = window.location.href + "?flag=1";
+			}
+		}
+		xhr.open('GET', '/dataCenterControlModule?date=' + date, true);
+		xhr.send();
+	}
+
+	function imgLoading(){
+		document.getElementById('divLoading').style.display = 'block';
+	}
+</script>

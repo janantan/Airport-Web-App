@@ -9,6 +9,7 @@ from PIL import Image
 from bs4 import BeautifulSoup
 import io
 from io import StringIO
+import matplotlib.pyplot as plt
 import urllib3
 import PIL.Image
 import requests
@@ -27,9 +28,9 @@ import utils, config, equipments
 cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.DB_NAME)
 amhs_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.AMHS_DB_NAME)
 users_cursor = utils.config_mongodb(utils.MONGO_HOST, utils.MONGO_PORT, utils.USERS_DB_NAME)
-UPLOAD_FOLDER = 'E:/BL/amhs_log/static/uploded_files/save_folder'
-ATTACHED_FILE_FOLDER = 'E:/BL/amhs_log/static/attached_files'
-SAVE_FOLDER = 'E:/BL/amhs_log/static/img'
+UPLOAD_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/uploded_files/save_folder'
+ATTACHED_FILE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/attached_files'
+SAVE_FOLDER = 'E:/AFTN-AMHS/Python/projects/Airport-Web-App/static/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
@@ -68,6 +69,9 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, app.secret_key)
+            if 'admin' in session.keys():
+                if session['admin']:
+                    session['new_users']=users_cursor.users.find({'airport':session['airport'],'approved':False}).count()
         except:
             flash('Token is Invalid or Expired! Please Sign in Again.', 'danger')
             return redirect(url_for('logout'))            
@@ -122,6 +126,96 @@ def bad_request():
 @app.errorhandler(401)
 def custom_401(error):
     return Response('Could not Verify!', 401, {'WWW-Authenticate' : 'Basic realm="Login Required"'})
+
+@app.route('/api/v1.0/dataCenterModuleData', methods=['POST'])
+def dataCenterModuleData_restApi():
+    data = []
+    status = 'not found'
+    message = {'error': 'There is some problems in your data!'}
+    #print(request.get_json().keys())
+    #if ['humidity', 'temperature'] != request.get_json().keys():
+        #return jsonify({'status': status, 'message': message})
+    temperature = request.get_json()['temperature']
+    humidity = request.get_json()['humidity']
+    today = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+    timestamp = datetime.datetime.utcnow().strftime('%H:%M')
+    new_data = (timestamp, temperature, humidity)
+    data.append(new_data)
+    record = {
+    'datetime' : datetime.datetime.utcnow().strftime('%Y-%m-%d'),
+    'data' : data
+    }
+    result = amhs_cursor.control_module.find_one({'datetime': today})
+    if result:
+        data = result['data']
+        data.append(new_data)
+        amhs_cursor.control_module.update_many(
+            {"datetime": today},
+            {'$set': {'data': data}}
+            )
+    else:
+        amhs_cursor.control_module.insert_one(record)
+    status = 'success'
+    message = {'data': new_data}
+    return jsonify({'status': status, 'message': message})
+
+@app.route('/dataCenterControlModule', methods=['GET'])
+@token_required
+def dataCenterModuleData():
+    choosen_date = request.args.get('date')
+    timestamps = []
+    temperatures = []
+    humidity_list = []
+    today = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+    if choosen_date:
+        date = str(choosen_date)
+    else:
+        date = today
+    #print(date)
+    result = amhs_cursor.control_module.find_one({'datetime': date})
+    if result:
+        for rec in result['data']:
+            timestamps.append(rec[0])
+            temperatures.append(rec[1])
+            humidity_list.append(rec[2])
+            last_temperature = rec[1]
+            last_humidity = rec[2]
+    else:
+        flash('There is no record!', 'error')
+        return False
+    #plt.show()
+    for item in ['temperature', 'humidity']:
+        fig = plt.figure(figsize=(30,15))
+        if item == 'temperature':
+            plt.plot(timestamps, temperatures)
+        else:
+            plt.plot(timestamps, humidity_list)
+        fig.suptitle(item+' plot '+date, fontsize=20)
+        plt.xlabel('time', fontsize=20)
+        plt.ylabel(item, fontsize=20)
+        plt.xticks(size = 10)
+        plt.yticks(size = 16)
+        if choosen_date:
+            fig.savefig(os.path.join(SAVE_FOLDER, item+"_old."+'jpg'))
+        else:
+            fig.savefig(os.path.join(SAVE_FOLDER, item+"."+'jpg'))
+            #if datetime.time(9,40) <= datetime.datetime.utcnow().time() <= datetime.time(9,59):
+                #fig.savefig(os.path.join(SAVE_FOLDER, 'plotImages', item+" "+date+"."+'jpg'))
+        if request.args.get('flag'):
+            temp_plot_path = "/static/img/temperature_old.jpg"
+            humidity_plot_path = "/static/img/humidity_old.jpg"
+        else:
+            temp_plot_path = "/static/img/temperature.jpg"
+            humidity_plot_path = "/static/img/humidity.jpg"
+    return render_template('index.html',
+        navigator="dataCenterControlModule",
+        log_records_list=session['log_records_list'],
+        temp_plot_path = temp_plot_path,
+        humidity_plot_path = humidity_plot_path,
+        unique_datetime = datetime.datetime.utcnow().strftime('%Y/%m/%d %H:%M:%S'),
+        temperature = round(last_temperature, 2),
+        humidity = round(last_humidity, 2)
+        )
 
 @app.route('/home', methods=['GET', 'POST'])
 @token_required
@@ -193,11 +287,14 @@ def login():
 
         if result:
             if sha256_crypt.verify(password, result['password']):
-                session['loged_in'] = True
-                TOKEN = jwt.encode({'user_id':result['user_id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                    app.secret_key)
-                token = TOKEN.decode('UTF-8')
-                return redirect(url_for('home'))
+                if result['approved']:
+                    session['loged_in'] = True
+                    TOKEN = jwt.encode({'user_id':result['user_id'], 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                        app.secret_key)
+                    token = TOKEN.decode('UTF-8')
+                    return redirect(url_for('home'))
+                else:
+                    flash('Not Approved User! Please wait for approvement.', 'danger')
             else:
                 flash('The Password Does Not Match!', 'danger')
         else:
@@ -217,6 +314,7 @@ def register():
         users['phone'] = request.form.get('phone')
         users['username'] = request.form.get('username')
         users['admin'] = False
+        users['approved'] = False
         if request.form.get('department') == 'Aeronautical Information and Communication Technology':
             if request.form.get('initial'):
                 users['AMHS form'] = True
@@ -571,6 +669,43 @@ def search():
         AICT_personel=AICT_personel,
         AICT_initial=AICT_initial
         )
+
+@app.route('/new-users', methods=['GET'])
+@token_required
+def new_users():
+    if 'username' not in session:
+        flash('Please Sign in First!', 'error')
+        return redirect(request.referrer)
+
+    if not session['admin']:
+        flash('You Have not Permission to Assign Roles!', 'error')
+        return redirect(request.referrer)
+    users = users_cursor.users.find({'department':'Aeronautical Information and Communication Technology', 'airport':session['airport'], 'approved':False})
+    result_list = []
+    for user in users:
+        result_list.append([user['first_name'], user['last_name'], user['username'], user['initial'], user['admin'], user['AMHS form'], user['IT form']])
+
+    return render_template('index.html',
+        navigator="new-users",
+        title='new users',
+        log_records_list=session['log_records_list'],
+        result=result_list
+        )
+
+@app.route('/approve-newUser/<username>')
+def approve_newUser(username):
+    users_cursor.users.update_many(
+            {"username": username},
+            {'$set': {'approved': True}}
+            )
+    flash('The User Approved Successfuly!', 'success')
+    return redirect(request.referrer)
+
+@app.route('/delete-newUser/<username>')
+def delete_newUser(username):
+    users_cursor.users.delete_one({"username": username})
+    flash('The User Deleted Successfuly!', 'success')
+    return redirect(request.referrer)
 
 @app.route('/user-roles', methods=['GET', 'POST'])
 @token_required
